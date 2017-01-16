@@ -1,7 +1,9 @@
-package com.example.lsdchat;
+package com.example.lsdchat.activity;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+
+import com.example.lsdchat.R;
 
 public class MainActivity extends AppCompatActivity {
 
