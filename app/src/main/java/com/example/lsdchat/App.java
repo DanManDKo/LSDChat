@@ -3,6 +3,7 @@ package com.example.lsdchat;
 import android.app.Application;
 
 import com.crashlytics.android.Crashlytics;
+import com.example.lsdchat.manager.ApiManager;
 import com.example.lsdchat.manager.DataManager;
 
 import io.fabric.sdk.android.Fabric;
@@ -11,6 +12,7 @@ import io.realm.RealmConfiguration;
 
 public class App extends Application {
     private static DataManager sDataManager;
+    private static ApiManager sApiManager;
 
     @Override
     public void onCreate() {
@@ -27,6 +29,14 @@ public class App extends Application {
 
     public static DataManager getDataManager() {
         return sDataManager;
+    }
+
+    public static ApiManager getApiManager() {
+        if (sApiManager == null) {
+            sApiManager = new ApiManager();
+            sApiManager.init();
+        }
+        return sApiManager;
     }
 
 
