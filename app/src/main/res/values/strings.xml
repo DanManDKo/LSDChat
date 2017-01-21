@@ -49,4 +49,14 @@
     <!--toasts-->
     <string name="registration_complete">Registration complete</string>
     <string name="there_is_no_device_camera">Your device doesn`t have camera</string>
+    <string name="title_activity_main">MainActivity</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="network_is_absent">The network is absent</string>
+    <string name="check_connection">Check your connection to the internet and retry</string>
+    <string name="cancel">Cancel</string>
+    <string name="retry">Retry</string>
 </resources>
