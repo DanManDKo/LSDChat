@@ -10,6 +10,7 @@ buildscript {
 }
 apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
+apply plugin: 'me.tatarka.retrolambda'
 
 repositories {
     maven { url 'https://maven.fabric.io/public' }
@@ -17,18 +18,64 @@ repositories {
 
 apply plugin: 'realm-android'
 
+def versionMajor = 0
+def versionMinor = 0
+def versionPatch = 1
+def versionBuild = 0
+
 android {
     compileSdkVersion 25
     buildToolsVersion '25.0.0'
+
     defaultConfig {
         applicationId "com.internship.lsd.lsdchat"
         minSdkVersion 19
         targetSdkVersion 25
-        versionCode 1
-        versionName "1.0"
+        versionCode versionMajor * 1000000 + versionMinor * 10000 + versionPatch * 100 + versionBuild
+        versionName "${versionMajor}.${versionMinor}.${versionPatch}"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
+
+    applicationVariants.all { variant ->
+        variant.outputs.each { output ->
+            def file = output.outputFile
+            output.outputFile = new File(file.parent, file.name.replace(".apk", "-" + defaultConfig.versionName + "(" + defaultConfig.versionCode + ").apk"))
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    signingConfigs {
+        debug {
+            storeFile file("keystore/debug.keystore")
+            storePassword "android"
+            keyAlias "androiddebugkey"
+            keyPassword "android"
+        }
+    }
+
     buildTypes {
+        def INT = "int"
+        def BOOLEAN = "boolean"
+        def STRING = "String"
+        def TRUE = "true"
+        def FALSE = "false"
+
+        def REPORT_CRASHES = "REPORT_CRASHES"
+        debug {
+            buildConfigField BOOLEAN, REPORT_CRASHES, FALSE
+
+            signingConfig signingConfigs.debug
+        }
+
+        debugDev {
+            buildConfigField BOOLEAN, REPORT_CRASHES, TRUE
+
+            signingConfig signingConfigs.debug
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
@@ -49,6 +96,10 @@ dependencies {
     compile 'io.reactivex:rxjava:1.2.1'
     compile 'com.squareup.retrofit2:adapter-rxjava:2.1.0'
     compile 'io.reactivex:rxandroid:1.2.1'
+    compile 'com.android.support:cardview-v7:25.0.0'
+
+    compile 'com.facebook.android:facebook-android-sdk:[4,5)'
+
     compile('com.crashlytics.sdk.android:crashlytics:2.6.5@aar') {
         transitive = true;
     }

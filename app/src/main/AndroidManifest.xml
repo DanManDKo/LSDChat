@@ -11,16 +11,30 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activity.MainActivity">
+        <activity
+            android:name=".activity.RegistrationActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+        <activity android:name="com.facebook.FacebookActivity"
+                  android:configChanges=
+                      "keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+                  android:label="@string/app_name" />
+
+        <activity android:name=".activity.MainActivity">
+
+        </activity>
+
         <meta-data
             android:name="io.fabric.ApiKey"
-            android:value="6cea4ff8dd45c841dacd56e27acf4399f548671d" />
+            android:value="6cea4ff8dd45c841dacd56e27acf4399f548671d"/>
+
+        <meta-data android:name="com.facebook.sdk.ApplicationId"
+                   android:value="@string/facebook_app_id"/>
     </application>
 
 </manifest>
