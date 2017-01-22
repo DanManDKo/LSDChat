@@ -1,44 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v4.widget.NestedScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:fresco="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:showIn="@layout/activity_registration">
+<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+                                            xmlns:app="http://schemas.android.com/apk/res-auto"
+                                            xmlns:tools="http://schemas.android.com/tools"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="match_parent"
+                                            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+                                            tools:showIn="@layout/activity_registration">
 
     <android.support.v7.widget.CardView
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:fresco="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/card_main_margin"
-        android:layout_marginLeft="@dimen/card_main_margin"
-        android:layout_marginRight="@dimen/card_main_margin"
-        android:layout_marginTop="@dimen/card_top_margin"
-        app:cardBackgroundColor="@color/colorNavyBlue"
-        app:cardElevation="@dimen/card_elevation"
-        app:cardMaxElevation="@dimen/max_card_elevation"
-        app:contentPadding="@dimen/card_inner_padding">
+        android:layout_marginBottom="@dimen/card_vertical_margin"
+        android:layout_marginLeft="@dimen/card_horizontal_margin"
+        android:layout_marginRight="@dimen/card_horizontal_margin"
+        android:layout_marginTop="@dimen/card_vertical_margin"
+        app:cardBackgroundColor="@color/colorNavyBlue">
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:padding="@dimen/card_inner_padding">
 
-            <com.facebook.drawee.view.SimpleDraweeView
+            <ImageView
                 android:id="@+id/iv_user_reg"
                 android:layout_width="@dimen/usericon_size"
                 android:layout_height="@dimen/usericon_size"
                 android:layout_centerHorizontal="true"
                 android:layout_marginBottom="@dimen/activity_vertical_margin"
                 android:contentDescription="@string/cda_userpic_reg"
-                android:scaleType="centerCrop"
-                fresco:placeholderImage="@drawable/userpic"
-                fresco:roundAsCircle="true"/>
+                android:src="@drawable/userpic"/>
 
             <android.support.design.widget.TextInputLayout
                 android:id="@+id/til_email_reg"
@@ -149,7 +139,6 @@
                     android:imeOptions="actionNext"
                     android:inputType="phone"
                     android:lines="@string/et_num_of_lines"
-                    android:maxLength="@string/et_phone_max_length"
                     android:textColor="@color/colorWhite"
                     android:theme="@style/EditRegTextTheme"
                     tools:hint="@string/phone_reg"/>
@@ -176,18 +165,20 @@
                     android:textColor="@color/colorWhite"
                     android:theme="@style/EditRegTextTheme"
                     tools:hint="@string/website_reg"/>
+
             </android.support.design.widget.TextInputLayout>
 
             <Button
                 android:id="@+id/fb_button_reg"
-                style="@style/FBButtonStyle"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/button_height"
                 android:layout_below="@id/til_web_reg"
                 android:layout_marginBottom="@dimen/activity_vertical_margin"
                 android:layout_marginTop="@dimen/activity_vertical_margin"
-                android:text="@string/fb_button_text"
-                android:textSize="@dimen/fb_btn_font_size"/>
+                android:background="@drawable/button_shape_fbsignup"
+                android:text="@string/sign_up"
+                android:textColor="@color/colorWhite"
+                android:textColorHint="@color/colorWhite"/>
 
             <Button
                 android:id="@+id/sign_up_button"
@@ -200,14 +191,6 @@
                 android:textColor="@color/colorWhite"
                 android:textSize="@dimen/btn_font_size"/>
 
-            <ProgressBar
-                android:id="@+id/progressbar_reg"
-                android:layout_width="@dimen/progressbar_size"
-                android:layout_height="@dimen/progressbar_size"
-                android:layout_below="@id/sign_up_button"
-                android:layout_centerHorizontal="true"
-                android:theme="@style/CustomProgressBar"
-                android:visibility="gone"/>
         </RelativeLayout>
     </android.support.v7.widget.CardView>
 </android.support.v4.widget.NestedScrollView>
