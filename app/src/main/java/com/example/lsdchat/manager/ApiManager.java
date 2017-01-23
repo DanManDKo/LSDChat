@@ -40,10 +40,6 @@ public class ApiManager {
         builder.serializeNulls();
         return GsonConverterFactory.create(builder.create());
     }
-        //a cap
-    public boolean isUserLogged() {
-        return false;
-    }
 
 }
 

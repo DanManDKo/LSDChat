@@ -6,11 +6,16 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Handler;
+import android.util.Log;
+import android.widget.Toast;
 
 import com.example.lsdchat.App;
 import com.example.lsdchat.R;
 import com.example.lsdchat.manager.ApiManager;
+import com.example.lsdchat.manager.SharedPreferencesManager;
+import com.example.lsdchat.util.HmacSha1Signature;
 import com.example.lsdchat.util.Network;
+
 
 /**
  * Created by User on 21.01.2017.
@@ -21,6 +26,8 @@ public class SplashScreenPresenter implements SplashContract.Presenter {
     private static int SPLASH_TIME_OUT = 3000;
     private Context mContext;
     private ApiManager mApiManager;
+    private SharedPreferencesManager mSharedPreferencesManager;
+    public static final String SIGNATURE_ERROR = "signature_error";
 
     @Override
     public void leaveSplashScreen() {
@@ -29,11 +36,18 @@ public class SplashScreenPresenter implements SplashContract.Presenter {
             showErrorDialog();
             return;
         }
-        mApiManager = App.getApiManager();
+        String signature;
+        try {
+            signature = HmacSha1Signature.calculateRFC2104HMAC();
+        } catch (Exception ex) {
+            Log.e(SIGNATURE_ERROR, ex.getMessage());
+            return;
+        }
+
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                if (mApiManager.isUserLogged()) {
+                if (mSharedPreferencesManager.isLogged()) {
                     navigateToMain();
                 } else {
                     navigateToLogin();
@@ -42,11 +56,6 @@ public class SplashScreenPresenter implements SplashContract.Presenter {
             }
         }, SPLASH_TIME_OUT);
 
-        if (isLogged()) {
-            navigateToMain();
-        } else {
-            navigateToLogin();
-        }
 
     }
 
@@ -57,17 +66,17 @@ public class SplashScreenPresenter implements SplashContract.Presenter {
 
     @Override
     public boolean isLogged() {
-        return false;
+        return mSharedPreferencesManager.isLogged();
     }
 
     @Override
     public void navigateToLogin() {
-
+        Toast.makeText(mContext, "redirect to login", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void navigateToMain() {
-
+        Toast.makeText(mContext, "redirect to main", Toast.LENGTH_SHORT).show();
     }
 
     private void showErrorDialog() {
@@ -93,6 +102,7 @@ public class SplashScreenPresenter implements SplashContract.Presenter {
     public void attachView(SplashContract.View view) {
         mView = view;
         mContext = mView.getContext();
+        mSharedPreferencesManager = App.getSharedPreferencesManager(mContext);
     }
 
     @Override
