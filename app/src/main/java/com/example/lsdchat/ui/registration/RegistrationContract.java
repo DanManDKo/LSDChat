@@ -2,32 +2,23 @@ package com.example.lsdchat.ui.registration;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.net.Uri;
 import android.support.design.widget.TextInputEditText;
 
-import com.example.lsdchat.api.registration.RegistrationResponse;
-import com.example.lsdchat.api.login.request.SessionRequestNoAuth;
-import com.example.lsdchat.api.login.response.SessionResponse;
+import com.example.lsdchat.base.BaseMvpPresenter;
+import com.example.lsdchat.base.BaseMvpView;
 
-
-import rx.Observable;
-
-public interface RegistrationContract {
-    interface Presenter {
+public class RegistrationContract {
+    public interface Presenter extends BaseMvpPresenter<View> {
         //screen navigation
-        void navigateToMainScreen();
+        void navigateToMainScreen(boolean validatevalue);
 
-        void onDestroy();
-
-        void showDialogImageSourceChooser();
+        void showImageSourceChooser();
 
         void initFacebookSdk();
 
         void loginWithFacebook();
 
-        void getFacebookToken();
+        void getFacebookeToken();
 
         void setTextChangedListenerWithInputMask(TextInputEditText phone);
 
@@ -38,14 +29,9 @@ public interface RegistrationContract {
         boolean validatePassword(String pass);
 
         boolean validateConfPassword(String pass, String confPass);
-
-        void requestSessionAndRegistration(boolean validateValue, RegistrationForm form);
-
-        void onActivityResult(int requestCode, int resultCode, Intent data);
-
     }
 
-    interface View {
+    public interface View extends BaseMvpView {
         //void onError();
         void setInvalideEmailError();
 
@@ -60,14 +46,5 @@ public interface RegistrationContract {
         void showProgressBar();
 
         void hideProgressBar();
-
-        void getUserpicUri(Uri uri);
-
-        Context getContext();
-    }
-
-    interface Model {
-        Observable<SessionResponse> getSessionNoAuth();
-        Observable<RegistrationResponse> getRegistration(String token, RegistrationForm form);
     }
 }

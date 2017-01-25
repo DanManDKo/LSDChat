@@ -3,9 +3,7 @@ package com.example.lsdchat.ui.registration;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
@@ -15,21 +13,14 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import com.example.lsdchat.R;
-import com.facebook.drawee.view.SimpleDraweeView;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.util.HashMap;
 
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 
 public class RegistrationActivity extends AppCompatActivity implements RegistrationContract.View {
-    private static final int REQUEST_IMAGE_CAMERA = 1;
-    private static final int REQUEST_IMAGE_GALLERY = 2;
+    private static final int REQUEST_IMAGE_CAPTURE = 1;
 
     private TextInputLayout mEmail;
     private TextInputLayout mPass;
@@ -42,42 +33,35 @@ public class RegistrationActivity extends AppCompatActivity implements Registrat
     private TextInputEditText mPassEdit;
     private TextInputEditText mConfPassEdit;
     private TextInputEditText mPhoneEdit;
-    private TextInputEditText mNameEdit;
-    private TextInputEditText mWebEdit;
 
     private Button mFbSignUpButton;
     private Button mSignUpButton;
-    private SimpleDraweeView mImageView;
+    private ImageView mImageView;
     private ProgressBar mProgressBar;
     private Toolbar mToolbar;
-
-    @Override
-    public Context getContext() {
-        return this;
-    }
-
-    private RegistrationPresenter mRegistrationPresenter = new RegistrationPresenter(this);
+    private RegistrationPresenter mRegistrationPresenter = new RegistrationPresenter();
 
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mRegistrationPresenter.attachView(this);
         mRegistrationPresenter.initFacebookSdk();
 
         setContentView(R.layout.activity_registration);
 
-        initView();
+        createUI();
         setRegFormHint();
 
         setSupportActionBar(mToolbar);
         configurateToolbar();
 
-        mRegistrationPresenter.getFacebookToken();
+        mRegistrationPresenter.getFacebookeToken();
 
         mEmailEdit.addTextChangedListener(mRegistrationPresenter.getTextWatcher());
         mPassEdit.addTextChangedListener(mRegistrationPresenter.getTextWatcher());
         mConfPassEdit.addTextChangedListener(mRegistrationPresenter.getTextWatcher());
         mRegistrationPresenter.setTextChangedListenerWithInputMask(mPhoneEdit);
 
-        mImageView.setOnClickListener(v -> mRegistrationPresenter.showDialogImageSourceChooser());
+        mImageView.setOnClickListener(v -> mRegistrationPresenter.showImageSourceChooser());
 
         mFbSignUpButton.setOnClickListener(v -> {
             mRegistrationPresenter.loginWithFacebook();
@@ -88,23 +72,16 @@ public class RegistrationActivity extends AppCompatActivity implements Registrat
         });
 
         mSignUpButton.setOnClickListener(v -> {
-            RegistrationForm form = new RegistrationForm();
-            form.setEmail(mEmailEdit.getText().toString());
-            form.setPassword(mPassEdit.getText().toString());
-            form.setFullName(mNameEdit.getText().toString());
-            form.setPhone(mPhoneEdit.getText().toString());
-            form.setWebsite(mWebEdit.getText().toString());
-
             boolean validateValue = mRegistrationPresenter.validateRegForm(
                     String.valueOf(mEmailEdit.getText()),
                     String.valueOf(mPassEdit.getText()),
                     String.valueOf(mConfPassEdit.getText()));
 
-            mRegistrationPresenter.requestSessionAndRegistration(validateValue, form);
+            mRegistrationPresenter.navigateToMainScreen(validateValue);
         });
     }
 
-    private void initView() {
+    private void createUI() {
         mToolbar = (Toolbar) findViewById(R.id.toolbar_reg);
         mEmail = (TextInputLayout) findViewById(R.id.til_email_reg);
         mPass = (TextInputLayout) findViewById(R.id.til_pass_reg);
@@ -116,14 +93,12 @@ public class RegistrationActivity extends AppCompatActivity implements Registrat
         mFbSignUpButton = (Button) findViewById(R.id.fb_button_reg);
         mSignUpButton = (Button) findViewById(R.id.sign_up_button);
         mProgressBar = (ProgressBar) findViewById(R.id.progressbar_reg);
-        mImageView = (SimpleDraweeView) findViewById(R.id.iv_user_reg);
+        mImageView = (ImageView) findViewById(R.id.iv_user_reg);
 
         mEmailEdit = (TextInputEditText) findViewById(R.id.tiet_email_reg);
         mPassEdit = (TextInputEditText) findViewById(R.id.tiet_pass_reg);
         mConfPassEdit = (TextInputEditText) findViewById(R.id.tiet_confpass_reg);
         mPhoneEdit = (TextInputEditText) findViewById(R.id.tiet_phone_reg);
-        mNameEdit = (TextInputEditText) findViewById(R.id.tiet_name_reg);
-        mWebEdit = (TextInputEditText) findViewById(R.id.tiet_web_reg);
     }
 
     public void setRegFormHint() {
@@ -144,22 +119,26 @@ public class RegistrationActivity extends AppCompatActivity implements Registrat
     }
 
     @Override
-    public void getUserpicUri(Uri uri) {
-        mImageView.setImageURI(uri);
-    }
-
-    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        mRegistrationPresenter.onActivityResult(requestCode, resultCode, data);
+        mRegistrationPresenter.getCallbackManager().onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+            Bundle extras = data.getExtras();
+            Bitmap imageBitmap = (Bitmap) extras.get("data");
+            mImageView.setImageBitmap(imageBitmap);
+        }
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mRegistrationPresenter.onDestroy();
+        mRegistrationPresenter.detachView();
     }
 
+    @Override
+    public Context getContext() {
+        return this;
+    }
 
     @Override
     protected void attachBaseContext(Context newBase) {
