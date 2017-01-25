@@ -1,5 +1,15 @@
 package com.example.lsdchat.api;
 
+import com.example.lsdchat.constant.ApiConstant;
+import com.example.lsdchat.model.SessionRequestBody;
+import com.example.lsdchat.model.SessionResponse;
+
+import retrofit2.Response;
+import retrofit2.http.Body;
+import retrofit2.http.POST;
+import rx.Observable;
+
 public interface ApiService {
-    //TODO write Api requests here
+    @POST(ApiConstant.SESSION_REQUEST)
+    Observable<Response<SessionResponse>> getSession(@Body SessionRequestBody body);
 }
