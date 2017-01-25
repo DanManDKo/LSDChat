@@ -3,14 +3,9 @@ package com.example.lsdchat.util;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.util.Log;
 
-import java.util.Random;
-
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
-
-import io.fabric.sdk.android.services.network.HttpRequest;
+import com.example.lsdchat.model.SessionRequestBody;
+import com.example.lsdchat.model.SessionResponse;
 
 
 /**

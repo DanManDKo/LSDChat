@@ -12,10 +12,20 @@ import android.widget.Toast;
 
 import com.example.lsdchat.App;
 import com.example.lsdchat.R;
+import com.example.lsdchat.constant.ApiConstant;
 import com.example.lsdchat.manager.ApiManager;
+import com.example.lsdchat.manager.DataManager;
 import com.example.lsdchat.manager.SharedPreferencesManager;
+import com.example.lsdchat.model.SessionRequestBody;
+import com.example.lsdchat.model.SessionResponse;
+import com.example.lsdchat.model.User;
 import com.example.lsdchat.util.HmacSha1Signature;
 import com.example.lsdchat.util.Network;
+
+import java.util.Random;
+
+import retrofit2.Response;
+import rx.Subscriber;
 
 
 /**
@@ -27,37 +37,43 @@ public class SplashScreenPresenter implements SplashContract.Presenter {
     private static int SPLASH_TIME_OUT = 3000;
     private Context mContext;
     private ApiManager mApiManager;
-    private SharedPreferencesManager mSharedPreferencesManager;
     public static final String SIGNATURE_ERROR = "signature_error";
+    private int mRandom;
+    private long mTimestamp;
+    private String mSignature;
+    private DataManager mDataManager;
+    private User mUser;
+
+    public SplashScreenPresenter() {
+        mApiManager = App.getApiManager();
+        mDataManager = App.getDataManager();
+        mUser = mDataManager.getUser();
+    }
 
     @Override
     public void leaveSplashScreen() {
-
         if (!isOnLine()) {
             showErrorDialog();
-            return;
-        }
-        String signature;
-        try {
-            signature = HmacSha1Signature.calculateRFC2104HMAC();
-        } catch (Exception ex) {
-            Log.e(SIGNATURE_ERROR, ex.getMessage());
             return;
         }
 
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                if (mSharedPreferencesManager.isLogged()) {
+                if (isLogged()) {
                     navigateToMain();
                 } else {
                     navigateToLogin();
                 }
-
             }
         }, SPLASH_TIME_OUT);
-
-
+//        if (mUser != null) {
+            mRandom = new Random().nextInt();
+            mTimestamp = System.currentTimeMillis() / 1000;
+//            mSignature = getSignature(mRandom, mTimestamp, mUser.getEmail(), mUser.getPassword());
+            mSignature = getSignature(mRandom, mTimestamp, "aa@test.aa", "aaaaaaaa");
+            getSession(createRequestBody());
+//        }
     }
 
     @Override
@@ -67,7 +83,9 @@ public class SplashScreenPresenter implements SplashContract.Presenter {
 
     @Override
     public boolean isLogged() {
-        return mSharedPreferencesManager.isLogged();
+        if (mUser != null)
+            return mUser.isSignIn();
+        return false;
     }
 
     @Override
@@ -78,6 +96,54 @@ public class SplashScreenPresenter implements SplashContract.Presenter {
     @Override
     public void navigateToMain() {
         Toast.makeText(mContext, "redirect to main", Toast.LENGTH_SHORT).show();
+    }
+
+    private SessionRequestBody createRequestBody() {
+        SessionRequestBody body = new SessionRequestBody();
+        body.setApplicationId(ApiConstant.APP_ID);
+        body.setAuthKey(ApiConstant.AUTH_KEY);
+        body.setSignature(mSignature);
+//        body.setEmail(mUser.getEmail());
+//        body.setPassword(mUser.getPassword());
+        body.setPassword("aaaaaaaa");
+        body.setEmail("aa@test.aa");
+        body.setNonce(mRandom);
+        body.setTimestamp(mTimestamp);
+        return body;
+    }
+
+    @Override
+    public void getSession(SessionRequestBody body) {
+        App.getApiManager().getSession(body).subscribe(new Subscriber<Response<SessionResponse>>() {
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onNext(Response<SessionResponse> sessionResponseResponse) {
+                SessionResponse session = sessionResponseResponse.body();
+                App.getDataManager().insertSession(session);
+            }
+        });
+    }
+
+    @Override
+    public String getSignature(int random, long timestamp, String user, String password) {
+
+        String signature;
+        try {
+            signature = HmacSha1Signature.calculateRFC2104HMAC(random, timestamp, user, password);
+        } catch (Exception ex) {
+            Log.e(SIGNATURE_ERROR, ex.getMessage());
+            return null;
+        }
+        return signature;
     }
 
     private void showErrorDialog() {
@@ -103,7 +169,6 @@ public class SplashScreenPresenter implements SplashContract.Presenter {
     public void attachView(SplashContract.View view) {
         mView = view;
         mContext = mView.getContext();
-        mSharedPreferencesManager = App.getSharedPreferencesManager(mContext);
     }
 
     @Override
