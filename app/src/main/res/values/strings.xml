@@ -2,6 +2,8 @@
     <string name="app_name">LSD chat</string>
     <!--registration screen strings-->
     <string name="sign_up">SIGN UP</string>
+    <string name="fb_button_text">Link Facebook</string>
+    <string name="fb_button_text_linked">Linked</string>
     <string name="email_reg">Email Address</string>
     <string name="password_reg">Password</string>
     <string name="conf_pass_reg">Confirm Password</string>
@@ -11,7 +13,17 @@
     <string name="cda_userpic_reg">User picture</string>
 
     <string name="et_num_of_lines">1</string>
+    <string name="et_phone_max_length">19</string>
 
     <string name="facebook_app_id">200211553785322</string>
 
+    <!--registration form string-->
+    <string name="invalid_email">Invalid email</string>
+    <string name="password_is_weak">Password is weak. Please use at least two digits and two capitalized letters</string>
+    <string name="passwords_donot_match">Passwords do not match</string>
+    <string name="password_length">Password length should be 6-12 symbols</string>
+    <!--registration alert dialog-->
+    <string name="image_source_chooser">Image source chooser</string>
+    <string name="device_camera">Device camera</string>
+    <string name="photo_gallery">Photo Gallery</string>
 </resources>

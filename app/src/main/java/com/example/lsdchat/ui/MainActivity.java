@@ -1,4 +1,4 @@
-package com.example.lsdchat.activity;
+package com.example.lsdchat.ui;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
