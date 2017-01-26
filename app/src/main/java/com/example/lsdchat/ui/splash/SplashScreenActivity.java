@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.lsdchat.R;
 
@@ -45,5 +46,15 @@ public class SplashScreenActivity extends AppCompatActivity implements SplashCon
         mPresenter.detachView();
     }
 
+    @Override
+    public void navigateToLogin() {
+        Toast.makeText(this,"Navigate to login",Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void navigateToMain() {
+        Toast.makeText(this,"Navigate to main",Toast.LENGTH_SHORT).show();
+
+    }
 }
 

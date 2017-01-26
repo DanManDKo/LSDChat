@@ -17,13 +17,14 @@ public interface SplashContract {
 
         boolean isLogged();
 
-        void navigateToLogin();
 
-        void navigateToMain();
         void getSession(SessionRequestBody body);
-        String getSignature(int random, long timestamp, String user, String password);
+        String getSignature(String user, String password);
     }
 
     interface View extends BaseMvpView {
+        void navigateToLogin();
+
+        void navigateToMain();
     }
 }

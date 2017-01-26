@@ -7,6 +7,7 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
 import java.util.Formatter;
+import java.util.Random;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -17,7 +18,8 @@ import javax.crypto.spec.SecretKeySpec;
 
 public class HmacSha1Signature {
     private static final String HMAC_SHA1_ALGORITHM = "HmacSHA1";
-
+    private static int mRandom;
+    private static long mTimestamp;
     private static String toHexString(byte[] bytes) {
         Formatter formatter = new Formatter();
         for (byte b : bytes) {
@@ -26,12 +28,23 @@ public class HmacSha1Signature {
         return formatter.toString();
     }
 
-    public static String calculateRFC2104HMAC(int random, long timestamp, String email,String password)
+    public static int getmRandom() {
+        return mRandom;
+    }
+
+    public static long getmTimestamp() {
+        return mTimestamp;
+    }
+
+
+    public static String calculateRFC2104HMAC( String email, String password)
             throws SignatureException, NoSuchAlgorithmException, InvalidKeyException {
+        mRandom = new Random().nextInt();
+        mTimestamp = System.currentTimeMillis() / 1000;
         SecretKeySpec signingKey = new SecretKeySpec(ApiConstant.AUTH_SECRET.getBytes(), HMAC_SHA1_ALGORITHM);
         Mac mac = Mac.getInstance(HMAC_SHA1_ALGORITHM);
         mac.init(signingKey);
-        return toHexString(mac.doFinal(getSignatureParams(random, timestamp,email,password).getBytes()));
+        return toHexString(mac.doFinal(getSignatureParams(mRandom, mTimestamp,email,password).getBytes()));
     }
 
     private static String getSignatureParams(int random, long timestamp, String email, String password) {
