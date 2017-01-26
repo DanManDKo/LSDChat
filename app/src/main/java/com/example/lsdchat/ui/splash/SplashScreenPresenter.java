@@ -6,6 +6,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Handler;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.example.lsdchat.App;
@@ -39,6 +40,7 @@ public class SplashScreenPresenter implements SplashContract.Presenter {
     private DataManager mDataManager;
     private User mUser;
     private boolean mNavigationFlag;
+
     public SplashScreenPresenter() {
         mApiManager = App.getApiManager();
         mDataManager = App.getDataManager();
@@ -53,21 +55,22 @@ public class SplashScreenPresenter implements SplashContract.Presenter {
             return;
         }
 
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (mNavigationFlag) {
-                    mView.navigateToMain();
-                } else {
-                    mView.navigateToLogin();
-                }
-            }
-        }, SPLASH_TIME_OUT);
-        if (isLogged()) {
-            mSignature = getSignature(mUser.getEmail(), mUser.getPassword());
-            getSession(createRequestBody());
-            mNavigationFlag = true;
-        }
+//        new Handler().postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                if (mNavigationFlag) {
+//                    mView.navigateToMain();
+//                } else {
+//                    mView.navigateToLogin();
+//                }
+//            }
+//        }, SPLASH_TIME_OUT);
+//        if (isLogged()) {
+//            mSignature = getSignature(mUser.getEmail(), mUser.getPassword());
+        mSignature = getSignature("aa@test.aa", "aaaaaaaa");
+        getSession(createRequestBody());
+        mNavigationFlag = true;
+//        }
     }
 
     @Override
@@ -88,8 +91,10 @@ public class SplashScreenPresenter implements SplashContract.Presenter {
         body.setApplicationId(ApiConstant.APP_ID);
         body.setAuthKey(ApiConstant.AUTH_KEY);
         body.setSignature(mSignature);
-        body.setEmail(mUser.getEmail());
-        body.setPassword(mUser.getPassword());
+//        body.setEmail(mUser.getEmail());
+        body.setEmail("aa@test.aa");
+//        body.setPassword(mUser.getPassword());
+        body.setPassword("aaaaaaaa");
         body.setNonce(mRandom);
         body.setTimestamp(mTimestamp);
         return body;
@@ -97,7 +102,7 @@ public class SplashScreenPresenter implements SplashContract.Presenter {
 
     @Override
     public void getSession(SessionRequestBody body) {
-        App.getApiManager().getSession(body).subscribe(new Subscriber<Response<SessionResponse>>() {
+        mApiManager.getSession(body).subscribe(new Subscriber<Response<SessionResponse>>() {
             @Override
             public void onCompleted() {
 
@@ -105,17 +110,19 @@ public class SplashScreenPresenter implements SplashContract.Presenter {
 
             @Override
             public void onError(Throwable e) {
-
+                Log.e("ERROR", e.getMessage());
             }
 
             @Override
             public void onNext(Response<SessionResponse> sessionResponseResponse) {
                 SessionResponse session = sessionResponseResponse.body();
-                App.getDataManager().insertSession(session);
+//                App.getDataManager().insertSession(session);
+                Log.e("onNext", session.getToken() + " id=" + session.getUserId());
             }
         });
     }
 
+    @Nullable
     @Override
     public String getSignature(String user, String password) {
 
