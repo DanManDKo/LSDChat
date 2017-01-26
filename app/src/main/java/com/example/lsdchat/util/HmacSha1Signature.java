@@ -28,11 +28,11 @@ public class HmacSha1Signature {
         return formatter.toString();
     }
 
-    public static int getmRandom() {
+    public static int getRandom() {
         return mRandom;
     }
 
-    public static long getmTimestamp() {
+    public static long getTimestamp() {
         return mTimestamp;
     }
 
