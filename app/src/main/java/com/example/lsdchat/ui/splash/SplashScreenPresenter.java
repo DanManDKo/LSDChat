@@ -7,21 +7,17 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Handler;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.example.lsdchat.App;
 import com.example.lsdchat.R;
 import com.example.lsdchat.constant.ApiConstant;
 import com.example.lsdchat.manager.ApiManager;
 import com.example.lsdchat.manager.DataManager;
-import com.example.lsdchat.manager.SharedPreferencesManager;
 import com.example.lsdchat.model.SessionRequestBody;
 import com.example.lsdchat.model.SessionResponse;
 import com.example.lsdchat.model.User;
 import com.example.lsdchat.util.HmacSha1Signature;
 import com.example.lsdchat.util.Network;
-
-import java.util.Random;
 
 import retrofit2.Response;
 import rx.Subscriber;
@@ -126,8 +122,8 @@ public class SplashScreenPresenter implements SplashContract.Presenter {
         String signature;
         try {
             signature = HmacSha1Signature.calculateRFC2104HMAC(user, password);
-            mRandom = HmacSha1Signature.getmRandom();
-            mTimestamp = HmacSha1Signature.getmTimestamp();
+            mRandom = HmacSha1Signature.getRandom();
+            mTimestamp = HmacSha1Signature.getTimestamp();
         } catch (Exception ex) {
             Log.e(SIGNATURE_ERROR, ex.getMessage());
             return null;
