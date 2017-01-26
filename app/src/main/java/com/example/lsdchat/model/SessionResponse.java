@@ -13,7 +13,7 @@ public class SessionResponse extends RealmObject {
     @SerializedName("_id")
     private String _id;
     @SerializedName("application_id")
-    private long aplicationId;
+    private long applicationId;
     @SerializedName("created_at")
     private String createdAt;
     @SerializedName("device_id")
@@ -40,12 +40,12 @@ public class SessionResponse extends RealmObject {
         this._id = _id;
     }
 
-    public long getAplicationId() {
-        return aplicationId;
+    public long getApplicationId() {
+        return applicationId;
     }
 
-    public void setAplicationId(long aplicationId) {
-        this.aplicationId = aplicationId;
+    public void setApplicationId(long applicationId) {
+        this.applicationId = applicationId;
     }
 
     public String getCreatedAt() {
