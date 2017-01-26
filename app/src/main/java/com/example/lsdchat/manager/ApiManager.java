@@ -14,12 +14,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 public class ApiManager {
-//    public static final String SCHEME = "https://";
-//    public static final String HOSTNAME = "api.quickblox.com/";
-//    public static final String SERVER = SCHEME + HOSTNAME;
-//    public static final String APP_ID = "52416";
-//    public static final String AUTH_KEY = "CYzPSEdHBjAsAKL";
-//    public static final String AUTH_SECRET = "NuadG9LH5h3UXat";
+
 
     private Retrofit mRetrofit;
     private ApiService mApiService;

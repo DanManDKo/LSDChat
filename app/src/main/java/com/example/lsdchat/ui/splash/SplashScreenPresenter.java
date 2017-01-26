@@ -42,7 +42,7 @@ public class SplashScreenPresenter implements SplashContract.Presenter {
     private String mSignature;
     private DataManager mDataManager;
     private User mUser;
-
+    private boolean mNavigationFlag;
     public SplashScreenPresenter() {
         mApiManager = App.getApiManager();
         mDataManager = App.getDataManager();
@@ -51,6 +51,7 @@ public class SplashScreenPresenter implements SplashContract.Presenter {
 
     @Override
     public void leaveSplashScreen() {
+
         if (!isOnLine()) {
             showErrorDialog();
             return;
@@ -59,20 +60,18 @@ public class SplashScreenPresenter implements SplashContract.Presenter {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                if (isLogged()) {
-                    navigateToMain();
+                if (mNavigationFlag) {
+                    mView.navigateToMain();
                 } else {
-                    navigateToLogin();
+                    mView.navigateToLogin();
                 }
             }
         }, SPLASH_TIME_OUT);
-//        if (mUser != null) {
-            mRandom = new Random().nextInt();
-            mTimestamp = System.currentTimeMillis() / 1000;
-//            mSignature = getSignature(mRandom, mTimestamp, mUser.getEmail(), mUser.getPassword());
-            mSignature = getSignature(mRandom, mTimestamp, "aa@test.aa", "aaaaaaaa");
+        if (isLogged()) {
+            mSignature = getSignature(mUser.getEmail(), mUser.getPassword());
             getSession(createRequestBody());
-//        }
+            mNavigationFlag = true;
+        }
     }
 
     @Override
@@ -87,25 +86,14 @@ public class SplashScreenPresenter implements SplashContract.Presenter {
         return false;
     }
 
-    @Override
-    public void navigateToLogin() {
-        Toast.makeText(mContext, "redirect to login", Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void navigateToMain() {
-        Toast.makeText(mContext, "redirect to main", Toast.LENGTH_SHORT).show();
-    }
 
     private SessionRequestBody createRequestBody() {
         SessionRequestBody body = new SessionRequestBody();
         body.setApplicationId(ApiConstant.APP_ID);
         body.setAuthKey(ApiConstant.AUTH_KEY);
         body.setSignature(mSignature);
-//        body.setEmail(mUser.getEmail());
-//        body.setPassword(mUser.getPassword());
-        body.setPassword("aaaaaaaa");
-        body.setEmail("aa@test.aa");
+        body.setEmail(mUser.getEmail());
+        body.setPassword(mUser.getPassword());
         body.setNonce(mRandom);
         body.setTimestamp(mTimestamp);
         return body;
@@ -133,11 +121,13 @@ public class SplashScreenPresenter implements SplashContract.Presenter {
     }
 
     @Override
-    public String getSignature(int random, long timestamp, String user, String password) {
+    public String getSignature(String user, String password) {
 
         String signature;
         try {
-            signature = HmacSha1Signature.calculateRFC2104HMAC(random, timestamp, user, password);
+            signature = HmacSha1Signature.calculateRFC2104HMAC(user, password);
+            mRandom = HmacSha1Signature.getmRandom();
+            mTimestamp = HmacSha1Signature.getmTimestamp();
         } catch (Exception ex) {
             Log.e(SIGNATURE_ERROR, ex.getMessage());
             return null;
