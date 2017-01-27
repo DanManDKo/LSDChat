@@ -25,24 +25,6 @@ public class DataManager {
         return true;
     }
 
-    public boolean insertSession(SessionToken session) {
-        try {
-            mRealm.beginTransaction();
-            mRealm.copyToRealmOrUpdate(session);
-            mRealm.commitTransaction();
-        } catch (Exception ex) {
-            mRealm.cancelTransaction();
-            return false;
-        }
-        return true;
-
-    }
-
-    public SessionToken getSession() {
-        return mRealm.where(SessionToken.class).findFirst();
-    }
-
-
 
     public User getUser() {
         return mRealm.where(User.class).findFirst();
