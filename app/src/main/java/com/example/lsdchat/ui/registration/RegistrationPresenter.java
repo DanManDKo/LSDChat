@@ -3,10 +3,12 @@ package com.example.lsdchat.ui.registration;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.design.widget.TextInputEditText;
@@ -16,8 +18,6 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.widget.Button;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.example.lsdchat.R;
@@ -30,12 +30,14 @@ import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.regex.Pattern;
 
+import okhttp3.internal.DiskLruCache;
 import ru.tinkoff.decoro.MaskImpl;
 import ru.tinkoff.decoro.parser.UnderscoreDigitSlotsParser;
 import ru.tinkoff.decoro.slots.Slot;
@@ -46,7 +48,7 @@ import static android.app.Activity.RESULT_OK;
 
 
 public class RegistrationPresenter implements RegistrationContract.Presenter {
-    private static final int REQUEST_IMAGE_CAPTURE = 1;
+    private static final int REQUEST_IMAGE_CAMERA = 1;
     private static final int REQUEST_IMAGE_GALLERY = 2;
     private static final int MIN_DIGITS_AND_LETTERS_VALUE = 2;
     private static final int MIN_PASSWORD_LENGTH = 6;
@@ -59,6 +61,7 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
     private RegistrationContract.View mView;
     private Context mContext;
     private CallbackManager mCallbackManager;
+    private String mCurrentPhotoPath;
 
     private TextWatcher mTextWatcher = new TextWatcher() {
         @Override
@@ -86,6 +89,7 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
         mView = view;
         mContext = mView.getContext();
         mCallbackManager = CallbackManager.Factory.create();
+        mCurrentPhotoPath = null;
     }
 
     @Override
@@ -207,13 +211,16 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
     @Override
     public Uri getUserImageFromCameraOrGallery(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
-            case REQUEST_IMAGE_CAPTURE:
+            case REQUEST_IMAGE_CAMERA:
                 if (resultCode == RESULT_OK) {
-                    return data.getData();
+                    String str = mCurrentPhotoPath;
+                    Toast.makeText(mContext, "ddd", Toast.LENGTH_SHORT).show();
+                    return Uri.parse(str);
                 }
                 break;
             case REQUEST_IMAGE_GALLERY:
                 if (resultCode == RESULT_OK) {
+
                     return data.getData();
                 }
                 break;
@@ -227,12 +234,12 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
         return mCallbackManager;
     }
 
-    void getPhotoFromGallery() {
+    public void getPhotoFromGallery() {
         Intent pickPhoto = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         ((Activity) mContext).startActivityForResult(pickPhoto, REQUEST_IMAGE_GALLERY);
     }
 
-    void getPhotoFromCamera() {
+    public void getPhotoFromCamera() {
         //check for device camera
         if (mContext.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)) {
             Intent pictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -250,7 +257,7 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
                             "com.internship.lsd.lsdchat",
                             photoFile);
                     pictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                    ((Activity) mContext).startActivityForResult(pictureIntent, REQUEST_IMAGE_CAPTURE);
+                ((Activity) mContext).startActivityForResult(pictureIntent, REQUEST_IMAGE_CAMERA);
                 }
             }
         } else {
@@ -258,41 +265,43 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
         }
     }
 
-    private String mCurrentPhotoPath;
 
-    private File createImageFile() throws IOException {
+    public File createImageFile() throws IOException {
         // Create an image file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = "LSD_" + timeStamp + "_";
         File storageDir = mContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         File image = File.createTempFile(imageFileName, ".jpg", storageDir);
-
         // Save a file path
         mCurrentPhotoPath = image.getAbsolutePath();
-
         return image;
     }
-    public Bitmap getPic(int w, int h) {
-        // Get the dimensions of the View
-        int targetW = w;
-        int targetH = h;
 
-        // Get the dimensions of the bitmap
-        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-        bmOptions.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
-        int photoW = bmOptions.outWidth;
-        int photoH = bmOptions.outHeight;
-
-        // Determine how much to scale down the image
-        int scaleFactor = Math.min(photoW/targetW, photoH/targetH);
-
-        // Decode the image file into a Bitmap sized to fill the View
-        bmOptions.inJustDecodeBounds = false;
-        bmOptions.inSampleSize = scaleFactor;
-        bmOptions.inPurgeable = true;
-
-        Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
-        return bitmap;
+    public String getCurrentPhotoPath() {
+        return mCurrentPhotoPath;
     }
+
+//    public Bitmap getPic(int w, int h) {
+//        // Get the dimensions of the View
+//        int targetW = w;
+//        int targetH = h;
+//
+//        // Get the dimensions of the bitmap
+//        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+//        bmOptions.inJustDecodeBounds = true;
+//        BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
+//        int photoW = bmOptions.outWidth;
+//        int photoH = bmOptions.outHeight;
+//
+//        // Determine how much to scale down the image
+//        int scaleFactor = Math.min(photoW / targetW, photoH / targetH);
+//
+//        // Decode the image file into a Bitmap sized to fill the View
+//        bmOptions.inJustDecodeBounds = false;
+//        bmOptions.inSampleSize = scaleFactor;
+//        bmOptions.inPurgeable = true;
+//
+//        Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
+//        return bitmap;
+//    }
 }

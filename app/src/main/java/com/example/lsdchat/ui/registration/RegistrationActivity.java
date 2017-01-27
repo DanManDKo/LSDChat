@@ -15,6 +15,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.example.lsdchat.R;
 import com.facebook.drawee.view.SimpleDraweeView;
@@ -84,6 +85,7 @@ public class RegistrationActivity extends AppCompatActivity implements Registrat
                     String.valueOf(mEmailEdit.getText()),
                     String.valueOf(mPassEdit.getText()),
                     String.valueOf(mConfPassEdit.getText()));
+            Toast.makeText(this, mRegistrationPresenter.getCurrentPhotoPath(), Toast.LENGTH_SHORT).show();
 
             mRegistrationPresenter.navigateToMainScreen(validateValue);
         });
@@ -132,9 +134,6 @@ public class RegistrationActivity extends AppCompatActivity implements Registrat
         mRegistrationPresenter.getCallbackManager().onActivityResult(requestCode, resultCode, data);
         mImageView.setImageURI(mRegistrationPresenter
                 .getUserImageFromCameraOrGallery(requestCode, resultCode, data));
-        mImageView.setImageBitmap(mRegistrationPresenter.getPic(
-                mImageView.getWidth(),
-                mImageView.getHeight()));
     }
 
     @Override
