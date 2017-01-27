@@ -46,4 +46,7 @@
     <string name="image_source_chooser">Image source chooser</string>
     <string name="device_camera">Device camera</string>
     <string name="photo_gallery">Photo Gallery</string>
+    <!--toasts-->
+    <string name="registration_complete">Registration complete</string>
+    <string name="there_is_no_device_camera">Your device doesn`t have camera</string>
 </resources>
