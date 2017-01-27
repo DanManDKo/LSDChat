@@ -64,7 +64,7 @@ public class LoginPresented implements LoginContract.Presented {
         currentUser.setEmail(email);
         currentUser.setPassword(password);
         currentUser.setSignIn(isKeepSignIn);
-        mDataManager.insertUser(currentUser);
+//        mDataManager.insertUser(currentUser);
     }
 
 
