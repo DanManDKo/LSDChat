@@ -16,8 +16,12 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.lsdchat.R;
-import com.example.lsdchat.manager.ApiManager;
 import com.example.lsdchat.ui.MainActivity;
+import com.jakewharton.rxbinding.widget.RxTextView;
+
+import rx.Observable;
+import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
 
 public class LoginActivity extends AppCompatActivity implements LoginContract.View {
     private ProgressBar mProgressBar;
@@ -37,19 +41,36 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
         setContentView(R.layout.activity_login);
         mPresented = new LoginPresented(this);
 
-//        init quickblox
-        ApiManager apiManager = new ApiManager();
-        apiManager.initializeQb(this);
 
         initView();
 
         setLoginButtonEnabled(false);
         textChange();
 
+        Observable<CharSequence> emailChangeObservable = RxTextView.textChanges(mEmail);
+        Subscription emailSubscription = emailChangeObservable
+                .doOnNext(charSequence -> hideEmailError())
+                .filter(charSequence -> !TextUtils.isEmpty(charSequence))
+                .observeOn(AndroidSchedulers.mainThread())
+
+                .subscribe(charSequence -> {
+                            boolean isEmailValid = validEmail(charSequence.toString());
+                            if (!isEmailValid) {
+                                setEmailError();
+                            } else {
+                                hideEmailError();
+                            }
+                        },throwable -> {});
+
+
 
         onClickButton();
 
 
+    }
+
+    private boolean validEmail(String email) {
+        return !TextUtils.isEmpty(email) && email.contains("@");
     }
 
     private void onClickButton() {
@@ -96,6 +117,11 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
         mKeepMeSignIn = (CheckBox) findViewById(R.id.cb_keep_me_signed_in);
         mIlEmail = (TextInputLayout) findViewById(R.id.input_layout_email);
         mIlPassword = (TextInputLayout) findViewById(R.id.input_layout_password);
+
+//        hardcore for test
+        mEmail.setText("aa@test.aa");
+        mPassword.setText("aaaaaaaa");
+
 
     }
 

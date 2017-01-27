@@ -1,10 +1,8 @@
 package com.example.lsdchat.ui.login;
 
 
-
 import com.example.lsdchat.base.BaseMvpPresenter;
 import com.example.lsdchat.base.BaseMvpView;
-import com.quickblox.users.model.QBUser;
 
 
 public interface LoginContract {
@@ -13,6 +11,7 @@ public interface LoginContract {
         void onDestroy();
 
         void validateCredentials(String email, String password);
+        void requestSessionAndLogin(String email, String password);
 
     }
 
