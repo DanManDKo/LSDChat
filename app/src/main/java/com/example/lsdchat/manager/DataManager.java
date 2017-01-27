@@ -1,6 +1,6 @@
 package com.example.lsdchat.manager;
 
-import com.example.lsdchat.model.SessionResponse;
+import com.example.lsdchat.api.model.SessionToken;
 import com.example.lsdchat.model.User;
 
 
@@ -25,7 +25,7 @@ public class DataManager {
         return true;
     }
 
-    public boolean insertSession(SessionResponse session) {
+    public boolean insertSession(SessionToken session) {
         try {
             mRealm.beginTransaction();
             mRealm.copyToRealmOrUpdate(session);
@@ -38,11 +38,15 @@ public class DataManager {
 
     }
 
-    public SessionResponse getSession() {
-        return mRealm.where(SessionResponse.class).findFirst();
+    public SessionToken getSession() {
+        return mRealm.where(SessionToken.class).findFirst();
     }
+
+
 
     public User getUser() {
         return mRealm.where(User.class).findFirst();
     }
+
+
 }

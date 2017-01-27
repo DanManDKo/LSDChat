@@ -10,4 +10,21 @@
     <string name="check_connection">Check your connection to the internet and retry</string>
     <string name="cancel">Cancel</string>
     <string name="retry">Retry</string>
+
+    <string name="error_input_email">Error input email</string>
+    <string name="error_input_password">Error input password</string>
+
+    <string name="sign_up">SIGN UP</string>
+    <string name="email_reg">Email Address</string>
+    <string name="password_reg">Password</string>
+    <string name="conf_pass_reg">Confirm Password</string>
+    <string name="full_name_reg">Full Name</string>
+    <string name="phone_reg">Phone</string>
+    <string name="website_reg">Website</string>
+    <string name="cda_userpic_reg">User picture</string>
+
+    <string name="et_num_of_lines">1</string>
+    <string name="sign_in">Sign In</string>
+    <string name="forgot_password">Forgot password</string>
+    <string name="keep_me_signed_in">Keep me signed in</string>
 </resources>
