@@ -5,6 +5,7 @@ import android.app.Application;
 import com.crashlytics.android.Crashlytics;
 import com.example.lsdchat.manager.ApiManager;
 import com.example.lsdchat.manager.DataManager;
+import com.facebook.drawee.backends.pipeline.Fresco;
 
 import io.fabric.sdk.android.Fabric;
 import io.realm.Realm;
@@ -18,6 +19,8 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        Fresco.initialize(this);
+
         Fabric.with(this, new Crashlytics());
 
         RealmConfiguration configuration = new RealmConfiguration
