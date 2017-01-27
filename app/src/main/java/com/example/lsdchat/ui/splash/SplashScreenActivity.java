@@ -1,6 +1,7 @@
 package com.example.lsdchat.ui.splash;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -9,6 +10,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.lsdchat.R;
+import com.example.lsdchat.ui.MainActivity;
+import com.example.lsdchat.ui.login.LoginActivity;
 
 /**
  * Created by User on 18.01.2017.
@@ -49,11 +52,13 @@ public class SplashScreenActivity extends AppCompatActivity implements SplashCon
     @Override
     public void navigateToLogin() {
         Toast.makeText(this,"Navigate to login",Toast.LENGTH_SHORT).show();
+//        startActivity(new Intent(this, LoginActivity.class));
     }
 
     @Override
     public void navigateToMain() {
         Toast.makeText(this,"Navigate to main",Toast.LENGTH_SHORT).show();
+//        startActivity(new Intent(this, MainActivity.class));
 
     }
 }

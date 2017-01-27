@@ -4,9 +4,6 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
-import com.example.lsdchat.model.SessionRequestBody;
-import com.example.lsdchat.model.SessionResponse;
-
 
 /**
  * Created by User on 21.01.2017.

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.lsdchat">
+          package="com.example.lsdchat">
 
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
         android:name=".App"
@@ -14,17 +14,16 @@
         android:theme="@style/AppTheme">
         <meta-data
             android:name="io.fabric.ApiKey"
-            android:value="6cea4ff8dd45c841dacd56e27acf4399f548671d" />
+            android:value="6cea4ff8dd45c841dacd56e27acf4399f548671d"/>
 
-        <activity android:name=".ui.login.LoginActivity">
+        <activity android:name=".ui.splash.SplashScreenActivity">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <!-- <activity android:name=".ui.login.LoginActivity"></activity> -->
-        <activity android:name=".ui.MainActivity"></activity>
+        <activity android:name=".ui.login.LoginActivity"/>
+        <activity android:name=".ui.MainActivity"/>
     </application>
 
 </manifest>

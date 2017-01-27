@@ -4,7 +4,7 @@ import android.app.Application;
 import android.content.Context;
 
 import com.crashlytics.android.Crashlytics;
-import com.example.lsdchat.manager.ApiManager;
+import com.example.lsdchat.api.ApiManager;
 import com.example.lsdchat.manager.DataManager;
 import com.example.lsdchat.manager.SharedPreferencesManager;
 

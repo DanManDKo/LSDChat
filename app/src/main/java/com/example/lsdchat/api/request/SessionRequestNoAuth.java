@@ -1,12 +1,14 @@
-package com.example.lsdchat.model;
+package com.example.lsdchat.api.request;
 
+import com.example.lsdchat.constant.ApiConstant;
+import com.example.lsdchat.util.SignatureTest;
 import com.google.gson.annotations.SerializedName;
 
-/**
- * Created by User on 25.01.2017.
- */
+import java.util.Random;
 
-public class SessionRequestBody {
+
+
+public class SessionRequestNoAuth {
     @SerializedName("application_id")
     private String applicationId;
     @SerializedName("auth_key")
@@ -17,10 +19,16 @@ public class SessionRequestBody {
     private long timestamp;
     @SerializedName("signature")
     private String signature;
-    @SerializedName("user[email]")
-    private String email;
-    @SerializedName("user[password]")
-    private String password;
+
+
+    public SessionRequestNoAuth() {
+        this.applicationId = ApiConstant.APP_ID;
+        this.authKey = ApiConstant.AUTH_KEY;
+        this.nonce = new Random().nextInt();
+        this.timestamp = System.currentTimeMillis() / 1000;
+        this.signature = SignatureTest.calculateSignatureNoAuth(nonce, timestamp);
+
+    }
 
     public String getApplicationId() {
         return applicationId;
@@ -62,19 +70,9 @@ public class SessionRequestBody {
         this.signature = signature;
     }
 
-    public String getEmail() {
-        return email;
-    }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
 
-    public String getPassword() {
-        return password;
-    }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
+
+
 }
