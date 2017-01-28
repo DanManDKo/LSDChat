@@ -20,17 +20,14 @@ public class SessionRequestNoAuth {
     @SerializedName("signature")
     private String signature;
 
-
-    public SessionRequestNoAuth() {
-        // TODO: 28.01.2017 [Code Review] The same as in SessionRequestAuth constructor. Factory is a
-        // good approach for creating SessionRequestAuth and SessionRequestNoAuth class instances
-        this.applicationId = ApiConstant.APP_ID;
-        this.authKey = ApiConstant.AUTH_KEY;
-        this.nonce = new Random().nextInt();
-        this.timestamp = System.currentTimeMillis() / 1000;
-        this.signature = SignatureTest.calculateSignatureNoAuth(nonce, timestamp);
-
+    public SessionRequestNoAuth(String applicationId, String authKey, int nonce, long timestamp, String signature) {
+        this.applicationId = applicationId;
+        this.authKey = authKey;
+        this.nonce = nonce;
+        this.timestamp = timestamp;
+        this.signature = signature;
     }
+
 
     public String getApplicationId() {
         return applicationId;

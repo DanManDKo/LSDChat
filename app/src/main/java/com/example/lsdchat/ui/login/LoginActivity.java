@@ -1,6 +1,5 @@
 package com.example.lsdchat.ui.login;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
@@ -16,9 +15,6 @@ import android.widget.TextView;
 
 import com.example.lsdchat.R;
 import com.example.lsdchat.ui.MainActivity;
-import com.jakewharton.rxbinding.widget.RxTextView;
-
-import rx.Observable;
 
 public class LoginActivity extends AppCompatActivity implements LoginContract.View {
 
@@ -41,59 +37,24 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
         mPresented = new LoginPresented(this);
         initView();
 
+//        set button disable
+        setLoginButtonEnabled(false);
 
-        Observable<CharSequence> emailSubscription = RxTextView.textChanges(mEmail);
-        // TODO: 28.01.2017 [Code Review] this is a part of business logic, should not be in Activity
-        emailSubscription.filter(charSequence -> charSequence.toString().length() != 0)
-                .subscribe(value -> {
-                    if (!isValidEmail(value)) {
-                        setEmailError();
-                    } else {
-                        hideEmailError();
-                    }
-                });
-        Observable<CharSequence> passwordSubscription = RxTextView.textChanges(mPassword);
-        // TODO: 28.01.2017 [Code Review] this is a part of business logic, should not be in Activity
-        passwordSubscription.filter(charSequence -> charSequence.toString().length() != 0)
-                .subscribe(value -> {
-                    if (!isValidPassword(value)) {
-                        setPasswordError();
-                    } else {
-                        hidePasswordError();
-                    }
-                });
-        // TODO: 28.01.2017 [Code Review] this is a part of business logic, should not be in Activity
-        Observable.combineLatest(emailSubscription, passwordSubscription, (email, password) -> {
-            boolean emailIs = isValidEmail(email.toString());
-            boolean passIs = isValidPassword(password.toString());
-            return emailIs && passIs;
-        }).subscribe(this::setLoginButtonEnabled);
-
+//        validate data
+        mPresented.validateCredentials(mEmail, mPassword);
 
         onClickButton();
 
 
     }
 
-    // TODO: 28.01.2017 [Code Review] this is a part of business logic, should not be in Activity
     private void onClickButton() {
         mBtnSignIn.setOnClickListener(view ->
-        {
-            if (isEmptyEditText()) {
-                mPresented.validateCredentials(mEmail.getText().toString(), mPassword.getText().toString());
-            }
-        });
-
-
-        mBtnSignUp.setOnClickListener(view -> navigateToRegistration());
-        mBtnForgotPassword.setOnClickListener(view -> navigateToForgotPassword());
+                mPresented.btnSignInClick(mEmail.getText().toString(), mPassword.getText().toString()));
+        mBtnSignUp.setOnClickListener(view -> mPresented.btnSignUpClick());
+        mBtnForgotPassword.setOnClickListener(view -> mPresented.btnSignForgotPasswordClick());
     }
 
-    // TODO: 28.01.2017 [Code Review] this is a part of business logic, should not be in Activity
-    private Boolean isEmptyEditText() {
-        return !TextUtils.isEmpty(mEmail.getText().toString()) && !TextUtils.isEmpty(mPassword.getText().toString());
-
-    }
 
 
     private void initView() {
@@ -121,13 +82,13 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
 
     @Override
     public void setEmailError() {
-        mIlEmail.setError(getString(R.string.error_input_email));
+        mIlEmail.setError(getString(R.string.login_error_email));
 
     }
 
     @Override
     public void setPasswordError() {
-        mIlPassword.setError(getString(R.string.error_input_password));
+        mIlPassword.setError(getString(R.string.login_error_password));
     }
 
     @Override
@@ -144,9 +105,7 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
     public void setLoginButtonEnabled(boolean enabled) {
         if (enabled) {
             mBtnSignIn.setClickable(true);
-            Log.e("BTN", "BTN.ok");
         } else {
-            Log.e("BTN", "BTN.error");
             mBtnSignIn.setClickable(false);
         }
     }
@@ -172,25 +131,5 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
     public boolean isKeepSignIn() {
         return mKeepMeSignIn.isChecked();
     }
-
-    @Override
-    public boolean isValidPassword(CharSequence password) {
-        return !TextUtils.isEmpty(password) && (password.toString().length() > 7);
-
-    }
-    // TODO: 28.01.2017 [Code Review] this is a part of business logic, should not be in Activity
-    @Override
-    public boolean isValidEmail(CharSequence email) {
-        return email.toString().matches("^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
-                + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$");
-
-    }
-
-    // TODO: 28.01.2017 [Code Review] ???
-    @Override
-    public Context getContext() {
-        return null;
-    }
-
 
 }
