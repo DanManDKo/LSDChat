@@ -22,6 +22,8 @@ public class SessionRequestNoAuth {
 
 
     public SessionRequestNoAuth() {
+        // TODO: 28.01.2017 [Code Review] The same as in SessionRequestAuth constructor. Factory is a
+        // good approach for creating SessionRequestAuth and SessionRequestNoAuth class instances
         this.applicationId = ApiConstant.APP_ID;
         this.authKey = ApiConstant.AUTH_KEY;
         this.nonce = new Random().nextInt();

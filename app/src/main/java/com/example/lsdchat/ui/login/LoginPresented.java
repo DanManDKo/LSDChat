@@ -23,7 +23,8 @@ public class LoginPresented implements LoginContract.Presented {
 
     @Override
     public void onDestroy() {
-
+        // TODO: 28.01.2017 [Code Review] leave some comment, like 'unused' or 'not required'
+        // try not to leave empty bodies in your code
     }
 
 
@@ -35,6 +36,8 @@ public class LoginPresented implements LoginContract.Presented {
 
     @Override
     public void requestSessionAndLogin(String email, String password) {
+        // TODO: 28.01.2017 [Code Review] you should inject App.getApiManager() to this class as parameter
+        // to have possibility to mock in for tests
         App.getApiManager().getSessionAuth(new SessionRequestAuth(email, password))
                 .doOnNext(sessionResponse -> getLoginWithToken(email, password, sessionResponse.getSession().getToken()))
                 .subscribe(sessionResponse -> {
@@ -43,6 +46,7 @@ public class LoginPresented implements LoginContract.Presented {
 //                            save token
 
                         },
+                        // TODO: 28.01.2017 [Code Review] add proper error handling logic
                         throwable -> Log.e("11111", throwable.getMessage())
                 );
     }
@@ -55,6 +59,7 @@ public class LoginPresented implements LoginContract.Presented {
                             //                    save model users
                             Log.e("AAA", "id  - " + loginUser.getLoginUser().getId() + " phone-" + loginUser.getLoginUser().getPhone());
                         },
+                        // TODO: 28.01.2017 [Code Review] add proper error handling logic
                         throwable -> Log.e("22222", throwable.getMessage()));
     }
 
@@ -64,7 +69,7 @@ public class LoginPresented implements LoginContract.Presented {
         currentUser.setEmail(email);
         currentUser.setPassword(password);
         currentUser.setSignIn(isKeepSignIn);
-        mDataManager.insertUser(currentUser);
+//        mDataManager.insertUser(currentUser);
     }
 
 
@@ -98,11 +103,13 @@ public class LoginPresented implements LoginContract.Presented {
     @Override
     public void attachView(LoginContract.View view) {
         mView = view;
+        // TODO: 28.01.2017 [Code Review] try not to use Android SDK's classes in Presenter, especially Context
         mContext = mView.getContext();
     }
 
     @Override
     public void detachView() {
         mView = null;
+        // TODO: 28.01.2017 [Code Review] nullify mContext as well.
     }
 }

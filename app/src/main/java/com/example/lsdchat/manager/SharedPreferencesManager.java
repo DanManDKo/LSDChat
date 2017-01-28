@@ -11,6 +11,8 @@ public class SharedPreferencesManager {
     public static final String APP_PREFERENCES = "preferences";
     public static final String IS_LOGGED = "is_logged";
     public static final boolean DEFAULT_VALUE = false;
+    // TODO: 28.01.2017 [Code Review] rename to 'logged', do not start boolean values with 'is'.
+    // Setter should be 'setLogged'
     private boolean isLogged;
     private SharedPreferences mSharedPreferences;
 

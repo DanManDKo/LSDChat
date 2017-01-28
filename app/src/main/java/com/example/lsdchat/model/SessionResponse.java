@@ -11,6 +11,7 @@ import io.realm.annotations.PrimaryKey;
 
 public class SessionResponse extends RealmObject {
     @SerializedName("_id")
+    // TODO: 28.01.2017 [Code Review] do not use '_'
     private String _id;
     @SerializedName("application_id")
     private long applicationId;

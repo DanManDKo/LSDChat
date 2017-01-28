@@ -16,13 +16,13 @@
             android:name="io.fabric.ApiKey"
             android:value="6cea4ff8dd45c841dacd56e27acf4399f548671d"/>
 
-        <activity android:name=".ui.splash.SplashScreenActivity">
+        <activity android:name=".ui.login.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".ui.login.LoginActivity"/>
+        <!--<activity android:name=".ui.login.LoginActivity"/>-->
         <activity android:name=".ui.MainActivity"/>
     </application>
 
