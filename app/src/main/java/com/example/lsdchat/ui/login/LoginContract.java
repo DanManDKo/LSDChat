@@ -32,8 +32,8 @@ public interface LoginContract {
         void navigateToMainScreen();
 
         boolean isKeepSignIn();
-        boolean isValidPassword(String password);
-        boolean isValidEmail(String email);
+        boolean isValidPassword(CharSequence password);
+        boolean isValidEmail(CharSequence email);
 
 
     }
