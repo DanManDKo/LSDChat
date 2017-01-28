@@ -24,11 +24,15 @@ public class ApiManager {
     private LoginService mLoginService;
     private SessionService mSessionService;
 
+    // TODO: 28.01.2017 [Code Review] it'd be better to call init() method in constructor to be sure
+    // class properties are not null. Otherwise you should throw exception in get... methods
+    // if init methods were not called
     public void init() {
         initRetrofit();
         initServices();
     }
 
+    // TODO: 28.01.2017 [Code Review] seems like it should be private.
     public void initRetrofit() {
         mRetrofit = new Retrofit.Builder()
                 .baseUrl(ApiConstant.SERVER)
@@ -37,11 +41,14 @@ public class ApiManager {
                 .build();
     }
 
+    // TODO: 28.01.2017 [Code Review] seems like it should be private, also mRetrofit may be null.
+    // Pass it as parameter
     public void initServices() {
         mLoginService = mRetrofit.create(LoginService.class);
         mSessionService = mRetrofit.create(SessionService.class);
     }
 
+    // TODO: 28.01.2017 [Code Review]
     private GsonConverterFactory createGsonConverter() {
         GsonBuilder builder = new GsonBuilder();
         builder.serializeNulls();

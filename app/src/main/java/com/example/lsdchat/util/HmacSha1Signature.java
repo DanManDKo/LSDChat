@@ -28,6 +28,7 @@ public class HmacSha1Signature {
         return formatter.toString();
     }
 
+    // TODO: 28.01.2017 [Code Review] you do not need these methods here (mRandom and mTimestamp fields are also redundant)
     public static int getRandom() {
         return mRandom;
     }
@@ -39,6 +40,7 @@ public class HmacSha1Signature {
 
     public static String calculateRFC2104HMAC( String email, String password)
             throws SignatureException, NoSuchAlgorithmException, InvalidKeyException {
+        // TODO: 28.01.2017 [Code Review] inject mRandom and mTimestamp parameters
         mRandom = new Random().nextInt();
         mTimestamp = System.currentTimeMillis() / 1000;
         SecretKeySpec signingKey = new SecretKeySpec(ApiConstant.AUTH_SECRET.getBytes(), HMAC_SHA1_ALGORITHM);
@@ -47,6 +49,8 @@ public class HmacSha1Signature {
         return toHexString(mac.doFinal(getSignatureParams(mRandom, mTimestamp,email,password).getBytes()));
     }
 
+    // TODO: 28.01.2017 [Code Review] due to class name, it is responsible for encoding string with HmacSHA1
+    // algorithm, the logic below should not be here
     private static String getSignatureParams(int random, long timestamp, String email, String password) {
 
         return String.format("application_id=%s&auth_key=%s&nonce=%s&timestamp=%s&user[email]=%s&user[password]=%s",

@@ -34,9 +34,11 @@ public class SplashScreenPresenter implements SplashContract.Presenter {
     private String mSignature;
     private DataManager mDataManager;
     private User mUser;
+    // TODO: 28.01.2017 [Code Review] It is not obvious what this flag really does. Rename it or...
     private boolean mNavigationFlag;
 
     public SplashScreenPresenter() {
+        // TODO: 28.01.2017 [Code Review] inject dependencies as constructor parameters
         mApiManager = App.getApiManager();
         mDataManager = App.getDataManager();
         mUser = mDataManager.getUser();

@@ -43,6 +43,7 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
 
 
         Observable<CharSequence> emailSubscription = RxTextView.textChanges(mEmail);
+        // TODO: 28.01.2017 [Code Review] this is a part of business logic, should not be in Activity
         emailSubscription.filter(charSequence -> charSequence.toString().length() != 0)
                 .subscribe(value -> {
                     if (!isValidEmail(value)) {
@@ -52,6 +53,7 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
                     }
                 });
         Observable<CharSequence> passwordSubscription = RxTextView.textChanges(mPassword);
+        // TODO: 28.01.2017 [Code Review] this is a part of business logic, should not be in Activity
         passwordSubscription.filter(charSequence -> charSequence.toString().length() != 0)
                 .subscribe(value -> {
                     if (!isValidPassword(value)) {
@@ -60,6 +62,7 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
                         hidePasswordError();
                     }
                 });
+        // TODO: 28.01.2017 [Code Review] this is a part of business logic, should not be in Activity
         Observable.combineLatest(emailSubscription, passwordSubscription, (email, password) -> {
             boolean emailIs = isValidEmail(email.toString());
             boolean passIs = isValidPassword(password.toString());
@@ -72,7 +75,7 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
 
     }
 
-
+    // TODO: 28.01.2017 [Code Review] this is a part of business logic, should not be in Activity
     private void onClickButton() {
         mBtnSignIn.setOnClickListener(view ->
         {
@@ -86,6 +89,7 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
         mBtnForgotPassword.setOnClickListener(view -> navigateToForgotPassword());
     }
 
+    // TODO: 28.01.2017 [Code Review] this is a part of business logic, should not be in Activity
     private Boolean isEmptyEditText() {
         return !TextUtils.isEmpty(mEmail.getText().toString()) && !TextUtils.isEmpty(mPassword.getText().toString());
 
@@ -117,13 +121,13 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
 
     @Override
     public void setEmailError() {
-        mIlEmail.setError(getString(R.string.login_error_email));
+        mIlEmail.setError(getString(R.string.error_input_email));
 
     }
 
     @Override
     public void setPasswordError() {
-        mIlPassword.setError(getString(R.string.login_error_password));
+        mIlPassword.setError(getString(R.string.error_input_password));
     }
 
     @Override
@@ -174,7 +178,7 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
         return !TextUtils.isEmpty(password) && (password.toString().length() > 7);
 
     }
-
+    // TODO: 28.01.2017 [Code Review] this is a part of business logic, should not be in Activity
     @Override
     public boolean isValidEmail(CharSequence email) {
         return email.toString().matches("^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
@@ -182,6 +186,7 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
 
     }
 
+    // TODO: 28.01.2017 [Code Review] ???
     @Override
     public Context getContext() {
         return null;

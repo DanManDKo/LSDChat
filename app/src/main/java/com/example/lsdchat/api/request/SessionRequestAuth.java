@@ -24,7 +24,9 @@ public class SessionRequestAuth {
     private String password;
 
     public SessionRequestAuth(String email, String password) {
-
+        // TODO: 28.01.2017 [Code Review] pass all the parameters in constructor, SessionRequestAuth
+        // should know nothing about classes like System, ApiConstant etc. Make factory method for
+        // request instance creation, for example.
         this.timestamp = System.currentTimeMillis() / 1000;
         this.nonce = new Random().nextInt();
         this.applicationId = ApiConstant.APP_ID;
