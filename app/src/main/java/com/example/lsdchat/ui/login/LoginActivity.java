@@ -117,13 +117,13 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
 
     @Override
     public void setEmailError() {
-        mIlEmail.setError(getString(R.string.error_input_email));
+        mIlEmail.setError(getString(R.string.login_error_email));
 
     }
 
     @Override
     public void setPasswordError() {
-        mIlPassword.setError(getString(R.string.error_input_password));
+        mIlPassword.setError(getString(R.string.login_error_password));
     }
 
     @Override
