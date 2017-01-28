@@ -1,9 +1,9 @@
 package com.example.lsdchat.api;
 
 import com.example.lsdchat.api.request.LoginRequest;
+import com.example.lsdchat.api.request.SessionRequestAuth;
 import com.example.lsdchat.api.request.SessionRequestNoAuth;
 import com.example.lsdchat.api.response.LoginResponse;
-import com.example.lsdchat.api.request.SessionRequestAuth;
 import com.example.lsdchat.api.response.SessionResponse;
 import com.example.lsdchat.api.service.LoginService;
 import com.example.lsdchat.api.service.SessionService;
@@ -27,13 +27,18 @@ public class ApiManager {
     // TODO: 28.01.2017 [Code Review] it'd be better to call init() method in constructor to be sure
     // class properties are not null. Otherwise you should throw exception in get... methods
     // if init methods were not called
-    public void init() {
+
+
+    public LoginService getmLoginService() {
+        return mLoginService;
+    }
+
+    public ApiManager() {
         initRetrofit();
         initServices();
     }
 
-    // TODO: 28.01.2017 [Code Review] seems like it should be private.
-    public void initRetrofit() {
+    private void initRetrofit() {
         mRetrofit = new Retrofit.Builder()
                 .baseUrl(ApiConstant.SERVER)
                 .addConverterFactory(createGsonConverter())
@@ -41,14 +46,14 @@ public class ApiManager {
                 .build();
     }
 
-    // TODO: 28.01.2017 [Code Review] seems like it should be private, also mRetrofit may be null.
-    // Pass it as parameter
-    public void initServices() {
-        mLoginService = mRetrofit.create(LoginService.class);
-        mSessionService = mRetrofit.create(SessionService.class);
+
+    private void initServices() {
+        if (mRetrofit != null) {
+            mLoginService = mRetrofit.create(LoginService.class);
+            mSessionService = mRetrofit.create(SessionService.class);
+        }
     }
 
-    // TODO: 28.01.2017 [Code Review]
     private GsonConverterFactory createGsonConverter() {
         GsonBuilder builder = new GsonBuilder();
         builder.serializeNulls();
@@ -69,7 +74,7 @@ public class ApiManager {
     }
 
     public Observable<LoginResponse> getLogin(LoginRequest body, String token) {
-        return mLoginService.getLogin(token,body)
+        return mLoginService.getLogin(token, body)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }

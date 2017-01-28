@@ -81,14 +81,14 @@ public class SplashScreenPresenter implements SplashContract.Presenter {
 
     @Override
     public void getSession() {
-        App.getApiManager().getSessionNoAuth(new SessionRequestNoAuth())
+        /*App.getApiManager().getSessionNoAuth(new SessionRequestNoAuth())
                 .subscribe(sessionResponse -> {
                             Log.e("AAA", "TOKEN  - " + sessionResponse.getSession().getToken());
                         },
                         throwable -> {
                             //                            error
                             Log.e("AAA", throwable.getMessage());
-                        });
+                        });*/
 
 
     }

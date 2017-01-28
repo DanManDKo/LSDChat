@@ -1,47 +1,79 @@
 package com.example.lsdchat.ui.login;
 
-import android.content.Context;
 import android.text.TextUtils;
 import android.util.Log;
+import android.widget.EditText;
 
-import com.example.lsdchat.App;
-import com.example.lsdchat.api.request.LoginRequest;
-import com.example.lsdchat.api.request.SessionRequestAuth;
-import com.example.lsdchat.manager.DataManager;
+import com.example.lsdchat.api.ApiManager;
 import com.example.lsdchat.model.User;
+import com.jakewharton.rxbinding.widget.RxTextView;
+
+import rx.Observable;
 
 
 public class LoginPresented implements LoginContract.Presented {
     private LoginContract.View mView;
-    private Context mContext;
-    private DataManager mDataManager = new DataManager();
-
+    private ApiManager mApiManager = new ApiManager();
+    private LoginContract.Model mModel;
 
     public LoginPresented(LoginContract.View mView) {
         this.mView = mView;
+
+        mModel = new LoginModel();
     }
 
     @Override
     public void onDestroy() {
-        // TODO: 28.01.2017 [Code Review] leave some comment, like 'unused' or 'not required'
-        // try not to leave empty bodies in your code
+        this.mApiManager = null;
+        this.mView = null;
+        this.mModel = null;
     }
 
 
     @Override
-    public void validateCredentials(String email, String password) {
-        requestSessionAndLogin(email, password);
+    public void validateCredentials(EditText etEmail, EditText etPassword) {
+
+        Observable<CharSequence> emailSubscription = RxTextView.textChanges(etEmail);
+        emailSubscription.filter(charSequence -> charSequence.toString().length() != 0)
+                .subscribe(value -> {
+                    if (!isValidEmail(value)) {
+                        mView.setEmailError();
+                    } else {
+                        mView.hideEmailError();
+                    }
+                });
+        Observable<CharSequence> passwordSubscription = RxTextView.textChanges(etPassword);
+        passwordSubscription.filter(charSequence -> charSequence.toString().length() != 0)
+                .subscribe(value -> {
+                    if (!isValidPassword(value)) {
+                        mView.setPasswordError();
+                    } else {
+                        mView.hidePasswordError();
+                    }
+                });
+        Observable.combineLatest(emailSubscription, passwordSubscription, (email, password) -> {
+            boolean emailIs = isValidEmail(email.toString());
+            boolean passIs = isValidPassword(password.toString());
+            return emailIs && passIs;
+        })
+                .subscribe(aBoolean -> {
+                    mView.setLoginButtonEnabled(aBoolean);
+
+                });
+
     }
 
 
     @Override
     public void requestSessionAndLogin(String email, String password) {
-        // TODO: 28.01.2017 [Code Review] you should inject App.getApiManager() to this class as parameter
-        // to have possibility to mock in for tests
-        App.getApiManager().getSessionAuth(new SessionRequestAuth(email, password))
+
+
+        mModel.getSessionAuth(email, password)
+                .doOnRequest(request -> mView.showProgressBar())
+                .doOnUnsubscribe(() -> mView.hideProgressBar())
                 .doOnNext(sessionResponse -> getLoginWithToken(email, password, sessionResponse.getSession().getToken()))
                 .subscribe(sessionResponse -> {
-                    addUserToDb(email,password,mView.isKeepSignIn());
+                            addUserToDb(email, password, mView.isKeepSignIn());
                             Log.e("AAA", "TOKEN  - " + sessionResponse.getSession().getToken());
 //                            save token
 
@@ -53,11 +85,11 @@ public class LoginPresented implements LoginContract.Presented {
 
 
     private void getLoginWithToken(String email, String password, String token) {
-        App.getApiManager().getLogin(new LoginRequest(email, password), token)
+        mModel.getLogin(email, password, token)
                 .doOnNext(loginResponse -> mView.navigateToMainScreen())
                 .subscribe(loginUser -> {
-                            //                    save model users
-                            Log.e("AAA", "id  - " + loginUser.getLoginUser().getId() + " phone-" + loginUser.getLoginUser().getPhone());
+                            //                    save Model users
+                            Log.e("AAA", "id  - " + loginUser.getLoginUser().getId() + " phone - " + loginUser.getLoginUser().getPhone());
                         },
                         // TODO: 28.01.2017 [Code Review] add proper error handling logic
                         throwable -> Log.e("22222", throwable.getMessage()));
@@ -73,43 +105,50 @@ public class LoginPresented implements LoginContract.Presented {
     }
 
 
-    //    validation email and password
-    private boolean validationData(String email, String password) {
-        return validEmail(email) && validPassword(password);
+    @Override
+    public boolean isValidPassword(CharSequence password) {
+        return !TextUtils.isEmpty(password) && (password.toString().length() > 7);
+
     }
 
+    // TODO: 28.01.2017 [Code Review] this is a part of business logic, should not be in Activity
+    @Override
+    public boolean isValidEmail(CharSequence email) {
+        return email.toString().matches("^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
+                + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$");
 
-    private boolean validPassword(String password) {
-        if (!TextUtils.isEmpty(password) && !(password.length() < 8)) {
-            mView.hidePasswordError();
-            return true;
-        } else {
-            mView.setPasswordError();
-            return false;
+    }
+
+    @Override
+    public void btnSignInClick(String email, String password) {
+        if (isEmptyFields(email, password)) {
+            requestSessionAndLogin(email, password);
         }
     }
 
-    private boolean validEmail(String email) {
-        if (!TextUtils.isEmpty(email) && email.contains("@")) {
-            mView.hideEmailError();
-            return true;
-        } else {
-            mView.setEmailError();
-            return false;
-        }
+    private Boolean isEmptyFields(String email, String password) {
+        return !TextUtils.isEmpty(email) && !TextUtils.isEmpty(password);
+
     }
 
+    @Override
+    public void btnSignUpClick() {
+        mView.navigateToRegistration();
+    }
+
+    @Override
+    public void btnSignForgotPasswordClick() {
+        mView.navigateToForgotPassword();
+    }
 
     @Override
     public void attachView(LoginContract.View view) {
         mView = view;
-        // TODO: 28.01.2017 [Code Review] try not to use Android SDK's classes in Presenter, especially Context
-        mContext = mView.getContext();
+
     }
 
     @Override
     public void detachView() {
         mView = null;
-        // TODO: 28.01.2017 [Code Review] nullify mContext as well.
     }
 }

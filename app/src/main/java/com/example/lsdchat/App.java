@@ -37,7 +37,7 @@ public class App extends Application {
     public static ApiManager getApiManager() {
         if (sApiManager == null) {
             sApiManager = new ApiManager();
-            sApiManager.init();
+//            sApiManager.init();
         }
         return sApiManager;
     }
