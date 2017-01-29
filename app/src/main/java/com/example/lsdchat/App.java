@@ -42,13 +42,13 @@ public class App extends Application {
     }
 
     public static DataManager getDataManager() {
+
         return sDataManager;
     }
 
     public static ApiManager getApiManager() {
         if (sApiManager == null) {
             sApiManager = new ApiManager();
-//            sApiManager.init();
         }
         return sApiManager;
     }

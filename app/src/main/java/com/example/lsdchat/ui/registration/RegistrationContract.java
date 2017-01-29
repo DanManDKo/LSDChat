@@ -7,13 +7,19 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.support.design.widget.TextInputEditText;
 
-import com.example.lsdchat.base.BaseMvpPresenter;
-import com.example.lsdchat.base.BaseMvpView;
+import com.example.lsdchat.api.registration.RegistrationResponse;
+import com.example.lsdchat.api.login.request.SessionRequestNoAuth;
+import com.example.lsdchat.api.login.response.SessionResponse;
 
-public class RegistrationContract {
-    public interface Presenter extends BaseMvpPresenter<View> {
+
+import rx.Observable;
+
+public interface RegistrationContract {
+    interface Presenter {
         //screen navigation
-        void navigateToMainScreen(boolean validatevalue);
+        void navigateToMainScreen();
+
+        void onDestroy();
 
         void showDialogImageSourceChooser();
 
@@ -33,13 +39,13 @@ public class RegistrationContract {
 
         boolean validateConfPassword(String pass, String confPass);
 
-        void requestSessionAndRegistration();
+        void requestSessionAndRegistration(boolean validateValue, RegistrationForm form);
 
         void onActivityResult(int requestCode, int resultCode, Intent data);
 
     }
 
-    public interface View extends BaseMvpView {
+    interface View {
         //void onError();
         void setInvalideEmailError();
 
@@ -56,5 +62,12 @@ public class RegistrationContract {
         void hideProgressBar();
 
         void getUserpicUri(Uri uri);
+
+        Context getContext();
+    }
+
+    interface Model {
+        Observable<SessionResponse> getSessionNoAuth();
+        Observable<RegistrationResponse> getRegistration(String token, RegistrationForm form);
     }
 }

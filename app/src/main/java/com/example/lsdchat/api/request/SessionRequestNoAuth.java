@@ -1,11 +1,6 @@
 package com.example.lsdchat.api.request;
 
-import com.example.lsdchat.constant.ApiConstant;
-import com.example.lsdchat.util.SignatureTest;
 import com.google.gson.annotations.SerializedName;
-
-import java.util.Random;
-
 
 
 public class SessionRequestNoAuth {

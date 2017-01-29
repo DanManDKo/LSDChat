@@ -5,17 +5,13 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Handler;
 import android.util.Log;
 
 import com.example.lsdchat.App;
 import com.example.lsdchat.R;
-import com.example.lsdchat.api.ApiManager;
-import com.example.lsdchat.api.request.SessionRequestNoAuth;
 import com.example.lsdchat.manager.DataManager;
 import com.example.lsdchat.model.User;
-import com.example.lsdchat.util.HmacSha1Signature;
 import com.example.lsdchat.util.Network;
 
 
@@ -24,22 +20,20 @@ import com.example.lsdchat.util.Network;
  */
 
 public class SplashScreenPresenter implements SplashContract.Presenter {
-    public static final String SIGNATURE_ERROR = "signature_error";
+    public final static String TOKEN_TAG = "token";
+    public final static String ERROR_TAG = "rxError";
     private static int SPLASH_TIME_OUT = 3000;
     private SplashContract.View mView;
+    private SplashContract.Model mModel;
     private Context mContext;
-    private ApiManager mApiManager;
-    private int mRandom;
-    private long mTimestamp;
-    private String mSignature;
     private DataManager mDataManager;
     private User mUser;
-    // TODO: 28.01.2017 [Code Review] It is not obvious what this flag really does. Rename it or...
-    private boolean mNavigationFlag;
+    private boolean mNavigateToMain;
 
-    public SplashScreenPresenter() {
-        // TODO: 28.01.2017 [Code Review] inject dependencies as constructor parameters
-        mApiManager = App.getApiManager();
+    public SplashScreenPresenter(SplashContract.View view) {
+        mView = view;
+        mModel = new SplashModel();
+        mContext = mView.getContext();
         mDataManager = App.getDataManager();
         mUser = mDataManager.getUser();
     }
@@ -53,7 +47,7 @@ public class SplashScreenPresenter implements SplashContract.Presenter {
         }
 
         new Handler().postDelayed(() -> {
-            if (mNavigationFlag) {
+            if (mNavigateToMain) {
                 mView.navigateToMain();
             } else {
                 mView.navigateToLogin();
@@ -61,9 +55,18 @@ public class SplashScreenPresenter implements SplashContract.Presenter {
         }, SPLASH_TIME_OUT);
 
         if (isLogged()) {
-            getSession();
-            mNavigationFlag = true;
+            requestSessionAndLogin(mUser.getEmail(), mUser.getPassword());
+            mNavigateToMain = true;
         }
+    }
+
+    @Override
+    public void requestSessionAndLogin(String email, String password) {
+
+        mModel.getSessionAuth(email, password)
+                .subscribe(sessionResponse -> {
+                    Log.e(TOKEN_TAG, sessionResponse.getSession().getToken());
+                }, throwable -> Log.e(ERROR_TAG, throwable.getMessage()));
     }
 
     @Override
@@ -72,27 +75,17 @@ public class SplashScreenPresenter implements SplashContract.Presenter {
     }
 
     @Override
+    public void onDestroy() {
+        mView = null;
+        mModel = null;
+    }
+
+    @Override
     public boolean isLogged() {
         if (mUser != null)
             return mUser.isSignIn();
         return false;
     }
-
-
-    @Override
-    public void getSession() {
-        /*App.getApiManager().getSessionNoAuth(new SessionRequestNoAuth())
-                .subscribe(sessionResponse -> {
-                            Log.e("AAA", "TOKEN  - " + sessionResponse.getSession().getToken());
-                        },
-                        throwable -> {
-                            //                            error
-                            Log.e("AAA", throwable.getMessage());
-                        });*/
-
-
-    }
-
 
 
     private void showErrorDialog() {
@@ -114,15 +107,5 @@ public class SplashScreenPresenter implements SplashContract.Presenter {
 
     }
 
-    @Override
-    public void attachView(SplashContract.View view) {
-        mView = view;
-        mContext = mView.getContext();
-    }
-
-    @Override
-    public void detachView() {
-        mView = null;
-    }
 
 }

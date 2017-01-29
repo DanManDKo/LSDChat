@@ -4,8 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -13,15 +11,17 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.example.lsdchat.App;
 import com.example.lsdchat.R;
 import com.example.lsdchat.ui.MainActivity;
+import com.example.lsdchat.ui.registration.RegistrationActivity;
 
 public class LoginActivity extends AppCompatActivity implements LoginContract.View {
 
     private ProgressBar mProgressBar;
     private EditText mEmail;
     private EditText mPassword;
-    private LoginContract.Presented mPresented;
+    private LoginContract.Presenter mPresenter;
     private Button mBtnSignIn;
     private Button mBtnSignUp;
     private TextView mBtnForgotPassword;
@@ -34,14 +34,14 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        mPresented = new LoginPresented(this);
+        mPresenter = new LoginPresenter(this, App.getDataManager());
         initView();
 
 //        set button disable
         setLoginButtonEnabled(false);
 
 //        validate data
-        mPresented.validateCredentials(mEmail, mPassword);
+        mPresenter.validateCredentials(mEmail, mPassword);
 
         onClickButton();
 
@@ -50,9 +50,9 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
 
     private void onClickButton() {
         mBtnSignIn.setOnClickListener(view ->
-                mPresented.btnSignInClick(mEmail.getText().toString(), mPassword.getText().toString()));
-        mBtnSignUp.setOnClickListener(view -> mPresented.btnSignUpClick());
-        mBtnForgotPassword.setOnClickListener(view -> mPresented.btnSignForgotPasswordClick());
+                mPresenter.btnSignInClick(mEmail.getText().toString(), mPassword.getText().toString()));
+        mBtnSignUp.setOnClickListener(view -> mPresenter.btnSignUpClick());
+        mBtnForgotPassword.setOnClickListener(view -> mPresenter.btnSignForgotPasswordClick());
     }
 
 
@@ -67,7 +67,6 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
         mKeepMeSignIn = (CheckBox) findViewById(R.id.cb_keep_me_signed_in);
         mIlEmail = (TextInputLayout) findViewById(R.id.input_layout_email);
         mIlPassword = (TextInputLayout) findViewById(R.id.input_layout_password);
-
     }
 
     @Override
@@ -114,12 +113,12 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
     @Override
     public void navigateToRegistration() {
 //        TODO: start activity registration
+        startActivity(new Intent(this, RegistrationActivity.class));
     }
 
     @Override
     public void navigateToForgotPassword() {
 //        TODO: start activity forgotpassword
-
     }
 
     @Override

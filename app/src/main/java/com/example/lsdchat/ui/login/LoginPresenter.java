@@ -5,26 +5,29 @@ import android.util.Log;
 import android.widget.EditText;
 
 import com.example.lsdchat.api.ApiManager;
+import com.example.lsdchat.manager.DataManager;
 import com.example.lsdchat.model.User;
 import com.jakewharton.rxbinding.widget.RxTextView;
 
 import rx.Observable;
 
 
-public class LoginPresented implements LoginContract.Presented {
+public class LoginPresenter implements LoginContract.Presenter {
     private LoginContract.View mView;
-    private ApiManager mApiManager = new ApiManager();
     private LoginContract.Model mModel;
+    private DataManager mDataManager;
 
-    public LoginPresented(LoginContract.View mView) {
+    public LoginPresenter(LoginContract.View mView, DataManager dataManager) {
         this.mView = mView;
+        this.mDataManager = dataManager;
 
         mModel = new LoginModel();
+
     }
 
     @Override
     public void onDestroy() {
-        this.mApiManager = null;
+        this.mDataManager = null;
         this.mView = null;
         this.mModel = null;
     }
@@ -101,7 +104,7 @@ public class LoginPresented implements LoginContract.Presented {
         currentUser.setEmail(email);
         currentUser.setPassword(password);
         currentUser.setSignIn(isKeepSignIn);
-//        mDataManager.insertUser(currentUser);
+        mDataManager.insertUser(currentUser);
     }
 
 
@@ -111,7 +114,6 @@ public class LoginPresented implements LoginContract.Presented {
 
     }
 
-    // TODO: 28.01.2017 [Code Review] this is a part of business logic, should not be in Activity
     @Override
     public boolean isValidEmail(CharSequence email) {
         return email.toString().matches("^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
@@ -141,14 +143,5 @@ public class LoginPresented implements LoginContract.Presented {
         mView.navigateToForgotPassword();
     }
 
-    @Override
-    public void attachView(LoginContract.View view) {
-        mView = view;
 
-    }
-
-    @Override
-    public void detachView() {
-        mView = null;
-    }
 }

@@ -8,10 +8,10 @@
 
     <ImageView
         android:id="@+id/logo"
-        android:layout_width="77dp"
-        android:layout_height="65dp"
+        android:layout_width="@dimen/splash_logo_width"
+        android:layout_height="@dimen/splash_logo_height"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="200dp"
+        android:layout_marginTop="@dimen/splash_logo_margin_top"
         android:src="@drawable/logo"/>
 
     <TextView
@@ -20,8 +20,8 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/logo"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="@dimen/splash_title_margin_top"
         android:text="LCD Chat"
         android:textColor="@color/colorWhite"
-        android:textSize="42sp"/>
+        android:textSize="@dimen/splash_title_size"/>
 </RelativeLayout>

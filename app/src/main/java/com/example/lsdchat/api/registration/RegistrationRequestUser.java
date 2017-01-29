@@ -1,74 +1,37 @@
 package com.example.lsdchat.api.registration;
 
+import android.support.annotation.IntegerRes;
+
 import com.google.gson.annotations.SerializedName;
 
 public class RegistrationRequestUser {
-    @SerializedName("email")
+    @SerializedName("user[email]")
     private String email;
-    @SerializedName("password")
+    @SerializedName("user[password]")
     private String password;
-    @SerializedName("full_name")
+    /*@SerializedName("full_name")
     private String fullName;
     @SerializedName("phone")
     private String phone;
     @SerializedName("website")
     private String website;
     @SerializedName("facebook_id")
-    private String facebookId;
+    private Integer facebookId;
+    @SerializedName("blob_id")
+    private Integer blobId;
+*/
+    public RegistrationRequestUser(String email, String password) {
+        this.email = email;
+        this.password = password;
+    }
 
-    public RegistrationRequestUser(String email, String password, String fullName, String phone, String website) {
+    /*public RegistrationRequestUser(String email, String password, String fullName, String phone, String website, Integer facebookId, Integer blobId) {
         this.email = email;
         this.password = password;
         this.fullName = fullName;
         this.phone = phone;
         this.website = website;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getFullName() {
-        return fullName;
-    }
-
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public String getWebsite() {
-        return website;
-    }
-
-    public void setWebsite(String website) {
-        this.website = website;
-    }
-
-    public String getFacebookId() {
-        return facebookId;
-    }
-
-    public void setFacebookId(String facebookId) {
         this.facebookId = facebookId;
-    }
+        this.blobId = blobId;
+    }*/
 }
