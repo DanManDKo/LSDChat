@@ -1,29 +1,39 @@
 package com.example.lsdchat.ui.splash;
 
-import com.example.lsdchat.base.BaseMvpPresenter;
-import com.example.lsdchat.base.BaseMvpView;
-import com.example.lsdchat.model.SessionRequestBody;
-import com.example.lsdchat.model.SessionResponse;
+import android.content.Context;
+
+import com.example.lsdchat.api.login.response.SessionResponse;
+
+import rx.Observable;
 
 /**
  * Created by User on 18.01.2017.
  */
 
+
 public interface SplashContract {
-    interface Presenter extends BaseMvpPresenter<View> {
+    interface Presenter {
         void leaveSplashScreen();
 
+        void requestSessionAndLogin(String email, String password);
+
         boolean isOnLine();
+
+        void onDestroy();
 
         boolean isLogged();
 
 
-        void getSession(SessionRequestBody body);
-        String getSignature(String user, String password);
     }
 
-    interface View extends BaseMvpView {
+    interface Model {
+        Observable<SessionResponse> getSessionAuth(String email, String password);
+    }
+
+    interface View {
         void navigateToLogin();
+
+        Context getContext();
 
         void navigateToMain();
     }

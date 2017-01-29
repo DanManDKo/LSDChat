@@ -1,12 +1,9 @@
-package com.example.lsdchat.model;
+package com.example.lsdchat.api.request;
 
 import com.google.gson.annotations.SerializedName;
 
-/**
- * Created by User on 25.01.2017.
- */
 
-public class SessionRequestBody {
+public class SessionRequestNoAuth {
     @SerializedName("application_id")
     private String applicationId;
     @SerializedName("auth_key")
@@ -17,10 +14,15 @@ public class SessionRequestBody {
     private long timestamp;
     @SerializedName("signature")
     private String signature;
-    @SerializedName("user[email]")
-    private String email;
-    @SerializedName("user[password]")
-    private String password;
+
+    public SessionRequestNoAuth(String applicationId, String authKey, int nonce, long timestamp, String signature) {
+        this.applicationId = applicationId;
+        this.authKey = authKey;
+        this.nonce = nonce;
+        this.timestamp = timestamp;
+        this.signature = signature;
+    }
+
 
     public String getApplicationId() {
         return applicationId;
@@ -62,19 +64,9 @@ public class SessionRequestBody {
         this.signature = signature;
     }
 
-    public String getEmail() {
-        return email;
-    }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
 
-    public String getPassword() {
-        return password;
-    }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
+
+
 }

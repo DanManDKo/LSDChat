@@ -1,14 +1,16 @@
 package com.example.lsdchat.ui.splash;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.lsdchat.R;
+import com.example.lsdchat.ui.MainActivity;
+import com.example.lsdchat.ui.login.LoginActivity;
 
 /**
  * Created by User on 18.01.2017.
@@ -22,16 +24,14 @@ public class SplashScreenActivity extends AppCompatActivity implements SplashCon
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_spalsh);
-        initViews();
-        mPresenter = new SplashScreenPresenter();
-        mPresenter.attachView(this);
+        initView();
+        mPresenter = new SplashScreenPresenter(this);
         mPresenter.leaveSplashScreen();
-
-
     }
-    private void initViews(){
+
+    private void initView() {
         mTextView = (TextView) findViewById(R.id.name);
-        Typeface typeface = Typeface.createFromAsset(getAssets(),"fonts/FortuneCity.ttf");
+        Typeface typeface = Typeface.createFromAsset(getAssets(), "fonts/FortuneCity.ttf");
         mTextView.setTypeface(typeface);
     }
 
@@ -43,18 +43,17 @@ public class SplashScreenActivity extends AppCompatActivity implements SplashCon
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mPresenter.detachView();
+        mPresenter.onDestroy();
     }
 
     @Override
     public void navigateToLogin() {
-        Toast.makeText(this,"Navigate to login",Toast.LENGTH_SHORT).show();
+        startActivity(new Intent(this, LoginActivity.class));
     }
 
     @Override
     public void navigateToMain() {
-        Toast.makeText(this,"Navigate to main",Toast.LENGTH_SHORT).show();
-
+        startActivity(new Intent(this, MainActivity.class));
     }
 }
 

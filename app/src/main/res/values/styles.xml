@@ -3,9 +3,11 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorPrimary">@color/colorGreen</item>
+        <item name="colorPrimaryDark">@color/colorGreenDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:fontFamily">Roboto-Regular</item>
+
     </style>
 
     <style name="AppTheme.NoActionBar">
@@ -13,8 +15,79 @@
         <item name="windowNoTitle">true</item>
     </style>
 
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
+
+    <!--CheckBox style-->
+    <style name="CheckBoxLogin" parent="Theme.AppCompat.Light">
+        <item name="android:textSize">@dimen/font_normal</item>
+        <item name="colorControlNormal">@color/colorWhite</item>
+        <item name="colorControlActivated">@color/colorWhite</item>
+    </style>
+
+    <!--Button login-->
+    <style name="ButtonLogin">
+        <item name="android:textSize">@dimen/button_text_size</item>
+        <item name="android:textColor">@color/colorWhite</item>
+        <item name="android:layout_marginLeft">@dimen/login_element_horizontal_margin</item>
+        <item name="android:layout_marginRight">@dimen/login_element_horizontal_margin</item>
+    </style>
+
+    <!--EditText login-->
+    <style name="EditTextLogin">
+        <item name="android:textSize">@dimen/font_normal</item>
+        <item name="android:textColor">@color/colorWhite</item>
+    </style>
+
+    <!--TextInputLayout login-->
+    <style name="TextInputLayoutLogin" >
+        <item name="android:textSize">@dimen/font_normal</item>
+        <item name="colorAccent">@color/colorWhite</item>
+        <item name="android:textColorHint">@color/colorWhite</item>
+        <item name="colorControlNormal">@color/colorWhite</item>
+        <item name="colorControlActivated">@color/colorWhite</item>
+        <item name="colorControlHighlight">@color/colorWhite</item>
+        <item name="android:textColor">@color/colorWhite</item>
+    </style>
+    <style name="error_appearance" parent="@android:style/TextAppearance">
+        <item name="android:textColor">@color/colorRed</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <!--Error label text style-->
+    <style name="EditErrorText" parent="TextAppearance.AppCompat.Small">
+        <item name="android:textColor">@color/colorRed</item>
+    </style>
+
+    <style name="EditRegTextTheme" parent="Theme.AppCompat.Light">
+        <item name="colorControlNormal">@color/colorWhiteOpacity</item>
+        <item name="colorControlActivated">@color/colorWhite</item>
+    </style>
+
+    <style name="EditHintText" parent="TextAppearance.AppCompat.Small">
+        <item name="android:textColor">@color/colorWhiteOpacity</item>
+        <item name="android:textSize">@dimen/et_hint_text_size</item>
+    </style>
+
+    <style name="ToolbarBackArrowColor" parent="Theme.AppCompat.Light">
+        <item name="android:textColorSecondary">@color/colorWhite</item>
+    </style>
+
+    <style name="FBButtonStyle">
+        <item name="android:paddingLeft">@dimen/button_padding</item>
+        <item name="android:paddingRight">@dimen/fb_button_padding</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textColor">@color/colorWhite</item>
+        <item name="android:textColorHint">@color/colorWhite</item>
+        <item name="android:textSize">@dimen/fb_btn_font_size</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:background">@drawable/button_shape_fbsignup</item>
+        <item name="android:drawableStart">@drawable/fb_icon</item>
+    </style>
+
+    <style name="CustomProgressBar" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorAccent">@color/colorGreenDark</item>
+    </style>
 </resources>

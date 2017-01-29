@@ -10,4 +10,48 @@
     <string name="check_connection">Check your connection to the internet and retry</string>
     <string name="cancel">Cancel</string>
     <string name="retry">Retry</string>
+
+
+
+    <!--Login screen-->
+    <string name="login.sign_in">Sign In</string>
+    <string name="login.sign_up">Sign Up</string>
+    <string name="login.forgot_password">Forgot password</string>
+    <string name="login.keep_me_sign_in">Keep me signed in</string>
+    <string name="login.email">Email Address</string>
+    <string name="login.password">Password</string>
+    <string name="login.error.email">Error input email</string>
+    <string name="login.error.password">Error input password</string>
+
+
+    <!--registration screen strings-->
+    <string name="sign_up">SIGN UP</string>
+    <string name="fb_button_text">Link Facebook</string>
+    <string name="fb_button_text_linked">Linked</string>
+    <string name="email_reg">Email Address</string>
+    <string name="password_reg">Password</string>
+    <string name="conf_pass_reg">Confirm Password</string>
+    <string name="full_name_reg">Full Name</string>
+    <string name="phone_reg">Phone</string>
+    <string name="website_reg">Website</string>
+    <string name="cda_userpic_reg">User picture</string>
+
+    <string name="et_num_of_lines">1</string>
+    <string name="et_phone_max_length">19</string>
+
+    <string name="facebook_app_id">200211553785322</string>
+
+    <!--registration form string-->
+    <string name="invalid_email">Invalid email</string>
+    <string name="password_is_weak">Password is weak. Please use at least two digits and two capitalized letters</string>
+    <string name="passwords_donot_match">Passwords do not match</string>
+    <string name="password_length">Password length should be 6-12 symbols</string>
+    <!--registration alert dialog-->
+    <string name="add_photo">Add photo</string>
+    <string name="device_camera">Device camera</string>
+    <string name="photo_gallery">Photo Gallery</string>
+    <!--toasts-->
+    <string name="registration_complete">Registration complete</string>
+    <string name="there_is_no_device_camera">Your device doesn`t have camera</string>
+    <string name="photo_added">Photo added</string>
 </resources>
