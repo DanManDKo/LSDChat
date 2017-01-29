@@ -21,7 +21,7 @@ public class RegistrationContract {
 
         void loginWithFacebook();
 
-        void getFacebookeToken();
+        void getFacebookToken();
 
         void setTextChangedListenerWithInputMask(TextInputEditText phone);
 
@@ -33,7 +33,9 @@ public class RegistrationContract {
 
         boolean validateConfPassword(String pass, String confPass);
 
-        Uri getUserImageFromCameraOrGallery(int requestCode, int resultCode, Intent data);
+        void requestSessionAndRegistration();
+
+        void onActivityResult(int requestCode, int resultCode, Intent data);
 
     }
 
@@ -52,5 +54,7 @@ public class RegistrationContract {
         void showProgressBar();
 
         void hideProgressBar();
+
+        void getUserpicUri(Uri uri);
     }
 }

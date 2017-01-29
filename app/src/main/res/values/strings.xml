@@ -23,10 +23,11 @@
     <string name="passwords_donot_match">Passwords do not match</string>
     <string name="password_length">Password length should be 6-12 symbols</string>
     <!--registration alert dialog-->
-    <string name="image_source_chooser">Image source chooser</string>
+    <string name="add_photo">Add photo</string>
     <string name="device_camera">Device camera</string>
     <string name="photo_gallery">Photo Gallery</string>
     <!--toasts-->
     <string name="registration_complete">Registration complete</string>
     <string name="there_is_no_device_camera">Your device doesn`t have camera</string>
+    <string name="photo_added">Photo added</string>
 </resources>

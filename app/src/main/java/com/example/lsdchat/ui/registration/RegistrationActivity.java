@@ -63,7 +63,7 @@ public class RegistrationActivity extends AppCompatActivity implements Registrat
         setSupportActionBar(mToolbar);
         configurateToolbar();
 
-        mRegistrationPresenter.getFacebookeToken();
+        mRegistrationPresenter.getFacebookToken();
 
         mEmailEdit.addTextChangedListener(mRegistrationPresenter.getTextWatcher());
         mPassEdit.addTextChangedListener(mRegistrationPresenter.getTextWatcher());
@@ -85,7 +85,6 @@ public class RegistrationActivity extends AppCompatActivity implements Registrat
                     String.valueOf(mEmailEdit.getText()),
                     String.valueOf(mPassEdit.getText()),
                     String.valueOf(mConfPassEdit.getText()));
-            Toast.makeText(this, mRegistrationPresenter.getCurrentPhotoPath(), Toast.LENGTH_SHORT).show();
 
             mRegistrationPresenter.navigateToMainScreen(validateValue);
         });
@@ -129,11 +128,14 @@ public class RegistrationActivity extends AppCompatActivity implements Registrat
     }
 
     @Override
+    public void getUserpicUri(Uri uri) {
+        mImageView.setImageURI(uri);
+    }
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        mRegistrationPresenter.getCallbackManager().onActivityResult(requestCode, resultCode, data);
-        mImageView.setImageURI(mRegistrationPresenter
-                .getUserImageFromCameraOrGallery(requestCode, resultCode, data));
+        mRegistrationPresenter.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
