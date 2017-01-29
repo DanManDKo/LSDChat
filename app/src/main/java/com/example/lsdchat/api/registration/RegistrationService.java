@@ -3,7 +3,6 @@ package com.example.lsdchat.api.registration;
 import com.example.lsdchat.api.login.request.SessionRequestNoAuth;
 import com.example.lsdchat.api.login.response.SessionResponse;
 import com.example.lsdchat.constant.ApiConstant;
-import com.example.lsdchat.ui.registration.RegistrationContract;
 
 import retrofit2.http.Body;
 import retrofit2.http.Header;
@@ -19,7 +18,6 @@ public interface RegistrationService {
 
     @Headers(ApiConstant.HEADER_CONTENT_TYPE)
     @POST(ApiConstant.REGISTRATION_REQUEST)
-    Observable<RegistrationResponse> getRegistrationRequest(@Header("QB-Token") String token,
-                                                             @Body RegistrationRequestUser body);
+    Observable<RegistrationResponse> getRegistrationRequest(@Header("QB-Token") String token, @Body RegistrationRequest body);
 
 }

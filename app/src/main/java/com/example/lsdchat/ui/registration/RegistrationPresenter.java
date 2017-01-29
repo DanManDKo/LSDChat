@@ -35,6 +35,7 @@ import ru.tinkoff.decoro.parser.UnderscoreDigitSlotsParser;
 import ru.tinkoff.decoro.slots.Slot;
 import ru.tinkoff.decoro.watchers.FormatWatcher;
 import ru.tinkoff.decoro.watchers.MaskFormatWatcher;
+import rx.exceptions.OnErrorFailedException;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -43,7 +44,7 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
     private static final int REQUEST_IMAGE_CAMERA = 1;
     private static final int REQUEST_IMAGE_GALLERY = 2;
     private static final int MIN_DIGITS_AND_LETTERS_VALUE = 2;
-    private static final int MIN_PASSWORD_LENGTH = 6;
+    private static final int MIN_PASSWORD_LENGTH = 8;
     private static final int MAX_PASSWORD_LENGTH = 12;
     private static final String DATE_FORMAT = "yyyyMMdd_HHmmss";
 
@@ -112,7 +113,6 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
                         getRegistrationWithToken(token, form);
 
                     }, throwable -> {
-
                         Log.e("TEST", throwable.getMessage());
 
                     });
@@ -122,7 +122,7 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
     private void getRegistrationWithToken(String token, RegistrationForm form) {
         mModel.getRegistration(token, form)
                 .subscribe(registrationResponse -> {
-                    Log.e("TEST", registrationResponse.getUser().getEmail());
+                    Log.e("TEST", String.valueOf(registrationResponse.getUser().getId()));
                     Toast.makeText(mContext, mContext.getString(R.string.registration_complete), Toast.LENGTH_SHORT).show();
                 }, throwable -> {
                     Log.e("TEST", throwable.getMessage());

@@ -1,15 +1,13 @@
 package com.example.lsdchat.api.registration;
 
-import android.support.annotation.IntegerRes;
-
 import com.google.gson.annotations.SerializedName;
 
 public class RegistrationRequestUser {
-    @SerializedName("user[email]")
+    @SerializedName("email")
     private String email;
-    @SerializedName("user[password]")
+    @SerializedName("password")
     private String password;
-    /*@SerializedName("full_name")
+    @SerializedName("full_name")
     private String fullName;
     @SerializedName("phone")
     private String phone;
@@ -19,13 +17,9 @@ public class RegistrationRequestUser {
     private Integer facebookId;
     @SerializedName("blob_id")
     private Integer blobId;
-*/
-    public RegistrationRequestUser(String email, String password) {
-        this.email = email;
-        this.password = password;
-    }
 
-    /*public RegistrationRequestUser(String email, String password, String fullName, String phone, String website, Integer facebookId, Integer blobId) {
+
+    public RegistrationRequestUser(String email, String password, String fullName, String phone, String website, Integer facebookId, Integer blobId) {
         this.email = email;
         this.password = password;
         this.fullName = fullName;
@@ -33,5 +27,5 @@ public class RegistrationRequestUser {
         this.website = website;
         this.facebookId = facebookId;
         this.blobId = blobId;
-    }*/
+    }
 }

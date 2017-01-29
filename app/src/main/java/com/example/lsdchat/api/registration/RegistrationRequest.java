@@ -10,11 +10,4 @@ public class RegistrationRequest {
         this.user = user;
     }
 
-    public RegistrationRequestUser getUser() {
-        return user;
-    }
-
-    public void setUser(RegistrationRequestUser user) {
-        this.user = user;
-    }
 }

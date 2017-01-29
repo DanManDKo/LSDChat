@@ -1,12 +1,12 @@
 package com.example.lsdchat.ui.registration;
 
 import com.example.lsdchat.App;
+import com.example.lsdchat.api.login.request.SessionRequestNoAuth;
+import com.example.lsdchat.api.login.response.SessionResponse;
 import com.example.lsdchat.api.registration.RegistrationRequest;
 import com.example.lsdchat.api.registration.RegistrationRequestUser;
 import com.example.lsdchat.api.registration.RegistrationResponse;
 import com.example.lsdchat.api.registration.RegistrationService;
-import com.example.lsdchat.api.login.request.SessionRequestNoAuth;
-import com.example.lsdchat.api.login.response.SessionResponse;
 import com.example.lsdchat.constant.ApiConstant;
 import com.example.lsdchat.util.Signature;
 
@@ -37,18 +37,11 @@ public class RegistrationModel implements RegistrationContract.Model {
 
     @Override
     public Observable<RegistrationResponse> getRegistration(String token, RegistrationForm form) {
-        RegistrationRequestUser user = new RegistrationRequestUser(
-                form.getEmail(),
-                form.getPassword()
+        RegistrationRequestUser user = new RegistrationRequestUser(form.getEmail(),form.getPassword(),
+                form.getFullName(),form.getPhone(),form.getWebsite(),form.getFacebookId(),form.getBlobId());
 
-        );
-        //                form.getFullName(),
-//                form.getPhone(),
-//                form.getWebsite(),
-//                form.getFacebookId(),
-//                form.getBlobId());
         RegistrationRequest body = new RegistrationRequest(user);
-        return mRegistrationService.getRegistrationRequest(token, user)
+        return mRegistrationService.getRegistrationRequest(token, body)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
