@@ -2,10 +2,7 @@ package com.example.lsdchat.ui.splash;
 
 import android.content.Context;
 
-import com.example.lsdchat.api.response.SessionResponse;
-import com.example.lsdchat.base.BaseMvpPresenter;
-import com.example.lsdchat.base.BaseMvpView;
-import com.example.lsdchat.api.request.SessionRequestNoAuth;
+import com.example.lsdchat.api.login.response.SessionResponse;
 
 import rx.Observable;
 
