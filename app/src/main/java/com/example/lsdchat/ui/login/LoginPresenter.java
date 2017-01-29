@@ -143,14 +143,5 @@ public class LoginPresenter implements LoginContract.Presenter {
         mView.navigateToForgotPassword();
     }
 
-    @Override
-    public void attachView(LoginContract.View view) {
-        mView = view;
 
-    }
-
-    @Override
-    public void detachView() {
-        mView = null;
-    }
 }

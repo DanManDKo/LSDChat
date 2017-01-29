@@ -1,17 +1,11 @@
 package com.example.lsdchat.ui.registration;
 
-import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.support.design.widget.TextInputEditText;
 
-import com.example.lsdchat.base.BaseMvpPresenter;
-import com.example.lsdchat.base.BaseMvpView;
-
 public class RegistrationContract {
-    public interface Presenter extends BaseMvpPresenter<View> {
+    public interface Presenter {
         //screen navigation
         void navigateToMainScreen(boolean validatevalue);
 
@@ -39,7 +33,7 @@ public class RegistrationContract {
 
     }
 
-    public interface View extends BaseMvpView {
+    public interface View {
         //void onError();
         void setInvalideEmailError();
 

@@ -1,15 +1,11 @@
 package com.example.lsdchat.ui.splash;
 
-import com.example.lsdchat.base.BaseMvpPresenter;
-import com.example.lsdchat.base.BaseMvpView;
-import com.example.lsdchat.api.request.SessionRequestNoAuth;
-
 /**
  * Created by User on 18.01.2017.
  */
 
 public interface SplashContract {
-    interface Presenter extends BaseMvpPresenter<View> {
+    interface Presenter {
         void leaveSplashScreen();
 
         boolean isOnLine();
@@ -20,7 +16,7 @@ public interface SplashContract {
         void getSession();
     }
 
-    interface View extends BaseMvpView {
+    interface View {
         void navigateToLogin();
 
         void navigateToMain();

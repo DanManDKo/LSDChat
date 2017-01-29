@@ -144,10 +144,6 @@ public class RegistrationActivity extends AppCompatActivity implements Registrat
         mRegistrationPresenter.detachView();
     }
 
-    @Override
-    public Context getContext() {
-        return this;
-    }
 
     @Override
     protected void attachBaseContext(Context newBase) {

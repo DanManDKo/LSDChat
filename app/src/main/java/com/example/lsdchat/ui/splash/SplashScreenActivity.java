@@ -27,7 +27,6 @@ public class SplashScreenActivity extends AppCompatActivity implements SplashCon
         setContentView(R.layout.activity_spalsh);
         initViews();
         mPresenter = new SplashScreenPresenter();
-        mPresenter.attachView(this);
         mPresenter.leaveSplashScreen();
 
 
@@ -38,15 +37,12 @@ public class SplashScreenActivity extends AppCompatActivity implements SplashCon
         mTextView.setTypeface(typeface);
     }
 
-    @Override
-    public Context getContext() {
-        return this;
-    }
+
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mPresenter.detachView();
+        
     }
 
     @Override

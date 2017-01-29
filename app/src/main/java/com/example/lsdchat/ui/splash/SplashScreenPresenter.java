@@ -114,15 +114,6 @@ public class SplashScreenPresenter implements SplashContract.Presenter {
 
     }
 
-    @Override
-    public void attachView(SplashContract.View view) {
-        mView = view;
-        mContext = mView.getContext();
-    }
 
-    @Override
-    public void detachView() {
-        mView = null;
-    }
 
 }
