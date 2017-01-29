@@ -5,6 +5,7 @@ import android.util.Log;
 import android.widget.EditText;
 
 import com.example.lsdchat.api.ApiManager;
+import com.example.lsdchat.manager.DataManager;
 import com.example.lsdchat.model.User;
 import com.jakewharton.rxbinding.widget.RxTextView;
 
@@ -13,13 +14,17 @@ import rx.Observable;
 
 public class LoginPresented implements LoginContract.Presented {
     private LoginContract.View mView;
-    private ApiManager mApiManager = new ApiManager();
+    private ApiManager mApiManager;
     private LoginContract.Model mModel;
+    private DataManager mDataManager;
 
-    public LoginPresented(LoginContract.View mView) {
+    public LoginPresented(LoginContract.View mView, ApiManager apiManager, DataManager dataManager) {
         this.mView = mView;
+        this.mApiManager = apiManager;
+        this.mDataManager = dataManager;
 
         mModel = new LoginModel();
+
     }
 
     @Override
@@ -101,7 +106,7 @@ public class LoginPresented implements LoginContract.Presented {
         currentUser.setEmail(email);
         currentUser.setPassword(password);
         currentUser.setSignIn(isKeepSignIn);
-//        mDataManager.insertUser(currentUser);
+        mDataManager.insertUser(currentUser);
     }
 
 

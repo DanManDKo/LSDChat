@@ -13,8 +13,10 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.example.lsdchat.App;
 import com.example.lsdchat.R;
 import com.example.lsdchat.ui.MainActivity;
+import com.example.lsdchat.ui.registration.RegistrationActivity;
 
 public class LoginActivity extends AppCompatActivity implements LoginContract.View {
 
@@ -34,7 +36,7 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        mPresented = new LoginPresented(this);
+        mPresented = new LoginPresented(this, App.getApiManager(),App.getDataManager());
         initView();
 
 //        set button disable
@@ -67,7 +69,6 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
         mKeepMeSignIn = (CheckBox) findViewById(R.id.cb_keep_me_signed_in);
         mIlEmail = (TextInputLayout) findViewById(R.id.input_layout_email);
         mIlPassword = (TextInputLayout) findViewById(R.id.input_layout_password);
-
     }
 
     @Override
@@ -114,12 +115,12 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
     @Override
     public void navigateToRegistration() {
 //        TODO: start activity registration
+        startActivity(new Intent(this, RegistrationActivity.class));
     }
 
     @Override
     public void navigateToForgotPassword() {
 //        TODO: start activity forgotpassword
-
     }
 
     @Override

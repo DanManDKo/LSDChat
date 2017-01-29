@@ -14,11 +14,11 @@ import rx.Observable;
 
 public interface LoginService {
 
-    @Headers("Content-Type: application/json")
+    @Headers(ApiConstant.HEADER_CONTENT_TYPE)
     @POST(ApiConstant.SESSION_REQUEST)
     Observable<SessionResponse> getSession(@Body SessionRequestAuth body);
 
-    @Headers("Content-Type: application/json")
+    @Headers(ApiConstant.HEADER_CONTENT_TYPE)
     @POST(ApiConstant.LOGIN_REQUEST)
     Observable<LoginResponse> getLogin(@Header("QB-Token") String token, @Body LoginRequest body);
 
