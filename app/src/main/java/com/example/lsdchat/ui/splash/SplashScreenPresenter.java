@@ -20,6 +20,8 @@ import com.example.lsdchat.util.Network;
  */
 
 public class SplashScreenPresenter implements SplashContract.Presenter {
+    public final static String TOKEN_TAG = "token";
+    public final static String ERROR_TAG = "rxError";
     private static int SPLASH_TIME_OUT = 3000;
     private SplashContract.View mView;
     private SplashContract.Model mModel;
@@ -27,8 +29,6 @@ public class SplashScreenPresenter implements SplashContract.Presenter {
     private DataManager mDataManager;
     private User mUser;
     private boolean mNavigateToMain;
-    public final static String TOKEN_TAG = "token";
-    public final static String ERROR_TAG = "rxError";
 
     public SplashScreenPresenter(SplashContract.View view) {
         mView = view;
@@ -54,11 +54,10 @@ public class SplashScreenPresenter implements SplashContract.Presenter {
             }
         }, SPLASH_TIME_OUT);
 
-//        if (isLogged()) {
-//            requestSessionAndLogin(mUser.getEmail(), mUser.getPassword());
-        requestSessionAndLogin("aa@test.aa", "aaaaaaaa");
-        mNavigateToMain = true;
-//        }
+        if (isLogged()) {
+            requestSessionAndLogin(mUser.getEmail(), mUser.getPassword());
+            mNavigateToMain = true;
+        }
     }
 
     @Override
