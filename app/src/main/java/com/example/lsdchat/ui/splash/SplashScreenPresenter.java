@@ -5,17 +5,13 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Handler;
-import android.util.Log;
 
 import com.example.lsdchat.App;
 import com.example.lsdchat.R;
 import com.example.lsdchat.api.ApiManager;
-import com.example.lsdchat.api.request.SessionRequestNoAuth;
 import com.example.lsdchat.manager.DataManager;
 import com.example.lsdchat.model.User;
-import com.example.lsdchat.util.HmacSha1Signature;
 import com.example.lsdchat.util.Network;
 
 

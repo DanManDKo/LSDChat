@@ -1,6 +1,6 @@
-package com.example.lsdchat.api.response;
+package com.example.lsdchat.api.login.response;
 
-import com.example.lsdchat.api.model.SessionToken;
+import com.example.lsdchat.api.login.model.SessionToken;
 import com.google.gson.annotations.SerializedName;
 
 

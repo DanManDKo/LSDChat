@@ -1,11 +1,11 @@
 package com.example.lsdchat.ui.login;
 
 import com.example.lsdchat.App;
-import com.example.lsdchat.api.request.LoginRequest;
-import com.example.lsdchat.api.request.SessionRequestAuth;
-import com.example.lsdchat.api.response.LoginResponse;
-import com.example.lsdchat.api.response.SessionResponse;
-import com.example.lsdchat.api.service.LoginService;
+import com.example.lsdchat.api.login.request.LoginRequest;
+import com.example.lsdchat.api.login.request.SessionRequestAuth;
+import com.example.lsdchat.api.login.response.LoginResponse;
+import com.example.lsdchat.api.login.response.SessionResponse;
+import com.example.lsdchat.api.login.service.LoginService;
 import com.example.lsdchat.constant.ApiConstant;
 import com.example.lsdchat.util.SignatureTest;
 

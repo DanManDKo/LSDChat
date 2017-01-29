@@ -1,4 +1,4 @@
-package com.example.lsdchat.api.request;
+package com.example.lsdchat.api.login.request;
 
 import com.google.gson.annotations.SerializedName;
 

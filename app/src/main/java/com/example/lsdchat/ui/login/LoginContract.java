@@ -3,8 +3,8 @@ package com.example.lsdchat.ui.login;
 
 import android.widget.EditText;
 
-import com.example.lsdchat.api.response.LoginResponse;
-import com.example.lsdchat.api.response.SessionResponse;
+import com.example.lsdchat.api.login.response.LoginResponse;
+import com.example.lsdchat.api.login.response.SessionResponse;
 
 import rx.Observable;
 
