@@ -7,7 +7,7 @@ import com.example.lsdchat.constant.ApiConstant;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
-public class SignatureTest {
+public class Signature {
 
     private static final String HMAC_SHA1_ALGORITHM = "HmacSHA1";
 

@@ -1,7 +1,6 @@
 package com.example.lsdchat.ui.splash;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -10,8 +9,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.lsdchat.R;
-import com.example.lsdchat.ui.MainActivity;
-import com.example.lsdchat.ui.login.LoginActivity;
 
 /**
  * Created by User on 18.01.2017.
@@ -25,24 +22,27 @@ public class SplashScreenActivity extends AppCompatActivity implements SplashCon
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_spalsh);
-        initViews();
-        mPresenter = new SplashScreenPresenter();
+        initView();
+        mPresenter = new SplashScreenPresenter(this);
         mPresenter.leaveSplashScreen();
 
 
     }
-    private void initViews(){
+    private void initView(){
         mTextView = (TextView) findViewById(R.id.name);
         Typeface typeface = Typeface.createFromAsset(getAssets(),"fonts/FortuneCity.ttf");
         mTextView.setTypeface(typeface);
     }
 
-
+    @Override
+    public Context getContext() {
+        return this;
+    }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        
+        mPresenter.onDestroy();
     }
 
     @Override
