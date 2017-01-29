@@ -43,5 +43,10 @@
     <dimen name="login_element_horizontal_margin">24dp</dimen>
     <dimen name="login_cardview_width">280dp</dimen>
 
-
+    <!--splash-->
+    <dimen name="splash_logo_width">80dp</dimen>
+    <dimen name="splash_logo_height">64dp</dimen>
+    <dimen name="splash_logo_margin_top">200dp</dimen>
+    <dimen name="splash_title_margin_top">50dp</dimen>
+    <dimen name="splash_title_size">42sp</dimen>
 </resources>
