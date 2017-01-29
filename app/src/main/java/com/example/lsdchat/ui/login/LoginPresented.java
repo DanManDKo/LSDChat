@@ -111,7 +111,6 @@ public class LoginPresented implements LoginContract.Presented {
 
     }
 
-    // TODO: 28.01.2017 [Code Review] this is a part of business logic, should not be in Activity
     @Override
     public boolean isValidEmail(CharSequence email) {
         return email.toString().matches("^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
