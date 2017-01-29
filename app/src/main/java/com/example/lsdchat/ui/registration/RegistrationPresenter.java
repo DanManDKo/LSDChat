@@ -82,18 +82,18 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
         return mTextWatcher;
     }
 
-    @Override
-    public void attachView(RegistrationContract.View view) {
-        mView = view;
-        mContext = mView.getContext();
-        mCallbackManager = CallbackManager.Factory.create();
-        mCurrentAvatarUri = null;
-    }
-
-    @Override
-    public void detachView() {
-        mView = null;
-    }
+//    @Override
+//    public void attachView(RegistrationContract.View view) {
+//        mView = view;
+//        mContext = mView.getContext();
+//        mCallbackManager = CallbackManager.Factory.create();
+//        mCurrentAvatarUri = null;
+//    }
+//
+//    @Override
+//    public void detachView() {
+//        mView = null;
+//    }
 
 
     @Override

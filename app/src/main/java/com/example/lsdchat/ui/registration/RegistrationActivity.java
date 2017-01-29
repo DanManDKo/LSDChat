@@ -52,8 +52,8 @@ public class RegistrationActivity extends AppCompatActivity implements Registrat
 
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mRegistrationPresenter.attachView(this);
-        mRegistrationPresenter.initFacebookSdk();
+//        mRegistrationPresenter.attachView(this);
+//        mRegistrationPresenter.initFacebookSdk();
 
         setContentView(R.layout.activity_registration);
 
@@ -141,7 +141,7 @@ public class RegistrationActivity extends AppCompatActivity implements Registrat
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mRegistrationPresenter.detachView();
+//        mRegistrationPresenter.detachView();
     }
 
 
