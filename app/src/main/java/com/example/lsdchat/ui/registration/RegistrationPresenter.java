@@ -12,14 +12,11 @@ import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.widget.Toast;
 
-import com.example.lsdchat.App;
 import com.example.lsdchat.R;
-import com.example.lsdchat.api.registration.RegistrationRequest;
-import com.example.lsdchat.api.registration.RegistrationRequestUser;
 import com.example.lsdchat.ui.MainActivity;
-import com.example.lsdchat.util.StorageHelper;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
@@ -28,7 +25,6 @@ import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
@@ -56,11 +52,11 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
     private static final String EMAIL_PATTERN =
             "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
                     + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
-
+    public Uri mCurrentAvatarUri;
     private RegistrationContract.View mView;
+    private RegistrationContract.Model mModel;
     private Context mContext;
     private CallbackManager mCallbackManager;
-    public Uri mCurrentAvatarUri;
     private TextWatcher mTextWatcher = new TextWatcher() {
         @Override
         public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -78,23 +74,23 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
         }
     };
 
+    public RegistrationPresenter(RegistrationContract.View view) {
+        this.mView = view;
+        mModel = new RegistrationModel();
+        mContext = view.getContext();
+        mCallbackManager = CallbackManager.Factory.create();
+        mCurrentAvatarUri = null;
+    }
+
+    @Override
+    public void onDestroy() {
+        mView = null;
+        mModel = null;
+    }
+
     public TextWatcher getTextWatcher() {
         return mTextWatcher;
     }
-
-//    @Override
-//    public void attachView(RegistrationContract.View view) {
-//        mView = view;
-//        mContext = mView.getContext();
-//        mCallbackManager = CallbackManager.Factory.create();
-//        mCurrentAvatarUri = null;
-//    }
-//
-//    @Override
-//    public void detachView() {
-//        mView = null;
-//    }
-
 
     @Override
     public void initFacebookSdk() {
@@ -107,29 +103,30 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
     }
 
     @Override
-    public void requestSessionAndRegistration() {
-//        App.getApiManager().getSessionNoAuth(new SessionRequestNoAuth())
-//                .doOnNext(registrationResponse -> getRegistrationWithToken(
-//                        registrationResponse.getSession().getToken(),
-//                        new RegistrationRequest(new RegistrationRequestUser(
-//                                email,
-//                                pass,
-//                                name,
-//                                phone,
-//                                website,
-//                                facebook))))
-//                .subscribe(registrationResponse -> {
-//                    addUserToDataBase(
-//                            email,
-//                            pass,
-//                            name,
-//                            phone,
-//                            website,
-//                            facebook);
-//                });
+    public void requestSessionAndRegistration(boolean validateValue, RegistrationForm form) {
+        if (validateValue) {
+            mModel.getSessionNoAuth()
+                    .subscribe(sessionResponse -> {
+                        String token = sessionResponse.getSession().getToken();
+                        Log.e("TEST", token);
+                        getRegistrationWithToken(token, form);
+
+                    }, throwable -> {
+
+                        Log.e("TEST", throwable.getMessage());
+
+                    });
+        }
     }
 
-    private void getRegistrationWithToken(String token, RegistrationRequest body) {
+    private void getRegistrationWithToken(String token, RegistrationForm form) {
+        mModel.getRegistration(token, form)
+                .subscribe(registrationResponse -> {
+                    Log.e("TEST", registrationResponse.getUser().getEmail());
+                    Toast.makeText(mContext, mContext.getString(R.string.registration_complete), Toast.LENGTH_SHORT).show();
+                }, throwable -> {
+                    Log.e("TEST", throwable.getMessage());
+                });
     }
 
     @Override
@@ -161,13 +158,10 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
     }
 
     @Override
-    public void navigateToMainScreen(boolean validateValue) {
-        if (validateValue) {
-            Toast.makeText(mContext, mContext.getString(R.string.registration_complete), Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(mContext, MainActivity.class);
-            mContext.startActivity(intent);
-            ((Activity) mContext).finish();
-        }
+    public void navigateToMainScreen() {
+        Intent intent = new Intent(mContext, MainActivity.class);
+        mContext.startActivity(intent);
+        ((Activity) mContext).finish();
     }
 
     @Override

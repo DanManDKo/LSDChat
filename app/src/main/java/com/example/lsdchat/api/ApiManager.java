@@ -1,12 +1,13 @@
 package com.example.lsdchat.api;
 
-import com.example.lsdchat.api.login.request.LoginRequest;
-import com.example.lsdchat.api.login.request.SessionRequestAuth;
-import com.example.lsdchat.api.login.request.SessionRequestNoAuth;
-import com.example.lsdchat.api.login.response.LoginResponse;
-import com.example.lsdchat.api.login.response.SessionResponse;
-import com.example.lsdchat.api.login.service.LoginService;
-import com.example.lsdchat.api.login.service.SessionService;
+import com.example.lsdchat.api.registration.RegistrationService;
+import com.example.lsdchat.api.request.LoginRequest;
+import com.example.lsdchat.api.request.SessionRequestAuth;
+import com.example.lsdchat.api.request.SessionRequestNoAuth;
+import com.example.lsdchat.api.response.LoginResponse;
+import com.example.lsdchat.api.response.SessionResponse;
+import com.example.lsdchat.api.service.LoginService;
+import com.example.lsdchat.api.service.SessionService;
 import com.example.lsdchat.constant.ApiConstant;
 import com.google.gson.GsonBuilder;
 
@@ -24,6 +25,10 @@ public class ApiManager {
     private LoginService mLoginService;
     private SessionService mSessionService;
 
+
+
+    private RegistrationService mRegistrationService;
+
     // TODO: 28.01.2017 [Code Review] it'd be better to call init() method in constructor to be sure
     // class properties are not null. Otherwise you should throw exception in get... methods
     // if init methods were not called
@@ -31,6 +36,10 @@ public class ApiManager {
 
     public LoginService getmLoginService() {
         return mLoginService;
+    }
+
+    public RegistrationService getRegistrationService() {
+        return mRegistrationService;
     }
 
     public ApiManager() {
@@ -51,6 +60,7 @@ public class ApiManager {
         if (mRetrofit != null) {
             mLoginService = mRetrofit.create(LoginService.class);
             mSessionService = mRetrofit.create(SessionService.class);
+            mRegistrationService = mRetrofit.create(RegistrationService.class);
         }
     }
 

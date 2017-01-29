@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName;
 
 public class RegistrationUser {
     @SerializedName("id")
-    private int id;
+    private Integer id;
     @SerializedName("full_name")
     private String fullName;
     @SerializedName("email")
@@ -22,11 +22,11 @@ public class RegistrationUser {
     @SerializedName("last_request_at")
     private String lastRequest;
     @SerializedName("external_user_id")
-    private int externalUserId;
+    private Integer externalUserId;
     @SerializedName("facebook_id")
-    private int facebookId;
+    private Integer facebookId;
     @SerializedName("blob_id")
-    private int blobId;
+    private Integer blobId;
     @SerializedName("custom_data")
     private String customData;
     @SerializedName("user_tags")
