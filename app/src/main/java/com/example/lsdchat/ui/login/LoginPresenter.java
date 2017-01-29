@@ -12,15 +12,13 @@ import com.jakewharton.rxbinding.widget.RxTextView;
 import rx.Observable;
 
 
-public class LoginPresented implements LoginContract.Presented {
+public class LoginPresenter implements LoginContract.Presenter {
     private LoginContract.View mView;
-    private ApiManager mApiManager;
     private LoginContract.Model mModel;
     private DataManager mDataManager;
 
-    public LoginPresented(LoginContract.View mView, ApiManager apiManager, DataManager dataManager) {
+    public LoginPresenter(LoginContract.View mView, DataManager dataManager) {
         this.mView = mView;
-        this.mApiManager = apiManager;
         this.mDataManager = dataManager;
 
         mModel = new LoginModel();
@@ -29,7 +27,7 @@ public class LoginPresented implements LoginContract.Presented {
 
     @Override
     public void onDestroy() {
-        this.mApiManager = null;
+        this.mDataManager = null;
         this.mView = null;
         this.mModel = null;
     }

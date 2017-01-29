@@ -18,7 +18,7 @@ public interface LoginContract {
         Observable<LoginResponse> getLogin(String email, String password,String token);
     }
 
-    interface Presented extends BaseMvpPresenter<View> {
+    interface Presenter extends BaseMvpPresenter<View> {
 
         void onDestroy();
 
