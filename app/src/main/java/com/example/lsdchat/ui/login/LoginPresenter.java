@@ -1,12 +1,17 @@
 package com.example.lsdchat.ui.login;
 
+import android.content.Context;
+import android.content.Intent;
 import android.text.TextUtils;
 import android.util.Log;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
-import com.example.lsdchat.api.ApiManager;
 import com.example.lsdchat.manager.DataManager;
 import com.example.lsdchat.model.User;
+import com.example.lsdchat.service.NotifyService;
+import com.example.lsdchat.util.Email;
 import com.jakewharton.rxbinding.widget.RxTextView;
 
 import rx.Observable;
@@ -39,7 +44,7 @@ public class LoginPresenter implements LoginContract.Presenter {
         Observable<CharSequence> emailSubscription = RxTextView.textChanges(etEmail);
         emailSubscription.filter(charSequence -> charSequence.toString().length() != 0)
                 .subscribe(value -> {
-                    if (!isValidEmail(value)) {
+                    if (Email.checkEmail(value)) {
                         mView.setEmailError();
                     } else {
                         mView.hideEmailError();
@@ -55,7 +60,7 @@ public class LoginPresenter implements LoginContract.Presenter {
                     }
                 });
         Observable.combineLatest(emailSubscription, passwordSubscription, (email, password) -> {
-            boolean emailIs = isValidEmail(email.toString());
+            boolean emailIs = Email.checkEmail(email.toString());
             boolean passIs = isValidPassword(password.toString());
             return emailIs && passIs;
         })
@@ -115,17 +120,13 @@ public class LoginPresenter implements LoginContract.Presenter {
     }
 
     @Override
-    public boolean isValidEmail(CharSequence email) {
-        return email.toString().matches("^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
-                + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$");
+    public void btnSignInClick(Button btnSignIn, String email, String password) {
+        btnSignIn.setOnClickListener(view -> {
+            if (isEmptyFields(email, password)) {
+                requestSessionAndLogin(email, password);
+            }
+        });
 
-    }
-
-    @Override
-    public void btnSignInClick(String email, String password) {
-        if (isEmptyFields(email, password)) {
-            requestSessionAndLogin(email, password);
-        }
     }
 
     private Boolean isEmptyFields(String email, String password) {
@@ -134,14 +135,24 @@ public class LoginPresenter implements LoginContract.Presenter {
     }
 
     @Override
-    public void btnSignUpClick() {
-        mView.navigateToRegistration();
+    public void btnSignUpClick(Button btnSignUp) {
+        btnSignUp.setOnClickListener(view -> mView.navigateToRegistration());
+
     }
 
     @Override
-    public void btnSignForgotPasswordClick() {
-        mView.navigateToForgotPassword();
+    public void btnSignForgotPasswordClick(TextView btnForgotPassword) {
+        btnForgotPassword.setOnClickListener(view -> mView.navigateToForgotPassword());
     }
 
+    @Override
+    public void startService(Context context) {
+        context.startService(new Intent(context, NotifyService.class));
+    }
+
+    @Override
+    public void stopService(Context context) {
+        context.stopService(new Intent(context, NotifyService.class));
+    }
 
 }

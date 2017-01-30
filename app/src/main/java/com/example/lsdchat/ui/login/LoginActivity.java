@@ -1,9 +1,12 @@
 package com.example.lsdchat.ui.login;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -28,7 +31,7 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
     private CheckBox mKeepMeSignIn;
     private TextInputLayout mIlEmail;
     private TextInputLayout mIlPassword;
-
+    private Toolbar mToolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,13 +51,12 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
 
     }
 
-    private void onClickButton() {
-        mBtnSignIn.setOnClickListener(view ->
-                mPresenter.btnSignInClick(mEmail.getText().toString(), mPassword.getText().toString()));
-        mBtnSignUp.setOnClickListener(view -> mPresenter.btnSignUpClick());
-        mBtnForgotPassword.setOnClickListener(view -> mPresenter.btnSignForgotPasswordClick());
-    }
 
+    private void onClickButton() {
+        mPresenter.btnSignInClick(mBtnSignIn,mEmail.getText().toString(), mPassword.getText().toString());
+        mPresenter.btnSignUpClick(mBtnSignUp);
+        mPresenter.btnSignForgotPasswordClick(mBtnForgotPassword);
+    }
 
 
     private void initView() {
@@ -67,6 +69,56 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
         mKeepMeSignIn = (CheckBox) findViewById(R.id.cb_keep_me_signed_in);
         mIlEmail = (TextInputLayout) findViewById(R.id.input_layout_email);
         mIlPassword = (TextInputLayout) findViewById(R.id.input_layout_password);
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+
+        setSupportActionBar(mToolbar);
+
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setHomeButtonEnabled(true);
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
+
+        }
+        getSupportActionBar().setTitle(R.string.login_sign_in);
+
+    }
+
+
+    @Override
+    public void onBackPressed() {
+        mPresenter.startService(this);
+        super.onBackPressed();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mPresenter.onDestroy();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
+        }
+        return true;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mPresenter.stopService(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mPresenter.startService(this);
+    }
+
+    @Override
+    public Context getContext() {
+        return this;
     }
 
     @Override
