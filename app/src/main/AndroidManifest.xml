@@ -22,11 +22,6 @@
 
 
         <activity
-            android:name=".ui.registration.RegistrationActivity"
-            android:screenOrientation="portrait">
-
-        </activity>
-        <activity
             android:name="com.facebook.FacebookActivity"
             android:configChanges=
                 "keyboard|keyboardHidden|screenLayout|screenSize|orientation"
@@ -56,6 +51,13 @@
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id"/>
-    </application>
 
+        <service
+
+            android:name=".service.NotifyService"
+
+            android:process=":myservice" >
+
+        </service>
+    </application>
 </manifest>
