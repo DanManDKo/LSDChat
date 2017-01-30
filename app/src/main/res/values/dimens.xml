@@ -2,6 +2,19 @@
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
+
+    <dimen name="button_padding">16dp</dimen>
+    <dimen name="fb_button_padding">36dp</dimen>
+
+    <!--card dimens-->
+    <dimen name="card_elevation">8dp</dimen>
+    <dimen name="max_card_elevation">16dp</dimen>
+    <dimen name="card_top_margin">16dp</dimen>
+    <dimen name="card_main_margin">24dp</dimen>
+    <dimen name="fb_btn_font_size">14sp</dimen>
+
+    <dimen name="progressbar_size">24dp</dimen>
+
     <dimen name="card_horizontal_margin">24dp</dimen>
     <dimen name="card_vertical_margin">16dp</dimen>
     <dimen name="card_inner_padding">36dp</dimen>
@@ -30,5 +43,10 @@
     <dimen name="login_element_horizontal_margin">24dp</dimen>
     <dimen name="login_cardview_width">280dp</dimen>
 
-
+    <!--splash-->
+    <dimen name="splash_logo_width">80dp</dimen>
+    <dimen name="splash_logo_height">64dp</dimen>
+    <dimen name="splash_logo_margin_top">200dp</dimen>
+    <dimen name="splash_title_margin_top">50dp</dimen>
+    <dimen name="splash_title_size">42sp</dimen>
 </resources>

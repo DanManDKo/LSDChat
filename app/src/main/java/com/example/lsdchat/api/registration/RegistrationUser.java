@@ -1,9 +1,8 @@
-package com.example.lsdchat.api.model;
-
+package com.example.lsdchat.api.registration;
 
 import com.google.gson.annotations.SerializedName;
 
-public class LoginUser {
+public class RegistrationUser {
     @SerializedName("id")
     private Integer id;
     @SerializedName("full_name")
@@ -17,31 +16,27 @@ public class LoginUser {
     @SerializedName("website")
     private String website;
     @SerializedName("created_at")
-    private String createdAt;
+    private String created;
     @SerializedName("updated_at")
-    private String updatedAt;
+    private String updated;
     @SerializedName("last_request_at")
-    private String lastRequestAt;
+    private String lastRequest;
     @SerializedName("external_user_id")
-    private int externalUserId;
+    private Integer externalUserId;
     @SerializedName("facebook_id")
-    private String facebookId;
-    @SerializedName("twitter_id")
-    private String twitterId;
-    @SerializedName("twitter_digits_id")
-    private int twitterDigitsId;
+    private Integer facebookId;
     @SerializedName("blob_id")
-    private int blobId;
+    private Integer blobId;
     @SerializedName("custom_data")
     private String customData;
     @SerializedName("user_tags")
     private String userTags;
 
-    public Integer getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -85,28 +80,28 @@ public class LoginUser {
         this.website = website;
     }
 
-    public String getCreatedAt() {
-        return createdAt;
+    public String getCreated() {
+        return created;
     }
 
-    public void setCreatedAt(String createdAt) {
-        this.createdAt = createdAt;
+    public void setCreated(String created) {
+        this.created = created;
     }
 
-    public String getUpdatedAt() {
-        return updatedAt;
+    public String getUpdated() {
+        return updated;
     }
 
-    public void setUpdatedAt(String updatedAt) {
-        this.updatedAt = updatedAt;
+    public void setUpdated(String updated) {
+        this.updated = updated;
     }
 
-    public String getLastRequestAt() {
-        return lastRequestAt;
+    public String getLastRequest() {
+        return lastRequest;
     }
 
-    public void setLastRequestAt(String lastRequestAt) {
-        this.lastRequestAt = lastRequestAt;
+    public void setLastRequest(String lastRequest) {
+        this.lastRequest = lastRequest;
     }
 
     public int getExternalUserId() {
@@ -117,28 +112,12 @@ public class LoginUser {
         this.externalUserId = externalUserId;
     }
 
-    public String getFacebookId() {
+    public int getFacebookId() {
         return facebookId;
     }
 
-    public void setFacebookId(String facebookId) {
+    public void setFacebookId(int facebookId) {
         this.facebookId = facebookId;
-    }
-
-    public String getTwitterId() {
-        return twitterId;
-    }
-
-    public void setTwitterId(String twitterId) {
-        this.twitterId = twitterId;
-    }
-
-    public int getTwitterDigitsId() {
-        return twitterDigitsId;
-    }
-
-    public void setTwitterDigitsId(int twitterDigitsId) {
-        this.twitterDigitsId = twitterDigitsId;
     }
 
     public int getBlobId() {
@@ -164,5 +143,4 @@ public class LoginUser {
     public void setUserTags(String userTags) {
         this.userTags = userTags;
     }
-
 }
