@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <!--for changing status bar color-->
-    <color name="colorPrimaryDark">@color/colorGreenDark</color>
-    <color name="colorAccent">@color/colorGreen</color>
+    <color name="colorPrimary">#327780</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
 
     <color name="colorWhite">#ffffff</color>
     <color name="colorWhiteOpacity">#99ffffff</color>
     <color name="colorGreen">#2BBC9B</color>
     <color name="colorGreenDark">#219177</color>
-    <color name="colorRed">#FF6F6F</color>
+    <color name="colorRed">#EE6767</color>
     <color name="colorNavyBlue">#327780</color>
     <color name="colorNavyBlueDark">#004951</color>
     <color name="colorButtonDisable">#165258</color>
