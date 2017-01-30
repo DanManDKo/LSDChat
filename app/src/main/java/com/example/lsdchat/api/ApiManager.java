@@ -1,7 +1,6 @@
 package com.example.lsdchat.api;
 
 import com.example.lsdchat.api.login.service.LoginService;
-import com.example.lsdchat.api.login.service.SessionService;
 import com.example.lsdchat.api.registration.RegistrationService;
 import com.example.lsdchat.constant.ApiConstant;
 import com.google.gson.GsonBuilder;
@@ -15,8 +14,6 @@ public class ApiManager {
 
     private Retrofit mRetrofit;
     private LoginService mLoginService;
-    private SessionService mSessionService;
-
 
     private RegistrationService mRegistrationService;
 
@@ -50,7 +47,6 @@ public class ApiManager {
     private void initServices() {
         if (mRetrofit != null) {
             mLoginService = mRetrofit.create(LoginService.class);
-            mSessionService = mRetrofit.create(SessionService.class);
             mRegistrationService = mRetrofit.create(RegistrationService.class);
         }
     }

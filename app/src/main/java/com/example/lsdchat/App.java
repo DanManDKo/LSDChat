@@ -6,8 +6,9 @@ import android.content.Context;
 import com.crashlytics.android.Crashlytics;
 import com.example.lsdchat.api.ApiManager;
 import com.example.lsdchat.manager.DataManager;
-import com.facebook.drawee.backends.pipeline.Fresco;
 import com.example.lsdchat.manager.SharedPreferencesManager;
+import com.facebook.FacebookSdk;
+import com.facebook.drawee.backends.pipeline.Fresco;
 
 import io.fabric.sdk.android.Fabric;
 import io.realm.Realm;
@@ -18,28 +19,6 @@ public class App extends Application {
     private static DataManager sDataManager;
     private static ApiManager sApiManager;
     private static SharedPreferencesManager sSharedPreferencesManager;
-
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        Fresco.initialize(this);
-
-        Fabric.with(this, new Crashlytics());
-
-        RealmConfiguration configuration = new RealmConfiguration
-                .Builder(this)
-                .deleteRealmIfMigrationNeeded()
-                .build();
-        Realm.setDefaultConfiguration(configuration);
-        sDataManager = new DataManager();
-
-        CalligraphyConfig.initDefault(
-                new CalligraphyConfig.Builder()
-                        .setDefaultFontPath("fonts/roboto_regular.ttf")
-                        .setFontAttrId(R.attr.fontPath)
-                        .build()
-        );
-    }
 
     public static DataManager getDataManager() {
 
@@ -58,6 +37,30 @@ public class App extends Application {
             sSharedPreferencesManager = new SharedPreferencesManager(context);
         }
         return sSharedPreferencesManager;
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        FacebookSdk.sdkInitialize(getApplicationContext());
+
+        Fresco.initialize(this);
+
+        Fabric.with(this, new Crashlytics());
+
+        RealmConfiguration configuration = new RealmConfiguration
+                .Builder(this)
+                .deleteRealmIfMigrationNeeded()
+                .build();
+        Realm.setDefaultConfiguration(configuration);
+        sDataManager = new DataManager();
+
+        CalligraphyConfig.initDefault(
+                new CalligraphyConfig.Builder()
+                        .setDefaultFontPath("fonts/roboto_regular.ttf")
+                        .setFontAttrId(R.attr.fontPath)
+                        .build()
+        );
     }
 
 }
