@@ -4,7 +4,6 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.widget.EditText;
 
-import com.example.lsdchat.api.ApiManager;
 import com.example.lsdchat.manager.DataManager;
 import com.example.lsdchat.model.User;
 import com.jakewharton.rxbinding.widget.RxTextView;
@@ -13,6 +12,7 @@ import rx.Observable;
 
 
 public class LoginPresenter implements LoginContract.Presenter {
+
     private LoginContract.View mView;
     private LoginContract.Model mModel;
     private DataManager mDataManager;
@@ -140,8 +140,10 @@ public class LoginPresenter implements LoginContract.Presenter {
 
     @Override
     public void btnSignForgotPasswordClick() {
-        mView.navigateToForgotPassword();
+        mView.showDialogForgotPassword();
     }
+
+
 
 
 }

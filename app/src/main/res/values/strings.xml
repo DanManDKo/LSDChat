@@ -54,4 +54,8 @@
     <string name="registration_complete">Registration complete</string>
     <string name="there_is_no_device_camera">Your device doesn`t have camera</string>
     <string name="photo_added">Photo added</string>
+    <!--forgotpassword-->
+    <string name="restore_password">Restore password</string>
+    <string name="button_cancel">Cancel</string>
+    <string name="send">Send</string>
 </resources>
