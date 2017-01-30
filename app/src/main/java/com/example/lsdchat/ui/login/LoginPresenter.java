@@ -6,6 +6,7 @@ import android.widget.EditText;
 
 import com.example.lsdchat.manager.DataManager;
 import com.example.lsdchat.model.User;
+import com.example.lsdchat.util.Email;
 import com.jakewharton.rxbinding.widget.RxTextView;
 
 import rx.Observable;
@@ -116,9 +117,7 @@ public class LoginPresenter implements LoginContract.Presenter {
 
     @Override
     public boolean isValidEmail(CharSequence email) {
-        return email.toString().matches("^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
-                + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$");
-
+        return Email.checkEmail(email.toString());
     }
 
     @Override
