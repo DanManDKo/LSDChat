@@ -49,8 +49,10 @@ public class SplashScreenPresenter implements SplashContract.Presenter {
         new Handler().postDelayed(() -> {
             if (mNavigateToMain) {
                 mView.navigateToMain();
+                ((Activity)mContext).finish();
             } else {
                 mView.navigateToLogin();
+                ((Activity)mContext).finish();
             }
         }, SPLASH_TIME_OUT);
 
