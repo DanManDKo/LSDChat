@@ -16,5 +16,7 @@ public class ApiConstant {
     public static final String REGISTRATION_REQUEST = "/users.json";
     public static final String HEADER_CONTENT_TYPE = "Content-Type: application/json";
 
+//    60 -  second, 15 - minutes
+    public static final int TIME_REMIND = 60 * 15;
 
 }
