@@ -1,22 +1,14 @@
 package com.example.lsdchat.api;
 
+import com.example.lsdchat.api.login.service.LoginService;
+import com.example.lsdchat.api.login.service.SessionService;
 import com.example.lsdchat.api.registration.RegistrationService;
-import com.example.lsdchat.api.request.LoginRequest;
-import com.example.lsdchat.api.request.SessionRequestAuth;
-import com.example.lsdchat.api.request.SessionRequestNoAuth;
-import com.example.lsdchat.api.response.LoginResponse;
-import com.example.lsdchat.api.response.SessionResponse;
-import com.example.lsdchat.api.service.LoginService;
-import com.example.lsdchat.api.service.SessionService;
 import com.example.lsdchat.constant.ApiConstant;
 import com.google.gson.GsonBuilder;
 
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
-import rx.Observable;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 public class ApiManager {
 
@@ -26,7 +18,6 @@ public class ApiManager {
     private SessionService mSessionService;
 
 
-
     private RegistrationService mRegistrationService;
 
     // TODO: 28.01.2017 [Code Review] it'd be better to call init() method in constructor to be sure
@@ -34,17 +25,17 @@ public class ApiManager {
     // if init methods were not called
 
 
+    public ApiManager() {
+        initRetrofit();
+        initServices();
+    }
+
     public LoginService getmLoginService() {
         return mLoginService;
     }
 
     public RegistrationService getRegistrationService() {
         return mRegistrationService;
-    }
-
-    public ApiManager() {
-        initRetrofit();
-        initServices();
     }
 
     private void initRetrofit() {
@@ -70,23 +61,6 @@ public class ApiManager {
         return GsonConverterFactory.create(builder.create());
     }
 
-    public Observable<SessionResponse> getSessionNoAuth(SessionRequestNoAuth body) {
-        return mSessionService.getSession(body)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
-    }
 
-
-    public Observable<SessionResponse> getSessionAuth(SessionRequestAuth body) {
-        return mLoginService.getSession(body)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
-    }
-
-    public Observable<LoginResponse> getLogin(LoginRequest body, String token) {
-        return mLoginService.getLogin(token, body)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
-    }
 }
 
