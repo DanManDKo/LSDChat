@@ -41,6 +41,16 @@ public class LoginPresenter implements LoginContract.Presenter {
         this.mModel = null;
     }
 
+    @Override
+    public void onResume() {
+        stopService(mView.getContext());
+    }
+
+    @Override
+    public void onPause() {
+        startService(mView.getContext());
+    }
+
 
     @Override
     public void validateCredentials(EditText etEmail, EditText etPassword) {
