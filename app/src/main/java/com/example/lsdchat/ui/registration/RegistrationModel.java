@@ -3,9 +3,11 @@ package com.example.lsdchat.ui.registration;
 import com.example.lsdchat.App;
 import com.example.lsdchat.api.login.request.SessionRequestNoAuth;
 import com.example.lsdchat.api.login.response.SessionResponse;
-import com.example.lsdchat.api.registration.RegistrationRequest;
-import com.example.lsdchat.api.registration.RegistrationRequestUser;
-import com.example.lsdchat.api.registration.RegistrationResponse;
+import com.example.lsdchat.api.registration.request.RegistrationCreateFileRequest;
+import com.example.lsdchat.api.registration.response.RegistrationCreateFileResponse;
+import com.example.lsdchat.api.registration.request.RegistrationRequest;
+import com.example.lsdchat.api.registration.request.RegistrationRequestUser;
+import com.example.lsdchat.api.registration.response.RegistrationResponse;
 import com.example.lsdchat.api.registration.RegistrationService;
 import com.example.lsdchat.constant.ApiConstant;
 import com.example.lsdchat.util.Signature;
@@ -42,6 +44,16 @@ public class RegistrationModel implements RegistrationContract.Model {
 
         RegistrationRequest body = new RegistrationRequest(user);
         return mRegistrationService.getRegistrationRequest(token, body)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    @Override
+    public Observable<RegistrationCreateFileResponse> createFile(String token, String mime, String fileName) {
+        //TODO:
+        RegistrationCreateFileRequest body = null;
+
+        return mRegistrationService.createFileRequest(token, body)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }

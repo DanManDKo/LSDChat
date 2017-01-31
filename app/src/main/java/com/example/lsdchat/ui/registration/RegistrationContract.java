@@ -8,7 +8,8 @@ import android.widget.Button;
 import android.widget.ImageView;
 
 import com.example.lsdchat.api.login.response.SessionResponse;
-import com.example.lsdchat.api.registration.RegistrationResponse;
+import com.example.lsdchat.api.registration.response.RegistrationCreateFileResponse;
+import com.example.lsdchat.api.registration.response.RegistrationResponse;
 
 import rx.Observable;
 
@@ -67,5 +68,7 @@ public interface RegistrationContract {
         Observable<SessionResponse> getSessionNoAuth();
 
         Observable<RegistrationResponse> getRegistration(String token, RegistrationForm form);
+
+        Observable<RegistrationCreateFileResponse> createFile(String token, String mime, String fileName);
     }
 }

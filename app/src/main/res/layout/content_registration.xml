@@ -219,7 +219,7 @@
                 android:layout_height="@dimen/progressbar_size"
                 android:layout_centerHorizontal="true"
                 android:theme="@style/CustomProgressBar"
-                android:visibility="gone"/>
+                android:visibility="invisible"/>
         </android.support.v7.widget.CardView>
     </LinearLayout>
 

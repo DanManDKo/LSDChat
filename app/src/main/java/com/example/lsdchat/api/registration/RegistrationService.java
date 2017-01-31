@@ -2,6 +2,10 @@ package com.example.lsdchat.api.registration;
 
 import com.example.lsdchat.api.login.request.SessionRequestNoAuth;
 import com.example.lsdchat.api.login.response.SessionResponse;
+import com.example.lsdchat.api.registration.request.RegistrationCreateFileRequest;
+import com.example.lsdchat.api.registration.request.RegistrationRequest;
+import com.example.lsdchat.api.registration.response.RegistrationCreateFileResponse;
+import com.example.lsdchat.api.registration.response.RegistrationResponse;
 import com.example.lsdchat.constant.ApiConstant;
 
 import retrofit2.http.Body;
@@ -18,6 +22,10 @@ public interface RegistrationService {
 
     @Headers(ApiConstant.HEADER_CONTENT_TYPE)
     @POST(ApiConstant.REGISTRATION_REQUEST)
-    Observable<RegistrationResponse> getRegistrationRequest(@Header("QB-Token") String token, @Body RegistrationRequest body);
+    Observable<RegistrationResponse> getRegistrationRequest(@Header(ApiConstant.QB_TOKEN) String token, @Body RegistrationRequest body);
+
+    @Headers(ApiConstant.HEADER_CONTENT_TYPE)
+    @POST(ApiConstant.BLOB_REQUEST)
+    Observable<RegistrationCreateFileResponse> createFileRequest(@Header(ApiConstant.QB_TOKEN) String token, @Body RegistrationCreateFileRequest body);
 
 }

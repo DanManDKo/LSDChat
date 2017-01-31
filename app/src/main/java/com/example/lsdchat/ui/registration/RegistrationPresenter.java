@@ -32,6 +32,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.net.URLConnection;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
@@ -325,6 +326,18 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
 
     public void loginWithFacebook() {
         LoginManager.getInstance().logInWithReadPermissions((Activity) mContext, Arrays.asList("public_profile"));
+    }
+
+    private File getAvatarFile(Uri uri) {
+        return new File(uri.toString());
+    }
+
+    private long getFileLength(File file) {
+        return file.length();
+    }
+
+    private String getFileMimeType(File file) {
+        return URLConnection.guessContentTypeFromName(file.getName());
     }
 
     @Override

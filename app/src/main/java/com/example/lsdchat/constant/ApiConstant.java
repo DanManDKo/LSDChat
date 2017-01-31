@@ -12,9 +12,11 @@ public class ApiConstant {
 
     public static final String SESSION_REQUEST = "/session.json";
     public static final String LOGIN_REQUEST = "/login.json";
-
+    public static final String BLOB_REQUEST = "/blobs.json";
     public static final String REGISTRATION_REQUEST = "/users.json";
+
     public static final String HEADER_CONTENT_TYPE = "Content-Type: application/json";
+    public static final String QB_TOKEN = "QB-Token";
 
 
 }

@@ -166,6 +166,6 @@ public class RegistrationActivity extends AppCompatActivity implements Registrat
 
     @Override
     public void hideProgressBar() {
-        mProgressBar.setVisibility(View.GONE);
+        mProgressBar.setVisibility(View.INVISIBLE);
     }
 }
