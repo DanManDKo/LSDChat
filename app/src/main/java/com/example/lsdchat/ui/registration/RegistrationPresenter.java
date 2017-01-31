@@ -20,6 +20,8 @@ import android.widget.Toast;
 import com.example.lsdchat.R;
 import com.example.lsdchat.ui.MainActivity;
 import com.example.lsdchat.util.Email;
+import com.example.lsdchat.util.ErrorsCode;
+import com.example.lsdchat.util.Network;
 import com.example.lsdchat.util.StorageHelper;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -48,7 +50,7 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
 
     private static final String DATE_FORMAT = "yyyyMMdd_HHmmss";
     private static final String AVATAR_FILE_NAME = "_avatar.jpg";
-    private static final String PHONE_MASK = "+38 ([000]) [000]-[00]-[00]";
+    private static final String PHONE_MASK = "+38 (0[00]) [000]-[00]-[00]";
 
     private RegistrationContract.View mView;
     private RegistrationContract.Model mModel;
@@ -57,7 +59,7 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
     private CallbackManager mCallbackManager;
 
     private String mUserFacebookId = null;
-    private Uri mCurrentAvatarUri = null;
+    private Uri mFullSizeAvatarUri = null;
     private Uri mUploadPhotoUri = null;
     private String mPhoneNumber = null;
 
@@ -102,6 +104,7 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
 
                     }, throwable -> {
                         Log.e("TEST", throwable.getMessage());
+                        showDialogError(throwable);
                     });
             button.setClickable(false);
         }
@@ -120,6 +123,7 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
                     navigateToMainScreen();
                 }, throwable -> {
                     Log.e("TEST", throwable.getMessage());
+                    showDialogError(throwable);
                 });
     }
 
@@ -161,7 +165,7 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
                 new MaskedTextChangedListener.ValueListener() {
                     @Override
                     public void onExtracted(@NotNull String s) {
-                        if (s.length() == 10) mPhoneNumber = "+380" + s;
+                        if (s.length() == 9) mPhoneNumber = "+380" + s;
                     }
 
                     @Override
@@ -245,9 +249,9 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
         switch (requestCode) {
             case REQUEST_IMAGE_CAMERA:
                 if (resultCode == RESULT_OK) {
-                    mView.getUserpicUri(mCurrentAvatarUri);
+                    mView.getUserpicUri(mFullSizeAvatarUri);
                     try {
-                        mUploadPhotoUri = StorageHelper.decodeAndSaveUri(mContext, mCurrentAvatarUri);
+                        mUploadPhotoUri = StorageHelper.decodeAndSaveUri(mContext, mFullSizeAvatarUri);
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();
                     }
@@ -256,10 +260,10 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
                 break;
             case REQUEST_IMAGE_GALLERY:
                 if (resultCode == RESULT_OK) {
-                    mCurrentAvatarUri = data.getData();
-                    mView.getUserpicUri(mCurrentAvatarUri);
+                    mFullSizeAvatarUri = data.getData();
+                    mView.getUserpicUri(mFullSizeAvatarUri);
                     try {
-                        mUploadPhotoUri = StorageHelper.decodeAndSaveUri(mContext, mCurrentAvatarUri);
+                        mUploadPhotoUri = StorageHelper.decodeAndSaveUri(mContext, mFullSizeAvatarUri);
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();
                     }
@@ -288,9 +292,9 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
                 File storageDir = mContext.getExternalFilesDir(String.valueOf(Environment.DIRECTORY_PICTURES));
                 String timestamp = new SimpleDateFormat(DATE_FORMAT).format(new Date());
                 File file = new File(storageDir + "/" + timestamp + AVATAR_FILE_NAME);
-                mCurrentAvatarUri = Uri.fromFile(file);
+                mFullSizeAvatarUri = Uri.fromFile(file);
 
-                pictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, mCurrentAvatarUri);
+                pictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, mFullSizeAvatarUri);
                 ((Activity) mContext).startActivityForResult(pictureIntent, REQUEST_IMAGE_CAMERA);
             }
         } else {
@@ -340,9 +344,26 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
         return URLConnection.guessContentTypeFromName(file.getName());
     }
 
+    private void showDialogError(Throwable throwable) {
+        String title = throwable.getMessage();
+        String message = ErrorsCode.getErrorMessage(mContext, throwable);
+
+        new AlertDialog.Builder(mContext)
+                .setTitle(title)
+                .setMessage(message)
+                .setPositiveButton("OK", (dialogInterface, i) -> dialogInterface.dismiss())
+                .setCancelable(false)
+                .create().show();
+    }
+
     @Override
     public void onDestroy() {
         mView = null;
         mModel = null;
+    }
+
+    @Override
+    public boolean isOnline() {
+        return Network.isOnline(mContext);
     }
 }

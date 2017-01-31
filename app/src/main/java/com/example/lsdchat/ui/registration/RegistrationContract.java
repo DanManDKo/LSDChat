@@ -15,6 +15,7 @@ import rx.Observable;
 
 public interface RegistrationContract {
     interface Presenter {
+        boolean isOnline();
 
         void onDestroy();
 
@@ -62,6 +63,7 @@ public interface RegistrationContract {
         void getUserpicUri(Uri uri);
 
         Context getContext();
+
     }
 
     interface Model {
