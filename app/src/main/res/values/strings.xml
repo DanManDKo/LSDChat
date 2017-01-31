@@ -12,7 +12,6 @@
     <string name="retry">Retry</string>
 
 
-
     <!--Login screen-->
     <string name="login.sign_in">Sign In</string>
     <string name="login.sign_up">Sign Up</string>
@@ -59,5 +58,25 @@
     <!--notify-->
     <string name="notify_title">LSD Chat</string>
     <string name="notify_message">Seems like you forgot to authorize the app?</string>
+    <string name="dialog.error.title">Error dialog</string>
+
+    <!--error code-->
+    <string name="error.code.400">Missing or invalid parameter. Possible causes:\n
+        - malformed request parameters</string>
+    <string name="error.code.401">Authorization missing or incorrect. Possible causes:\n
+        - a user tries to authorise with wrong login and password\n
+        - a user uses invalid session token</string>
+    <string name="error.code.403">Access has been refused. Possible causes:\n
+        - a user tries to retrieve chat messages for chat dialog he is not in occupants list.</string>
+    <string name="error.code.404">The requested resource could not be found. Possible causes:\n
+        - a user tries to retrieve chat messages for invalid chat dialog id.\n
+        - a user tries to retrieve a custom object record with invalid id.</string>
+    <string name="error.code.422">The request was well-formed but was unable to be followed due to validation errors. Possible causes:\n
+        - create a user with existent login or email.
+        - provide values in wrong format to create some object.</string>
+    <string name="error.code.500">Server encountered an error, try again later</string>
+    <string name="error.code.503">Server is at capacity, try again later</string>
+    <string name="error.code.unknown">Unknown code</string>
+    <string name="error.code.noconnect">No connections!</string>
 
 </resources>

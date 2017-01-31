@@ -43,6 +43,7 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
 //        set button disable
         setLoginButtonEnabled(false);
 
+
 //        validate data
         mPresenter.validateCredentials(mEmail, mPassword);
 
@@ -53,7 +54,7 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
 
 
     private void onClickButton() {
-        mPresenter.btnSignInClick(mBtnSignIn,mEmail.getText().toString(), mPassword.getText().toString());
+        mPresenter.btnSignInClick(mBtnSignIn,mEmail, mPassword);
         mPresenter.btnSignUpClick(mBtnSignUp);
         mPresenter.btnSignForgotPasswordClick(mBtnForgotPassword);
     }

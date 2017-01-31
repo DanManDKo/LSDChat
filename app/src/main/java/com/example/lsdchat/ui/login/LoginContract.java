@@ -30,7 +30,7 @@ public interface LoginContract {
 
         boolean isValidPassword(CharSequence password);
 
-        void btnSignInClick(Button btnSignIn, String email, String password);
+        void btnSignInClick(Button btnSignIn, EditText email, EditText password);
 
         void btnSignUpClick(Button btnSignUp);
 
@@ -40,6 +40,7 @@ public interface LoginContract {
 
         void stopService(Context context);
 
+        boolean isOnline();
     }
 
     interface View {

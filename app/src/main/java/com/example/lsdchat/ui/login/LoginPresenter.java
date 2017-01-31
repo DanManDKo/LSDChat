@@ -2,6 +2,7 @@ package com.example.lsdchat.ui.login;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Button;
@@ -12,8 +13,11 @@ import com.example.lsdchat.manager.DataManager;
 import com.example.lsdchat.model.User;
 import com.example.lsdchat.service.NotifyService;
 import com.example.lsdchat.util.Email;
+import com.example.lsdchat.util.ErrorsCode;
+import com.example.lsdchat.util.Network;
 import com.jakewharton.rxbinding.widget.RxTextView;
 
+import retrofit2.adapter.rxjava.HttpException;
 import rx.Observable;
 
 
@@ -44,7 +48,7 @@ public class LoginPresenter implements LoginContract.Presenter {
         Observable<CharSequence> emailSubscription = RxTextView.textChanges(etEmail);
         emailSubscription.filter(charSequence -> charSequence.toString().length() != 0)
                 .subscribe(value -> {
-                    if (Email.checkEmail(value)) {
+                    if (!Email.checkEmail(value)) {
                         mView.setEmailError();
                     } else {
                         mView.hideEmailError();
@@ -87,10 +91,34 @@ public class LoginPresenter implements LoginContract.Presenter {
 
                         },
                         // TODO: 28.01.2017 [Code Review] add proper error handling logic
-                        throwable -> Log.e("11111", throwable.getMessage())
+                        throwable -> {
+                            Log.e("11111", throwable.getMessage());
+                            dialogError(throwable);
+
+
+                        }
                 );
     }
 
+    @Override
+    public boolean isOnline() {
+        if (!Network.isOnline(mView.getContext())) {
+            Network.showErrorConnectDialog(mView.getContext());
+            return false;
+        } else return true;
+    }
+
+    private void dialogError(Throwable throwable) {
+        String title = throwable.getMessage();
+        String message = ErrorsCode.getErrorMessage(mView.getContext(), throwable);
+
+        new AlertDialog.Builder(mView.getContext())
+                .setTitle(title)
+                .setMessage(message)
+                .setPositiveButton("OK", (dialogInterface, i) -> dialogInterface.dismiss())
+                .setCancelable(false)
+                .create().show();
+    }
 
     private void getLoginWithToken(String email, String password, String token) {
         mModel.getLogin(email, password, token)
@@ -100,7 +128,12 @@ public class LoginPresenter implements LoginContract.Presenter {
                             Log.e("AAA", "id  - " + loginUser.getLoginUser().getId() + " phone - " + loginUser.getLoginUser().getPhone());
                         },
                         // TODO: 28.01.2017 [Code Review] add proper error handling logic
-                        throwable -> Log.e("22222", throwable.getMessage()));
+                        throwable -> {
+                            Log.e("22222", String.valueOf(((HttpException) throwable).response().body()));
+
+                            dialogError(throwable);
+
+                        });
     }
 
     //    add current user to db
@@ -116,18 +149,22 @@ public class LoginPresenter implements LoginContract.Presenter {
     @Override
     public boolean isValidPassword(CharSequence password) {
         return !TextUtils.isEmpty(password) && (password.toString().length() > 7);
-
     }
 
     @Override
-    public void btnSignInClick(Button btnSignIn, String email, String password) {
+    public void btnSignInClick(Button btnSignIn, EditText etEmail, EditText etPassword) {
         btnSignIn.setOnClickListener(view -> {
+            String email = etEmail.getText().toString();
+            String password = etPassword.getText().toString();
             if (isEmptyFields(email, password)) {
-                requestSessionAndLogin(email, password);
+                if (isOnline()) {
+                    requestSessionAndLogin(email, password);
+                }
             }
         });
 
     }
+
 
     private Boolean isEmptyFields(String email, String password) {
         return !TextUtils.isEmpty(email) && !TextUtils.isEmpty(password);
