@@ -94,18 +94,41 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
 
     public void requestSessionAndRegistration(boolean validateValue, RegistrationForm form, Button button) {
         if (validateValue) {
-            mModel.getSessionNoAuth()
-                    .doOnRequest(request -> mView.showProgressBar())
-                    .doOnUnsubscribe(() -> mView.hideProgressBar())
-                    .subscribe(sessionResponse -> {
-                        String token = sessionResponse.getSession().getToken();
-                        Log.e("TEST", token);
-                        getRegistrationWithToken(token, form);
+            if (mUploadPhotoUri != null) {
+                mModel.getSessionAuth(form.getEmail().toString(), form.getPassword().toString())
+                        .doOnRequest(aLong -> mView.showProgressBar())
+                        .doOnUnsubscribe(() -> mView.hideProgressBar())
+                        .doOnNext(sessionResponse -> {
+                            File file = getAvatarFile(mUploadPhotoUri);
+                            String token = sessionResponse.getSession().getToken();
+                            String mime = getFileMimeType(file);
+//                            String fileName = file.getName();
+                            String fileName = "avatar.jpeg";
+                            getBlobObjectCreateFile(token, mime, fileName);
+                        })
+                        .subscribe(sessionResponse -> {
+                            String token = sessionResponse.getSession().getToken();
+                            Log.e("TEST", token);
+                        }, throwable -> {
+                            Log.e("TEST", throwable.getMessage());
 
-                    }, throwable -> {
-                        Log.e("TEST", throwable.getMessage());
-                        showDialogError(throwable);
-                    });
+                            decodeThrowableAndShowAlert(throwable);
+                        });
+            } else {
+                mModel.getSessionNoAuth()
+                        .doOnRequest(request -> mView.showProgressBar())
+                        .doOnUnsubscribe(() -> mView.hideProgressBar())
+                        .subscribe(sessionResponse -> {
+                            String token = sessionResponse.getSession().getToken();
+                            Log.e("TEST", token);
+                            getRegistrationWithToken(token, form);
+
+                        }, throwable -> {
+                            Log.e("TEST", throwable.getMessage());
+
+                            decodeThrowableAndShowAlert(throwable);
+                        });
+            }
             button.setClickable(false);
         }
     }
@@ -123,11 +146,24 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
                     navigateToMainScreen();
                 }, throwable -> {
                     Log.e("TEST", throwable.getMessage());
-                    showDialogError(throwable);
+
+                    decodeThrowableAndShowAlert(throwable);
                 });
     }
 
-    public void navigateToMainScreen() {
+    private void getBlobObjectCreateFile(String token, String mime, String fileName) {
+        mModel.createFile(token, mime, fileName)
+                .subscribe(registrationCreateFileResponse -> {
+                    String blobId = registrationCreateFileResponse.getBlob().getBlobObjestAccess().getBlobId().toString();
+                    Log.e("TEST", blobId);
+                }, throwable -> {
+                    Log.e("TEST", throwable.getMessage());
+
+                    decodeThrowableAndShowAlert(throwable);
+                });
+    }
+
+    private void navigateToMainScreen() {
         Intent intent = new Intent(mContext, MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         mContext.startActivity(intent);
@@ -307,7 +343,7 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
         imageView.setOnClickListener(view -> showDialogImageSourceChooser());
     }
 
-    public void showDialogImageSourceChooser() {
+    private void showDialogImageSourceChooser() {
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext)
                 .setTitle(mContext.getString(R.string.add_photo))
                 .setPositiveButton(mContext.getString(R.string.photo_gallery), (dialogInterface, i) -> {
@@ -328,8 +364,14 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
         });
     }
 
-    public void loginWithFacebook() {
+    private void loginWithFacebook() {
         LoginManager.getInstance().logInWithReadPermissions((Activity) mContext, Arrays.asList("public_profile"));
+    }
+
+    private void decodeThrowableAndShowAlert(Throwable t) {
+        String title = t.getMessage();
+        String message = ErrorsCode.getErrorMessage(mContext, t);
+        mView.showResponseDialogError(title, message);
     }
 
     private File getAvatarFile(Uri uri) {
@@ -342,18 +384,6 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
 
     private String getFileMimeType(File file) {
         return URLConnection.guessContentTypeFromName(file.getName());
-    }
-
-    private void showDialogError(Throwable throwable) {
-        String title = throwable.getMessage();
-        String message = ErrorsCode.getErrorMessage(mContext, throwable);
-
-        new AlertDialog.Builder(mContext)
-                .setTitle(title)
-                .setMessage(message)
-                .setPositiveButton("OK", (dialogInterface, i) -> dialogInterface.dismiss())
-                .setCancelable(false)
-                .create().show();
     }
 
     @Override
