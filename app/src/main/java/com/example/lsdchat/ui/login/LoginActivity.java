@@ -108,13 +108,13 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
     @Override
     protected void onResume() {
         super.onResume();
-        mPresenter.stopService(this);
+        mPresenter.onResume();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        mPresenter.startService(this);
+        mPresenter.onPause();
     }
 
     @Override

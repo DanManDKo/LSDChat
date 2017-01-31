@@ -23,6 +23,8 @@ public interface LoginContract {
     interface Presenter {
 
         void onDestroy();
+        void onResume();
+        void onPause();
 
         void validateCredentials(EditText email, EditText password);
 
