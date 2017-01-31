@@ -46,6 +46,8 @@ public interface LoginContract {
     }
 
     interface View {
+        void dialogError(Throwable throwable);
+
         Context getContext();
 
         void showProgressBar();

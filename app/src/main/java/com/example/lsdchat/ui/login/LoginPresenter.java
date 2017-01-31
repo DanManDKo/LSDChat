@@ -2,7 +2,6 @@ package com.example.lsdchat.ui.login;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Button;
@@ -13,7 +12,6 @@ import com.example.lsdchat.manager.DataManager;
 import com.example.lsdchat.model.User;
 import com.example.lsdchat.service.NotifyService;
 import com.example.lsdchat.util.Email;
-import com.example.lsdchat.util.ErrorsCode;
 import com.example.lsdchat.util.Network;
 import com.jakewharton.rxbinding.widget.RxTextView;
 
@@ -103,7 +101,7 @@ public class LoginPresenter implements LoginContract.Presenter {
                         // TODO: 28.01.2017 [Code Review] add proper error handling logic
                         throwable -> {
                             Log.e("11111", throwable.getMessage());
-                            dialogError(throwable);
+                            mView.dialogError(throwable);
 
 
                         }
@@ -118,17 +116,7 @@ public class LoginPresenter implements LoginContract.Presenter {
         } else return true;
     }
 
-    private void dialogError(Throwable throwable) {
-        String title = throwable.getMessage();
-        String message = ErrorsCode.getErrorMessage(mView.getContext(), throwable);
 
-        new AlertDialog.Builder(mView.getContext())
-                .setTitle(title)
-                .setMessage(message)
-                .setPositiveButton("OK", (dialogInterface, i) -> dialogInterface.dismiss())
-                .setCancelable(false)
-                .create().show();
-    }
 
     private void getLoginWithToken(String email, String password, String token) {
         mModel.getLogin(email, password, token)
@@ -141,7 +129,7 @@ public class LoginPresenter implements LoginContract.Presenter {
                         throwable -> {
                             Log.e("22222", String.valueOf(((HttpException) throwable).response().body()));
 
-                            dialogError(throwable);
+                            mView.dialogError(throwable);
 
                         });
     }
