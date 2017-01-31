@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -157,6 +158,17 @@ public class RegistrationActivity extends AppCompatActivity implements Registrat
     @Override
     public Context getContext() {
         return this;
+    }
+
+    @Override
+    public void showResponseDialogError(String title, String message) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(title)
+                .setMessage(message)
+                .setPositiveButton(getString(R.string.alert_ok), (dialogInterface, i) -> dialogInterface.dismiss())
+                .setCancelable(false)
+                .create()
+                .show();
     }
 
     @Override

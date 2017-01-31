@@ -64,10 +64,14 @@ public interface RegistrationContract {
 
         Context getContext();
 
+        void showResponseDialogError(String title, String message);
+
     }
 
     interface Model {
         Observable<SessionResponse> getSessionNoAuth();
+
+        Observable<SessionResponse> getSessionAuth(String email, String password);
 
         Observable<RegistrationResponse> getRegistration(String token, RegistrationForm form);
 
