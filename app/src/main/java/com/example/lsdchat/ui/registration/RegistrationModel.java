@@ -18,6 +18,7 @@ import com.example.lsdchat.util.Signature;
 
 import java.util.Random;
 
+import okhttp3.MultipartBody;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -72,7 +73,10 @@ public class RegistrationModel implements RegistrationContract.Model {
     }
 
     @Override
-    public Observable<RegistrationCreateFileResponse> uploadFile(String token, String mime, String fileName) {
-        return null;
+    public Observable<Void> uploadFile(String type, String expires, String acl, String key, String policy, String actionStatus, String algorithm, String credential, String date, String signature, MultipartBody.Part file) {
+
+        return mRegistrationService.getUploadFileRequest(type, expires, acl, key, policy, actionStatus, algorithm, credential, date, signature, file)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
     }
 }

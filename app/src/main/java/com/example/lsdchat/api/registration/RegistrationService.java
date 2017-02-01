@@ -45,10 +45,18 @@ public interface RegistrationService {
     @POST(ApiConstant.LOGIN_REQUEST)
     Observable<LoginResponse> getLogin(@Header(ApiConstant.QB_TOKEN) String token, @Body LoginRequest body);
 
-//    @Multipart
-//    @POST(ApiConstant.SERVER_AMAZON)
-//    Observable<Void> getUploadFileRequest(@Field("Content-Type")String type,
-//                                          @Field("Expires") String expires,
-//                                          @Part MultipartBody.Part file);
+    @Multipart
+    @POST(ApiConstant.SERVER_AMAZON)
+    Observable<Void> getUploadFileRequest(@Field("Content-Type")String type,
+                                          @Field("Expires") String expires,
+                                          @Field("acl") String acl,
+                                          @Field("key") String key,
+                                          @Field("policy") String policy,
+                                          @Field("success_action_status") String actionStatus,
+                                          @Field("x-amz-algorithm") String algorithm,
+                                          @Field("x-amz-credential") String credential,
+                                          @Field("x-amz-date") String date,
+                                          @Field("x-amz-signature") String signature,
+                                          @Part MultipartBody.Part file);
 
 }

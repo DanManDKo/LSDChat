@@ -12,6 +12,9 @@ import com.example.lsdchat.api.login.response.SessionResponse;
 import com.example.lsdchat.api.registration.response.RegistrationCreateFileResponse;
 import com.example.lsdchat.api.registration.response.RegistrationResponse;
 
+import okhttp3.MultipartBody;
+import retrofit2.http.Field;
+import retrofit2.http.Part;
 import rx.Observable;
 
 public interface RegistrationContract {
@@ -78,6 +81,16 @@ public interface RegistrationContract {
 
         Observable<RegistrationCreateFileResponse> createFile(String token, String mime, String fileName);
 
-        Observable<RegistrationCreateFileResponse> uploadFile(String token, String mime, String fileName);
+        Observable<Void> uploadFile(String type,
+                                    String expires,
+                                    String acl,
+                                    String key,
+                                    String policy,
+                                    String actionStatus,
+                                    String algorithm,
+                                    String credential,
+                                    String date,
+                                    String signature,
+                                    MultipartBody.Part file);
     }
 }
