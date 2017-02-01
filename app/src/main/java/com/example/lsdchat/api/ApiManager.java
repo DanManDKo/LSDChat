@@ -5,11 +5,9 @@ import com.example.lsdchat.api.registration.RegistrationService;
 import com.example.lsdchat.constant.ApiConstant;
 import com.google.gson.GsonBuilder;
 
-import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
-import retrofit2.converter.simplexml.SimpleXmlConverterFactory;
 
 public class ApiManager {
 
@@ -34,8 +32,6 @@ public class ApiManager {
     private void initRetrofit() {
         mRetrofit = new Retrofit.Builder()
                 .baseUrl(ApiConstant.SERVER)
-                .client(new OkHttpClient())
-                .addConverterFactory(SimpleXmlConverterFactory.create())
                 .addConverterFactory(createGsonConverter())
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                 .build();
