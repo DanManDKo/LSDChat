@@ -12,7 +12,7 @@ public class RegistrationCreateFileBlobObjectAccess {
     @SerializedName("object_access_type")
     private String objectAccessType;
     @SerializedName("params")
-    private BlobObjectAccessParams params;
+    private String params;
 
     public Integer getBlobId() {
         return blobId;
@@ -46,11 +46,11 @@ public class RegistrationCreateFileBlobObjectAccess {
         this.objectAccessType = objectAccessType;
     }
 
-    public BlobObjectAccessParams getParams() {
+    public String getParams() {
         return params;
     }
 
-    public void setParams(BlobObjectAccessParams params) {
+    public void setParams(String params) {
         this.params = params;
     }
 }
