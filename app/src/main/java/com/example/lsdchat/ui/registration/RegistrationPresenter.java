@@ -39,6 +39,10 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+
 import static android.app.Activity.RESULT_OK;
 
 public class RegistrationPresenter implements RegistrationContract.Presenter {
@@ -60,7 +64,7 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
 
     private String mUserFacebookId = null;
     private Uri mFullSizeAvatarUri = null;
-    private Uri mUploadPhotoUri = null;
+    private File mUploadFile = null;
     private String mPhoneNumber = null;
 
     private TextWatcher mTextWatcher = new TextWatcher() {
@@ -87,48 +91,52 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
         mCallbackManager = CallbackManager.Factory.create();
     }
 
+    @Override
+    public void onFacebookButtonClickListener(Button button) {
+        button.setOnClickListener(view -> {
+            loginWithFacebook();
+            button.setText(mContext.getString(R.string.fb_button_text_linked));
+            button.setClickable(false);
+        });
+    }
 
-    public TextWatcher getTextWatcher() {
-        return mTextWatcher;
+    private void loginWithFacebook() {
+        LoginManager.getInstance().logInWithReadPermissions((Activity) mContext, Arrays.asList("public_profile"));
+    }
+
+    @Override
+    public void onSignupButtonClickListener(Button button, TextInputEditText email, TextInputEditText pass, TextInputEditText confpass, TextInputEditText name, TextInputEditText web) {
+        button.setOnClickListener(view -> {
+            RegistrationForm form = new RegistrationForm();
+            form.setEmail(email.getText().toString());
+            form.setPassword(pass.getText().toString());
+            form.setFullName(name.getText().toString());
+            form.setWebsite(web.getText().toString());
+
+            boolean validateValue = validateRegForm(
+                    email.getText().toString(),
+                    pass.getText().toString(),
+                    confpass.getText().toString());
+
+            requestSessionAndRegistration(validateValue, form, button);
+        });
     }
 
     public void requestSessionAndRegistration(boolean validateValue, RegistrationForm form, Button button) {
         if (validateValue) {
-            if (mUploadPhotoUri != null) {
-                mModel.getSessionAuth(form.getEmail().toString(), form.getPassword().toString())
-                        .doOnRequest(aLong -> mView.showProgressBar())
-                        .doOnUnsubscribe(() -> mView.hideProgressBar())
-                        .doOnNext(sessionResponse -> {
-                            File file = getAvatarFile(mUploadPhotoUri);
-                            String token = sessionResponse.getSession().getToken();
-                            String mime = getFileMimeType(file);
-//                            String fileName = file.getName();
-                            String fileName = "avatar.jpeg";
-                            getBlobObjectCreateFile(token, mime, fileName);
-                        })
-                        .subscribe(sessionResponse -> {
-                            String token = sessionResponse.getSession().getToken();
-                            Log.e("TEST", token);
-                        }, throwable -> {
-                            Log.e("TEST", throwable.getMessage());
+            mModel.getSessionNoAuth()
+                    .doOnRequest(request -> mView.showProgressBar())
+                    .doOnUnsubscribe(() -> mView.hideProgressBar())
+                    .subscribe(sessionResponse -> {
 
-                            decodeThrowableAndShowAlert(throwable);
-                        });
-            } else {
-                mModel.getSessionNoAuth()
-                        .doOnRequest(request -> mView.showProgressBar())
-                        .doOnUnsubscribe(() -> mView.hideProgressBar())
-                        .subscribe(sessionResponse -> {
-                            String token = sessionResponse.getSession().getToken();
-                            Log.e("TEST", token);
-                            getRegistrationWithToken(token, form);
+                        String token = sessionResponse.getSession().getToken();
+                        getRegistrationWithToken(token, form);
+                        Log.e("TEST", token);
 
-                        }, throwable -> {
-                            Log.e("TEST", throwable.getMessage());
-
-                            decodeThrowableAndShowAlert(throwable);
-                        });
-            }
+                    }, throwable -> {
+                        decodeThrowableAndShowAlert(throwable);
+                        Log.e("TEST", throwable.getMessage());
+                    });
             button.setClickable(false);
         }
     }
@@ -140,14 +148,37 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
         mModel.getRegistration(token, form)
                 .doOnRequest(request -> mView.showProgressBar())
                 .doOnUnsubscribe(() -> mView.hideProgressBar())
+                .doOnNext(registrationResponse -> {
+                    getLoginRegistratedUser(form.getEmail(), form.getPassword(), token);
+                })
                 .subscribe(registrationResponse -> {
-                    Log.e("TEST", String.valueOf(registrationResponse.getUser().getId()));
-                    Toast.makeText(mContext, mContext.getString(R.string.registration_complete), Toast.LENGTH_SHORT).show();
-                    navigateToMainScreen();
-                }, throwable -> {
-                    Log.e("TEST", throwable.getMessage());
 
+                    Log.e("TEST", String.valueOf(registrationResponse.getUser().getId()));
+                    //navigateToMainScreen();
+
+                }, throwable -> {
                     decodeThrowableAndShowAlert(throwable);
+                    Log.e("TEST", throwable.getMessage());
+                });
+    }
+
+    private void getLoginRegistratedUser(String email, String password, String token) {
+        mModel.getLogin(email, password, token)
+                .doOnRequest(request -> mView.showProgressBar())
+                .doOnUnsubscribe(() -> mView.hideProgressBar())
+                .doOnNext(loginResponse -> {
+                    if (mUploadFile != null) {
+                        getBlobObjectCreateFile(token, getFileMimeType(mUploadFile), mUploadFile.getName());
+                    } else {
+                        Toast.makeText(mContext, mContext.getString(R.string.registration_complete), Toast.LENGTH_SHORT).show();
+                        navigateToMainScreen();
+                    }
+                })
+                .subscribe(loginResponse -> {
+                    //at this point user can be added to database
+                }, throwable -> {
+                    decodeThrowableAndShowAlert(throwable);
+                    Log.e("TEST", throwable.getMessage());
                 });
     }
 
@@ -155,11 +186,19 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
         mModel.createFile(token, mime, fileName)
                 .subscribe(registrationCreateFileResponse -> {
                     String blobId = registrationCreateFileResponse.getBlob().getBlobObjestAccess().getBlobId().toString();
-                    Log.e("TEST", blobId);
-                }, throwable -> {
-                    Log.e("TEST", throwable.getMessage());
 
+
+//                    RequestBody requestFile = RequestBody.create(MediaType.parse(mContext.getContentResolver().getType(Uri.fromFile(mUploadFile))), mUploadFile);
+//                    MultipartBody.Part multyPart = MultipartBody.Part.createFormData("avatar", mUploadFile.getName(), requestFile);
+//                    String descriptionString = "hello, this is description speaking";
+//                    RequestBody description =
+//                            RequestBody.create(
+//                                    okhttp3.MultipartBody.FORM, descriptionString);
+
+                    Log.e("TEST", "blob_id= " + blobId + "; params= ");
+                }, throwable -> {
                     decodeThrowableAndShowAlert(throwable);
+                    Log.e("TEST", throwable.getMessage());
                 });
     }
 
@@ -214,24 +253,6 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
     }
 
     @Override
-    public void onSignupButtonClickListener(Button button, TextInputEditText email, TextInputEditText pass, TextInputEditText confpass, TextInputEditText name, TextInputEditText web) {
-        button.setOnClickListener(view -> {
-            RegistrationForm form = new RegistrationForm();
-            form.setEmail(email.getText().toString());
-            form.setPassword(pass.getText().toString());
-            form.setFullName(name.getText().toString());
-            form.setWebsite(web.getText().toString());
-
-            boolean validateValue = validateRegForm(
-                    email.getText().toString(),
-                    pass.getText().toString(),
-                    confpass.getText().toString());
-
-            requestSessionAndRegistration(validateValue, form, button);
-        });
-    }
-
-    @Override
     public boolean validateRegForm(String email, String pass, String confPass) {
         boolean test = true;
         if (!validateEmail(email)) test = false;
@@ -281,37 +302,20 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-            case REQUEST_IMAGE_CAMERA:
-                if (resultCode == RESULT_OK) {
-                    mView.getUserpicUri(mFullSizeAvatarUri);
-                    try {
-                        mUploadPhotoUri = StorageHelper.decodeAndSaveUri(mContext, mFullSizeAvatarUri);
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    }
-                    Toast.makeText(mContext, mContext.getString(R.string.photo_added), Toast.LENGTH_SHORT).show();
-                }
-                break;
-            case REQUEST_IMAGE_GALLERY:
-                if (resultCode == RESULT_OK) {
-                    mFullSizeAvatarUri = data.getData();
-                    mView.getUserpicUri(mFullSizeAvatarUri);
-                    try {
-                        mUploadPhotoUri = StorageHelper.decodeAndSaveUri(mContext, mFullSizeAvatarUri);
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    }
-                    Toast.makeText(mContext, mContext.getString(R.string.photo_added), Toast.LENGTH_SHORT).show();
-                }
-                break;
-            default:
-                if (resultCode == RESULT_OK) {
-                    mCallbackManager.onActivityResult(requestCode, resultCode, data);
-                }
-                break;
-        }
+    public void onAvatarClickListener(ImageView imageView) {
+        imageView.setOnClickListener(view -> showDialogImageSourceChooser());
+    }
+
+    private void showDialogImageSourceChooser() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext)
+                .setTitle(mContext.getString(R.string.add_photo))
+                .setPositiveButton(mContext.getString(R.string.photo_gallery), (dialogInterface, i) -> {
+                    getPhotoFromGallery();
+                })
+                .setNegativeButton(mContext.getString(R.string.device_camera), (dialogInterface, i) -> {
+                    getPhotoFromCamera();
+                });
+        builder.create().show();
     }
 
     public void getPhotoFromGallery() {
@@ -339,33 +343,37 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
     }
 
     @Override
-    public void onAvatarClickListener(ImageView imageView) {
-        imageView.setOnClickListener(view -> showDialogImageSourceChooser());
-    }
-
-    private void showDialogImageSourceChooser() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(mContext)
-                .setTitle(mContext.getString(R.string.add_photo))
-                .setPositiveButton(mContext.getString(R.string.photo_gallery), (dialogInterface, i) -> {
-                    getPhotoFromGallery();
-                })
-                .setNegativeButton(mContext.getString(R.string.device_camera), (dialogInterface, i) -> {
-                    getPhotoFromCamera();
-                });
-        builder.create().show();
-    }
-
-    @Override
-    public void onFacebookButtonClickListener(Button button) {
-        button.setOnClickListener(view -> {
-            loginWithFacebook();
-            button.setText(mContext.getString(R.string.fb_button_text_linked));
-            button.setClickable(false);
-        });
-    }
-
-    private void loginWithFacebook() {
-        LoginManager.getInstance().logInWithReadPermissions((Activity) mContext, Arrays.asList("public_profile"));
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case REQUEST_IMAGE_CAMERA:
+                if (resultCode == RESULT_OK) {
+                    mView.getUserpicUri(mFullSizeAvatarUri);
+                    try {
+                        mUploadFile = StorageHelper.decodeAndSaveUri(mContext, mFullSizeAvatarUri);
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                    Toast.makeText(mContext, mContext.getString(R.string.photo_added), Toast.LENGTH_SHORT).show();
+                }
+                break;
+            case REQUEST_IMAGE_GALLERY:
+                if (resultCode == RESULT_OK) {
+                    mFullSizeAvatarUri = data.getData();
+                    mView.getUserpicUri(mFullSizeAvatarUri);
+                    try {
+                        mUploadFile = StorageHelper.decodeAndSaveUri(mContext, mFullSizeAvatarUri);
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                    Toast.makeText(mContext, mContext.getString(R.string.photo_added), Toast.LENGTH_SHORT).show();
+                }
+                break;
+            default:
+                if (resultCode == RESULT_OK) {
+                    mCallbackManager.onActivityResult(requestCode, resultCode, data);
+                }
+                break;
+        }
     }
 
     private void decodeThrowableAndShowAlert(Throwable t) {
@@ -374,16 +382,12 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
         mView.showResponseDialogError(title, message);
     }
 
-    private File getAvatarFile(Uri uri) {
-        return new File(uri.toString());
-    }
-
-    private long getFileLength(File file) {
-        return file.length();
-    }
-
     private String getFileMimeType(File file) {
         return URLConnection.guessContentTypeFromName(file.getName());
+    }
+
+    public TextWatcher getTextWatcher() {
+        return mTextWatcher;
     }
 
     @Override

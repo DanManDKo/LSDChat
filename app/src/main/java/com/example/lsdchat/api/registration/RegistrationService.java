@@ -1,7 +1,9 @@
 package com.example.lsdchat.api.registration;
 
+import com.example.lsdchat.api.login.request.LoginRequest;
 import com.example.lsdchat.api.login.request.SessionRequestAuth;
 import com.example.lsdchat.api.login.request.SessionRequestNoAuth;
+import com.example.lsdchat.api.login.response.LoginResponse;
 import com.example.lsdchat.api.login.response.SessionResponse;
 import com.example.lsdchat.api.registration.request.RegistrationCreateFileRequest;
 import com.example.lsdchat.api.registration.request.RegistrationRequest;
@@ -9,9 +11,13 @@ import com.example.lsdchat.api.registration.response.RegistrationCreateFileRespo
 import com.example.lsdchat.api.registration.response.RegistrationResponse;
 import com.example.lsdchat.constant.ApiConstant;
 
+import java.io.File;
+
 import retrofit2.http.Body;
+import retrofit2.http.Field;
 import retrofit2.http.Header;
 import retrofit2.http.Headers;
+import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import rx.Observable;
 
@@ -32,5 +38,13 @@ public interface RegistrationService {
     @Headers(ApiConstant.HEADER_CONTENT_TYPE)
     @POST(ApiConstant.BLOB_REQUEST)
     Observable<RegistrationCreateFileResponse> createFileRequest(@Header(ApiConstant.QB_TOKEN) String token, @Body RegistrationCreateFileRequest body);
+
+    @Headers(ApiConstant.HEADER_CONTENT_TYPE)
+    @POST(ApiConstant.LOGIN_REQUEST)
+    Observable<LoginResponse> getLogin(@Header(ApiConstant.QB_TOKEN) String token, @Body LoginRequest body);
+
+    @Multipart
+    @POST(ApiConstant.SERVER_AMAZON)
+    Observable<Void> getUploadFileRequest();
 
 }

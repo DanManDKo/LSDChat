@@ -4,6 +4,7 @@ public class ApiConstant {
     public static final String SCHEME = "https://";
     public static final String HOSTNAME = "api.quickblox.com";
     public static final String SERVER = SCHEME + HOSTNAME;
+    public static final String SERVER_AMAZON = "https://qbprod.s3.amazonaws.com/";
 
     //    for test - Serj
     public static final String APP_ID = "52350";
