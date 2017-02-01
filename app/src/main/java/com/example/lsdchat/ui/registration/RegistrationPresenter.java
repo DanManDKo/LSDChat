@@ -186,7 +186,18 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
         mModel.createFile(token, mime, fileName)
                 .subscribe(registrationCreateFileResponse -> {
                     String blobId = registrationCreateFileResponse.getBlob().getBlobObjestAccess().getBlobId().toString();
-
+                    String params = registrationCreateFileResponse.getBlob().getBlobObjestAccess().getParams();
+                    Uri uri = Uri.parse(params);
+                    String contentType = uri.getQueryParameter("Content-Type");
+                    String expires = uri.getQueryParameter("Expires");
+                    String acl = uri.getQueryParameter("acl");
+                    String key = uri.getQueryParameter("key");
+                    String policy = uri.getQueryParameter("policy");
+                    String actionStatus = uri.getQueryParameter("success_action_status");
+                    String algorithm = uri.getQueryParameter("x-amz-algorithm");
+                    String credential = uri.getQueryParameter("x-amz-credential");
+                    String date = uri.getQueryParameter("x-amz-date");
+                    String signature = uri.getQueryParameter("x-amz-signature");
 
 //                    RequestBody requestFile = RequestBody.create(MediaType.parse(mContext.getContentResolver().getType(Uri.fromFile(mUploadFile))), mUploadFile);
 //                    MultipartBody.Part multyPart = MultipartBody.Part.createFormData("avatar", mUploadFile.getName(), requestFile);

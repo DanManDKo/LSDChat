@@ -13,12 +13,14 @@ import com.example.lsdchat.constant.ApiConstant;
 
 import java.io.File;
 
+import okhttp3.MultipartBody;
 import retrofit2.http.Body;
 import retrofit2.http.Field;
 import retrofit2.http.Header;
 import retrofit2.http.Headers;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
+import retrofit2.http.Part;
 import rx.Observable;
 
 public interface RegistrationService {
@@ -43,8 +45,10 @@ public interface RegistrationService {
     @POST(ApiConstant.LOGIN_REQUEST)
     Observable<LoginResponse> getLogin(@Header(ApiConstant.QB_TOKEN) String token, @Body LoginRequest body);
 
-    @Multipart
-    @POST(ApiConstant.SERVER_AMAZON)
-    Observable<Void> getUploadFileRequest();
+//    @Multipart
+//    @POST(ApiConstant.SERVER_AMAZON)
+//    Observable<Void> getUploadFileRequest(@Field("Content-Type")String type,
+//                                          @Field("Expires") String expires,
+//                                          @Part MultipartBody.Part file);
 
 }
