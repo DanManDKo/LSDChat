@@ -199,16 +199,26 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
                     String date = uri.getQueryParameter("x-amz-date");
                     String signature = uri.getQueryParameter("x-amz-signature");
 
-//                    RequestBody requestFile = RequestBody.create(MediaType.parse(mContext.getContentResolver().getType(Uri.fromFile(mUploadFile))), mUploadFile);
-//                    MultipartBody.Part multyPart = MultipartBody.Part.createFormData("avatar", mUploadFile.getName(), requestFile);
+                    RequestBody requestFile = RequestBody.create(MediaType.parse(mContext.getContentResolver().getType(Uri.fromFile(mUploadFile))), mUploadFile);
+                    MultipartBody.Part multyPart = MultipartBody.Part.createFormData("avatar", mUploadFile.getName(), requestFile);
 //                    String descriptionString = "hello, this is description speaking";
 //                    RequestBody description =
 //                            RequestBody.create(
 //                                    okhttp3.MultipartBody.FORM, descriptionString);
+                    uploadFile(contentType, expires, acl, key, policy, actionStatus, algorithm, credential, date, signature, multyPart);
 
                     Log.e("TEST", "blob_id= " + blobId + "; params= ");
                 }, throwable -> {
                     decodeThrowableAndShowAlert(throwable);
+                    Log.e("TEST", throwable.getMessage());
+                });
+    }
+
+    private void uploadFile(String type, String expires, String acl, String key, String policy, String actionStatus, String algorithm, String credential, String date, String signature, MultipartBody.Part file) {
+        mModel.uploadFile(type, expires, acl, key, policy, actionStatus, algorithm, credential, date, signature, file)
+                .subscribe(aVoid -> {
+
+                }, throwable -> {
                     Log.e("TEST", throwable.getMessage());
                 });
     }
