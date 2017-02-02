@@ -47,16 +47,16 @@ public interface RegistrationService {
 
     @Multipart
     @POST(ApiConstant.SERVER_AMAZON)
-    Observable<Void> getUploadFileRequest(@Field("Content-Type")String type,
-                                          @Field("Expires") String expires,
-                                          @Field("acl") String acl,
-                                          @Field("key") String key,
-                                          @Field("policy") String policy,
-                                          @Field("success_action_status") String actionStatus,
-                                          @Field("x-amz-algorithm") String algorithm,
-                                          @Field("x-amz-credential") String credential,
-                                          @Field("x-amz-date") String date,
-                                          @Field("x-amz-signature") String signature,
+    Observable<Void> getUploadFileRequest(@Part("Content-Type")String type,
+                                          @Part("Expires") String expires,
+                                          @Part("acl") String acl,
+                                          @Part("key") String key,
+                                          @Part("policy") String policy,
+                                          @Part("success_action_status") String actionStatus,
+                                          @Part("x-amz-algorithm") String algorithm,
+                                          @Part("x-amz-credential") String credential,
+                                          @Part("x-amz-date") String date,
+                                          @Part("x-amz-signature") String signature,
                                           @Part MultipartBody.Part file);
 
 }

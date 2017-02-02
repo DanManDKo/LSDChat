@@ -91,6 +91,6 @@ public interface RegistrationContract {
                                     String credential,
                                     String date,
                                     String signature,
-                                    MultipartBody.Part file);
+                                    MultipartBody.Part part);
     }
 }
