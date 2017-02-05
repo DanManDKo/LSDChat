@@ -168,8 +168,8 @@ public class LoginPresenter implements LoginContract.Presenter {
 
     }
 
-
-    private Boolean isEmptyFields(String email, String password) {
+    @Override
+    public boolean isEmptyFields(String email, String password) {
         return !TextUtils.isEmpty(email) && !TextUtils.isEmpty(password);
 
     }
@@ -194,6 +194,8 @@ public class LoginPresenter implements LoginContract.Presenter {
         context.stopService(new Intent(context, NotifyService.class));
     }
 
-
-
+    @Override
+    public void goToForgotPassword() {
+        mView.navigateToRegistration();
+    }
 }

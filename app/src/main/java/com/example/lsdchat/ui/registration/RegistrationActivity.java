@@ -42,10 +42,11 @@ public class RegistrationActivity extends AppCompatActivity implements Registrat
     private SimpleDraweeView mImageView;
     private ProgressBar mProgressBar;
     private Toolbar mToolbar;
-    private RegistrationPresenter mRegistrationPresenter = new RegistrationPresenter(this);
+    private RegistrationPresenter mRegistrationPresenter;
 
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mRegistrationPresenter = new RegistrationPresenter(this);
         setContentView(R.layout.activity_registration);
 
         initView();

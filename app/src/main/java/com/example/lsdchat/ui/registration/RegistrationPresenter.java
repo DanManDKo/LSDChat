@@ -144,7 +144,7 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
     private void getRegistrationWithToken(String token, RegistrationForm form) {
         form.setPhone(mPhoneNumber);
         //Somehow API backend says wrong user_id, but it is correct
-        //form.setFacebookId(Integer.parseInt(mUserFacebookId));
+        form.setFacebookId(Integer.parseInt(mUserFacebookId));
         mModel.getRegistration(token, form)
                 .doOnNext(registrationResponse -> {
                     getLoginRegistratedUser(form.getEmail(), form.getPassword(), token);
