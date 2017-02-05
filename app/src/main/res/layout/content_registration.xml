@@ -211,15 +211,16 @@
                     android:textColor="@color/colorWhite"
                     android:textSize="@dimen/btn_font_size"/>
 
+                <ProgressBar
+                    android:id="@+id/progressbar_reg"
+                    android:layout_width="@dimen/progressbar_size"
+                    android:layout_height="@dimen/progressbar_size"
+                    android:layout_below="@id/sign_up_button"
+                    android:layout_centerHorizontal="true"
+                    android:theme="@style/CustomProgressBar"
+                    android:visibility="invisible"/>
             </RelativeLayout>
 
-            <ProgressBar
-                android:id="@+id/progressbar_reg"
-                android:layout_width="@dimen/progressbar_size"
-                android:layout_height="@dimen/progressbar_size"
-                android:layout_centerHorizontal="true"
-                android:theme="@style/CustomProgressBar"
-                android:visibility="invisible"/>
         </android.support.v7.widget.CardView>
     </LinearLayout>
 

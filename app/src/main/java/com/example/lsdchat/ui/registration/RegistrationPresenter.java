@@ -95,14 +95,31 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
     @Override
     public void onFacebookButtonClickListener(Button button) {
         button.setOnClickListener(view -> {
-            loginWithFacebook();
+            LoginManager.getInstance().logInWithReadPermissions((Activity) mContext, Arrays.asList("public_profile"));
             button.setText(mContext.getString(R.string.fb_button_text_linked));
             button.setClickable(false);
         });
     }
 
-    private void loginWithFacebook() {
-        LoginManager.getInstance().logInWithReadPermissions((Activity) mContext, Arrays.asList("public_profile"));
+    @Override
+    public void getFacebookToken() {
+        LoginManager.getInstance().registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+                //Somehow API backend says wrong user_id, but it is correct
+                mUserFacebookId = loginResult.getAccessToken().getUserId();
+            }
+
+            @Override
+            public void onCancel() {
+
+            }
+
+            @Override
+            public void onError(FacebookException error) {
+
+            }
+        });
     }
 
     @Override
@@ -127,6 +144,7 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
         if (validateValue) {
             mModel.getSessionNoAuth()
                     .doOnRequest(request -> mView.showProgressBar())
+                    .doOnUnsubscribe(() -> mView.hideProgressBar())
                     .subscribe(sessionResponse -> {
 
                         String token = sessionResponse.getSession().getToken();
@@ -144,8 +162,12 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
     private void getRegistrationWithToken(String token, RegistrationForm form) {
         form.setPhone(mPhoneNumber);
         //Somehow API backend says wrong user_id, but it is correct
-        //form.setFacebookId(Integer.parseInt(mUserFacebookId));
+        if (mUserFacebookId != null) {
+//            form.setFacebookId(Integer.parseInt(mUserFacebookId));
+        }
         mModel.getRegistration(token, form)
+                .doOnRequest(request -> mView.showProgressBar())
+                .doOnUnsubscribe(() -> mView.hideProgressBar())
                 .doOnNext(registrationResponse -> {
                     getLoginRegistratedUser(form.getEmail(), form.getPassword(), token);
                 })
@@ -159,6 +181,8 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
 
     private void getLoginRegistratedUser(String email, String password, String token) {
         mModel.getLogin(email, password, token)
+                .doOnRequest(request -> mView.showProgressBar())
+                .doOnUnsubscribe(() -> mView.hideProgressBar())
                 .doOnNext(loginResponse -> {
                     if (mUploadFile != null) {
                         getBlobObjectCreateFile(token, getFileMimeType(mUploadFile), mUploadFile.getName());
@@ -177,10 +201,13 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
 
     private void getBlobObjectCreateFile(String token, String mime, String fileName) {
         mModel.createFile(token, mime, fileName)
+                .doOnRequest(request -> mView.showProgressBar())
+                .doOnUnsubscribe(() -> mView.hideProgressBar())
                 .subscribe(registrationCreateFileResponse -> {
                     long blobId = registrationCreateFileResponse.getBlob().getBlobObjestAccess().getBlobId();
                     String params = registrationCreateFileResponse.getBlob().getBlobObjestAccess().getParams();
                     Uri uri = Uri.parse(params);
+
                     RequestBody contentR = RequestBody.create(MultipartBody.FORM, uri.getQueryParameter(ApiConstant.UploadParametres.CONTENT_TYPE));
                     RequestBody expiresR = RequestBody.create(MultipartBody.FORM, uri.getQueryParameter(ApiConstant.UploadParametres.EXPIRES));
                     RequestBody aclR = RequestBody.create(MultipartBody.FORM, uri.getQueryParameter(ApiConstant.UploadParametres.ACL));
@@ -192,26 +219,10 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
                     RequestBody dateR = RequestBody.create(MultipartBody.FORM, uri.getQueryParameter(ApiConstant.UploadParametres.DATE));
                     RequestBody signatureR = RequestBody.create(MultipartBody.FORM, uri.getQueryParameter(ApiConstant.UploadParametres.SIGNATURE));
 
-                    //***
                     RequestBody file = RequestBody.create(MediaType.parse(getFileMimeType(mUploadFile)), mUploadFile);
                     MultipartBody.Part multiPart = MultipartBody.Part.createFormData(ApiConstant.UploadParametres.FILE, mUploadFile.getName(), file);
-                    //***
 
-                    uploadFileRetrofit(
-                            token,
-                            blobId,
-                            contentR,
-                            expiresR,
-                            aclR,
-                            keyR,
-                            policyR,
-                            successR,
-                            algorithmR,
-                            credentialR,
-                            dateR,
-                            signatureR,
-                            multiPart);
-
+                    uploadFileRetrofit(token, blobId, contentR, expiresR, aclR, keyR, policyR, successR, algorithmR, credentialR, dateR, signatureR, multiPart);
 
                 }, throwable -> {
                     decodeThrowableAndShowAlert(throwable);
@@ -245,49 +256,34 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
         map.put(ApiConstant.UploadParametres.DATE, date);
         map.put(ApiConstant.UploadParametres.SIGNATURE, signature);
 
-
         mModel.uploadFileMap(map, file)
-                .subscribe(aVoid -> {
+                .doOnRequest(request -> mView.showProgressBar())
+                .doOnUnsubscribe(() -> mView.hideProgressBar())
+                .doOnNext(aVoid -> {
                     long fileSize = mUploadFile.length();
-                    declareFileUploaded(fileSize, token, blobId);
+                    if (fileSize != 0 && blobId != 0) {
+                        declareFileUploaded(fileSize, token, blobId);
+                    }
+                })
+                .subscribe(aVoid -> {
                 }, throwable -> {
                     Log.e("TEST", throwable.getMessage());
                 });
     }
 
-
-
     private void declareFileUploaded(long size, String token, long blobId) {
         mModel.declareFileUploaded(size, token, blobId)
-                .doOnNext(aVoid -> mView.navigatetoMainScreen())
+                .doOnRequest(request -> mView.showProgressBar())
+                .doOnUnsubscribe(() -> mView.hideProgressBar())
                 .subscribe(aVoid -> {
-
+                    Toast.makeText(mContext, mContext.getString(R.string.registration_complete), Toast.LENGTH_SHORT).show();
+                    mView.navigatetoMainScreen();
                 }, throwable -> {
                     decodeThrowableAndShowAlert(throwable);
                     Log.e("TEST", throwable.getMessage());
                 });
     }
 
-    @Override
-    public void getFacebookToken() {
-        LoginManager.getInstance().registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
-            @Override
-            public void onSuccess(LoginResult loginResult) {
-                //Somehow API backend says wrong user_id, but it is correct
-                mUserFacebookId = loginResult.getAccessToken().getUserId();
-            }
-
-            @Override
-            public void onCancel() {
-
-            }
-
-            @Override
-            public void onError(FacebookException error) {
-
-            }
-        });
-    }
 
     @Override
     public void setTextChangedInputMaskListener(TextInputEditText phone) {

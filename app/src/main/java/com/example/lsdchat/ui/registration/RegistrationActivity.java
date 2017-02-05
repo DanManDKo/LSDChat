@@ -16,6 +16,7 @@ import android.widget.ProgressBar;
 
 import com.example.lsdchat.R;
 import com.example.lsdchat.ui.MainActivity;
+import com.facebook.FacebookSdk;
 import com.facebook.drawee.view.SimpleDraweeView;
 
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
@@ -42,19 +43,22 @@ public class RegistrationActivity extends AppCompatActivity implements Registrat
     private SimpleDraweeView mImageView;
     private ProgressBar mProgressBar;
     private Toolbar mToolbar;
-    private RegistrationPresenter mRegistrationPresenter = new RegistrationPresenter(this);
+    private RegistrationPresenter mRegistrationPresenter;
 
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_registration);
+        FacebookSdk.sdkInitialize(getApplicationContext());
+        mRegistrationPresenter = new RegistrationPresenter(this);
 
+        setContentView(R.layout.activity_registration);
         initView();
+
+        mRegistrationPresenter.getFacebookToken();
+
         setRegFormHint();
 
         setSupportActionBar(mToolbar);
         configurateToolbar();
-
-        mRegistrationPresenter.getFacebookToken();
 
         mEmailEdit.addTextChangedListener(mRegistrationPresenter.getTextWatcher());
         mPassEdit.addTextChangedListener(mRegistrationPresenter.getTextWatcher());
@@ -88,6 +92,12 @@ public class RegistrationActivity extends AppCompatActivity implements Registrat
         mPhoneEdit = (TextInputEditText) findViewById(R.id.tiet_phone_reg);
         mNameEdit = (TextInputEditText) findViewById(R.id.tiet_name_reg);
         mWebEdit = (TextInputEditText) findViewById(R.id.tiet_web_reg);
+
+        mEmailEdit.setText("aaaaaa11@uff.fm");
+        mPassEdit.setText("WWeerr55");
+        mConfPassEdit.setText("WWeerr55");
+        mWebEdit.setText("www.lol.com");
+        mNameEdit.setText("Jim Bim");
     }
 
     public void setRegFormHint() {
