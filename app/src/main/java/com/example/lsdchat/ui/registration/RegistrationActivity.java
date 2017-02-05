@@ -48,10 +48,12 @@ public class RegistrationActivity extends AppCompatActivity implements Registrat
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         FacebookSdk.sdkInitialize(getApplicationContext());
+
         setContentView(R.layout.activity_registration);
 
         mRegistrationPresenter = new RegistrationPresenter(this);
         initView();
+
 
         setRegFormHint();
 
@@ -94,6 +96,12 @@ public class RegistrationActivity extends AppCompatActivity implements Registrat
         mPhoneEdit = (TextInputEditText) findViewById(R.id.tiet_phone_reg);
         mNameEdit = (TextInputEditText) findViewById(R.id.tiet_name_reg);
         mWebEdit = (TextInputEditText) findViewById(R.id.tiet_web_reg);
+
+        mEmailEdit.setText("aaaaaa11@uff.fm");
+        mPassEdit.setText("WWeerr55");
+        mConfPassEdit.setText("WWeerr55");
+        mWebEdit.setText("www.lol.com");
+        mNameEdit.setText("Jim Bim");
     }
 
     public void setRegFormHint() {

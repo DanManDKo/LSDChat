@@ -35,11 +35,11 @@
             android:name=".ui.registration.RegistrationActivity"
             android:parentActivityName=".ui.login.LoginActivity"
             android:windowSoftInputMode="stateHidden"
-            android:screenOrientation="portrait"
-            >
+            android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.login.LoginActivity"/>
+
         </activity>
         <activity android:name=".ui.splash.SplashScreenActivity"
             android:screenOrientation="portrait"
