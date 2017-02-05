@@ -4,11 +4,11 @@ import android.app.DialogFragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.TextInputEditText;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.lsdchat.R;
@@ -21,7 +21,7 @@ public class ForgotPasswordFragment extends DialogFragment implements ForgotPass
     private ForgotPasswordPresenter mPresenter;
     private Button mSend;
     private Button mCancel;
-    private TextInputEditText mEmailInput;
+    private EditText mEmailInput;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -48,7 +48,7 @@ public class ForgotPasswordFragment extends DialogFragment implements ForgotPass
     private void initView(View view) {
         mCancel = (Button) view.findViewById(R.id.btn_cancel_forgot_password);
         mSend = (Button) view.findViewById(R.id.btn_send_forgot_password);
-        mEmailInput = (TextInputEditText) view.findViewById(R.id.email_input_forgot_password);
+        mEmailInput = (EditText) view.findViewById(R.id.email_input_forgot_password);
     }
 
     @Override

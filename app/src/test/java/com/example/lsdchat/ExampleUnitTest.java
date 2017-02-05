@@ -1,8 +1,11 @@
 package com.example.lsdchat;
 
+import com.example.lsdchat.manager.DataManager;
 import com.example.lsdchat.ui.login.LoginActivity;
+import com.example.lsdchat.ui.login.LoginContract;
 import com.example.lsdchat.ui.login.LoginPresenter;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 
@@ -15,9 +18,16 @@ import static org.junit.Assert.assertEquals;
  */
 public class ExampleUnitTest {
 
+
     @Mock
     LoginActivity loginActivity;
-    private LoginPresenter mLoginPresenter;
+
+    LoginContract.Presenter mLoginPresenter;
+
+    @Before
+    public void setUp() {
+        mLoginPresenter = new LoginPresenter(loginActivity,new DataManager());
+    }
 
     @Test
     public void addition_isCorrect() throws Exception {
@@ -26,6 +36,7 @@ public class ExampleUnitTest {
 
     @Test
     public void submitButtonTest() {
+
 //       mLoginPresenter.
     }
 
