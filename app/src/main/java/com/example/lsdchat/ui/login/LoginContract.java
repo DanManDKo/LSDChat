@@ -49,9 +49,13 @@ public interface LoginContract {
         boolean isOnline();
 
         void goToForgotPassword();
+
+        void goToRegistrationScreen();
+
     }
 
     interface View {
+
         void dialogError(Throwable throwable);
 
         Context getContext();

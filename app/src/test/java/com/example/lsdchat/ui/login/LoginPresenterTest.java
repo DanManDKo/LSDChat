@@ -9,8 +9,10 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.powermock.api.mockito.PowerMockito.mock;
-
+import static org.powermock.api.mockito.PowerMockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class LoginPresenterTest {
@@ -26,11 +28,26 @@ public class LoginPresenterTest {
 
     @Test
     public void passCorrectTest() {
-        assertThat(presenter.isValidPassword("aaaaaaaa"), is(true));
+        assertThat(presenter.isValidPassword(""), is(false));
+        assertThat(presenter.isValidPassword("aaa"), is(false));
+        assertThat(presenter.isValidPassword("Aaaaaaaa"), is(true));
     }
 
+    @Test
+    public void isKeepSignInTest(){
+        when(view.isKeepSignIn()).thenReturn(true);
+        assertThat(view.isKeepSignIn(),is(true));
+    }
 
+    @Test
+    public void isBtnFPTest(){
+        presenter.goToForgotPassword();
+        verify(view,times(1)).showDialogForgotPassword();
+    }
 
-
-
+    @Test
+    public void isBtnRegistrationTest(){
+        presenter.goToRegistrationScreen();
+        verify(view,times(1)).navigateToRegistration();
+    }
 }
