@@ -1,14 +1,22 @@
 package com.example.lsdchat.ui.login;
 
+import android.content.Context;
+import android.content.Intent;
 import android.text.TextUtils;
 import android.util.Log;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.example.lsdchat.manager.DataManager;
 import com.example.lsdchat.model.User;
+
+import com.example.lsdchat.service.NotifyService;
 import com.example.lsdchat.util.Email;
+import com.example.lsdchat.util.Network;
 import com.jakewharton.rxbinding.widget.RxTextView;
 
+import retrofit2.adapter.rxjava.HttpException;
 import rx.Observable;
 
 
@@ -31,6 +39,17 @@ public class LoginPresenter implements LoginContract.Presenter {
         this.mDataManager = null;
         this.mView = null;
         this.mModel = null;
+        stopService(mView.getContext());
+    }
+
+    @Override
+    public void onResume() {
+        stopService(mView.getContext());
+    }
+
+    @Override
+    public void onPause() {
+        startService(mView.getContext());
     }
 
 
@@ -40,7 +59,7 @@ public class LoginPresenter implements LoginContract.Presenter {
         Observable<CharSequence> emailSubscription = RxTextView.textChanges(etEmail);
         emailSubscription.filter(charSequence -> charSequence.toString().length() != 0)
                 .subscribe(value -> {
-                    if (!isValidEmail(value)) {
+                    if (!Email.checkEmail(value)) {
                         mView.setEmailError();
                     } else {
                         mView.hideEmailError();
@@ -56,7 +75,7 @@ public class LoginPresenter implements LoginContract.Presenter {
                     }
                 });
         Observable.combineLatest(emailSubscription, passwordSubscription, (email, password) -> {
-            boolean emailIs = isValidEmail(email.toString());
+            boolean emailIs = Email.checkEmail(email.toString());
             boolean passIs = isValidPassword(password.toString());
             return emailIs && passIs;
         })
@@ -82,10 +101,23 @@ public class LoginPresenter implements LoginContract.Presenter {
 //                            save token
 
                         },
-                        // TODO: 28.01.2017 [Code Review] add proper error handling logic
-                        throwable -> Log.e("11111", throwable.getMessage())
+                        throwable -> {
+                            Log.e("11111", throwable.getMessage());
+                            mView.dialogError(throwable);
+
+
+                        }
                 );
     }
+
+    @Override
+    public boolean isOnline() {
+        if (!Network.isOnline(mView.getContext())) {
+            Network.showErrorConnectDialog(mView.getContext());
+            return false;
+        } else return true;
+    }
+
 
 
     private void getLoginWithToken(String email, String password, String token) {
@@ -96,7 +128,12 @@ public class LoginPresenter implements LoginContract.Presenter {
                             Log.e("AAA", "id  - " + loginUser.getLoginUser().getId() + " phone - " + loginUser.getLoginUser().getPhone());
                         },
                         // TODO: 28.01.2017 [Code Review] add proper error handling logic
-                        throwable -> Log.e("22222", throwable.getMessage()));
+                        throwable -> {
+                            Log.e("22222", String.valueOf(((HttpException) throwable).response().body()));
+
+                            mView.dialogError(throwable);
+
+                        });
     }
 
     //    add current user to db
@@ -112,20 +149,25 @@ public class LoginPresenter implements LoginContract.Presenter {
     @Override
     public boolean isValidPassword(CharSequence password) {
         return !TextUtils.isEmpty(password) && (password.toString().length() > 7);
-
     }
 
     @Override
     public boolean isValidEmail(CharSequence email) {
         return Email.checkEmail(email.toString());
+}
+  public void btnSignInClick(Button btnSignIn, EditText etEmail, EditText etPassword) {
+        btnSignIn.setOnClickListener(view -> {
+            String email = etEmail.getText().toString();
+            String password = etPassword.getText().toString();
+            if (isEmptyFields(email, password)) {
+                if (isOnline()) {
+                    requestSessionAndLogin(email, password);
+                }
+            }
+        });
+
     }
 
-    @Override
-    public void btnSignInClick(String email, String password) {
-        if (isEmptyFields(email, password)) {
-            requestSessionAndLogin(email, password);
-        }
-    }
 
     private Boolean isEmptyFields(String email, String password) {
         return !TextUtils.isEmpty(email) && !TextUtils.isEmpty(password);
@@ -133,15 +175,28 @@ public class LoginPresenter implements LoginContract.Presenter {
     }
 
     @Override
-    public void btnSignUpClick() {
-        mView.navigateToRegistration();
+    public void btnSignUpClick(Button btnSignUp) {
+        btnSignUp.setOnClickListener(view -> mView.navigateToRegistration());
+
+    }
+
+    @Override
+    public void btnSignForgotPasswordClick(TextView btnForgotPassword) {
+        btnForgotPassword.setOnClickListener(view -> mView.navigateToForgotPassword());
     }
 
     @Override
     public void btnSignForgotPasswordClick() {
         mView.showDialogForgotPassword();
+}
+    public void startService(Context context) {
+        context.startService(new Intent(context, NotifyService.class));
     }
 
+    @Override
+    public void stopService(Context context) {
+        context.stopService(new Intent(context, NotifyService.class));
+    }
 
 
 

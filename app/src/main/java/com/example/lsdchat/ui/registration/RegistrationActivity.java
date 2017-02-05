@@ -2,34 +2,26 @@ package com.example.lsdchat.ui.registration;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import com.example.lsdchat.R;
+import com.example.lsdchat.ui.MainActivity;
 import com.facebook.drawee.view.SimpleDraweeView;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.util.HashMap;
 
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 
 public class RegistrationActivity extends AppCompatActivity implements RegistrationContract.View {
-    private static final int REQUEST_IMAGE_CAMERA = 1;
-    private static final int REQUEST_IMAGE_GALLERY = 2;
 
     private TextInputLayout mEmail;
     private TextInputLayout mPass;
@@ -45,23 +37,15 @@ public class RegistrationActivity extends AppCompatActivity implements Registrat
     private TextInputEditText mNameEdit;
     private TextInputEditText mWebEdit;
 
-    private Button mFbSignUpButton;
+    private Button mFacebookButton;
     private Button mSignUpButton;
     private SimpleDraweeView mImageView;
     private ProgressBar mProgressBar;
     private Toolbar mToolbar;
-
-    @Override
-    public Context getContext() {
-        return this;
-    }
-
     private RegistrationPresenter mRegistrationPresenter = new RegistrationPresenter(this);
 
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mRegistrationPresenter.initFacebookSdk();
-
         setContentView(R.layout.activity_registration);
 
         initView();
@@ -75,33 +59,13 @@ public class RegistrationActivity extends AppCompatActivity implements Registrat
         mEmailEdit.addTextChangedListener(mRegistrationPresenter.getTextWatcher());
         mPassEdit.addTextChangedListener(mRegistrationPresenter.getTextWatcher());
         mConfPassEdit.addTextChangedListener(mRegistrationPresenter.getTextWatcher());
-        mRegistrationPresenter.setTextChangedListenerWithInputMask(mPhoneEdit);
 
-        mImageView.setOnClickListener(v -> mRegistrationPresenter.showDialogImageSourceChooser());
+        mRegistrationPresenter.setTextChangedInputMaskListener(mPhoneEdit);
 
-        mFbSignUpButton.setOnClickListener(v -> {
-            mRegistrationPresenter.loginWithFacebook();
-
-            mFbSignUpButton.setText(getString(R.string.fb_button_text_linked));
-            mFbSignUpButton.setEnabled(false);
-            mFbSignUpButton.setClickable(false);
-        });
-
-        mSignUpButton.setOnClickListener(v -> {
-            RegistrationForm form = new RegistrationForm();
-            form.setEmail(mEmailEdit.getText().toString());
-            form.setPassword(mPassEdit.getText().toString());
-            form.setFullName(mNameEdit.getText().toString());
-            form.setPhone(mPhoneEdit.getText().toString());
-            form.setWebsite(mWebEdit.getText().toString());
-
-            boolean validateValue = mRegistrationPresenter.validateRegForm(
-                    String.valueOf(mEmailEdit.getText()),
-                    String.valueOf(mPassEdit.getText()),
-                    String.valueOf(mConfPassEdit.getText()));
-
-            mRegistrationPresenter.requestSessionAndRegistration(validateValue, form);
-        });
+        mRegistrationPresenter.onAvatarClickListener(mImageView);
+        mRegistrationPresenter.onFacebookButtonClickListener(mFacebookButton);
+        mRegistrationPresenter.onSignupButtonClickListener(mSignUpButton,
+                mEmailEdit, mPassEdit, mConfPassEdit, mNameEdit, mWebEdit);
     }
 
     private void initView() {
@@ -113,7 +77,7 @@ public class RegistrationActivity extends AppCompatActivity implements Registrat
         mPhone = (TextInputLayout) findViewById(R.id.til_phone_reg);
         mWeb = (TextInputLayout) findViewById(R.id.til_web_reg);
 
-        mFbSignUpButton = (Button) findViewById(R.id.fb_button_reg);
+        mFacebookButton = (Button) findViewById(R.id.fb_button_reg);
         mSignUpButton = (Button) findViewById(R.id.sign_up_button);
         mProgressBar = (ProgressBar) findViewById(R.id.progressbar_reg);
         mImageView = (SimpleDraweeView) findViewById(R.id.iv_user_reg);
@@ -144,6 +108,16 @@ public class RegistrationActivity extends AppCompatActivity implements Registrat
     }
 
     @Override
+    public void navigatetoMainScreen() {
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+        overridePendingTransition(R.anim.push_up_in, R.anim.push_up_out);
+        finish();
+        overridePendingTransition(R.anim.push_down_in, R.anim.push_down_out);
+    }
+
+    @Override
     public void getUserpicUri(Uri uri) {
         mImageView.setImageURI(uri);
     }
@@ -159,7 +133,6 @@ public class RegistrationActivity extends AppCompatActivity implements Registrat
         super.onDestroy();
         mRegistrationPresenter.onDestroy();
     }
-
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -194,12 +167,40 @@ public class RegistrationActivity extends AppCompatActivity implements Registrat
     }
 
     @Override
+    public Context getContext() {
+        return this;
+    }
+
+    @Override
+    public void showResponseDialogError(String title, String message) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(title)
+                .setMessage(message)
+                .setPositiveButton(getString(R.string.alert_ok), (dialogInterface, i) -> dialogInterface.dismiss())
+                .setCancelable(false)
+                .create()
+                .show();
+    }
+
+    @Override
     public void showProgressBar() {
         mProgressBar.setVisibility(View.VISIBLE);
     }
 
     @Override
     public void hideProgressBar() {
-        mProgressBar.setVisibility(View.GONE);
+        mProgressBar.setVisibility(View.INVISIBLE);
+    }
+
+    //just alert for test
+    @Override
+    public void showAlertD() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Daaaa")
+                .setPositiveButton(getString(R.string.alert_ok), (dialogInterface, i) -> dialogInterface.dismiss())
+                .setOnCancelListener(dialogInterface -> dialogInterface.dismiss())
+                .setCancelable(false)
+                .create()
+                .show();
     }
 }

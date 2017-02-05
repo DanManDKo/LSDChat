@@ -13,32 +13,38 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.lsdchat.R;
-import com.example.lsdchat.ui.MainActivity;
+import com.example.lsdchat.constant.ApiConstant;
+import com.example.lsdchat.util.Email;
+import com.example.lsdchat.util.ErrorsCode;
+import com.example.lsdchat.util.Network;
+import com.example.lsdchat.util.StorageHelper;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
-import com.facebook.FacebookSdk;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
+import com.redmadrobot.inputmask.MaskedTextChangedListener;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.net.URLConnection;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.regex.Pattern;
+import java.util.HashMap;
 
-import ru.tinkoff.decoro.MaskImpl;
-import ru.tinkoff.decoro.parser.UnderscoreDigitSlotsParser;
-import ru.tinkoff.decoro.slots.Slot;
-import ru.tinkoff.decoro.watchers.FormatWatcher;
-import ru.tinkoff.decoro.watchers.MaskFormatWatcher;
-import rx.exceptions.OnErrorFailedException;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 
 import static android.app.Activity.RESULT_OK;
-
 
 public class RegistrationPresenter implements RegistrationContract.Presenter {
     private static final int REQUEST_IMAGE_CAMERA = 1;
@@ -46,18 +52,22 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
     private static final int MIN_DIGITS_AND_LETTERS_VALUE = 2;
     private static final int MIN_PASSWORD_LENGTH = 8;
     private static final int MAX_PASSWORD_LENGTH = 12;
-    private static final String DATE_FORMAT = "yyyyMMdd_HHmmss";
 
+    private static final String DATE_FORMAT = "yyyyMMdd_HHmmss";
     private static final String AVATAR_FILE_NAME = "_avatar.jpg";
-    private static final String PHONE_MASK = "+38 (0__) ___-__-__";
-    private static final String EMAIL_PATTERN =
-            "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
-                    + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
-    public Uri mCurrentAvatarUri;
+    private static final String PHONE_MASK = "+38 (0[00]) [000]-[00]-[00]";
+
     private RegistrationContract.View mView;
     private RegistrationContract.Model mModel;
+
     private Context mContext;
     private CallbackManager mCallbackManager;
+
+    private String mUserFacebookId = null;
+    private Uri mFullSizeAvatarUri = null;
+    private File mUploadFile = null;
+    private String mPhoneNumber = null;
+
     private TextWatcher mTextWatcher = new TextWatcher() {
         @Override
         public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -76,55 +86,184 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
     };
 
     public RegistrationPresenter(RegistrationContract.View view) {
-        this.mView = view;
+        mView = view;
         mModel = new RegistrationModel();
         mContext = view.getContext();
         mCallbackManager = CallbackManager.Factory.create();
-        mCurrentAvatarUri = null;
     }
 
     @Override
-    public void onDestroy() {
-        mView = null;
-        mModel = null;
+    public void onFacebookButtonClickListener(Button button) {
+        button.setOnClickListener(view -> {
+            loginWithFacebook();
+            button.setText(mContext.getString(R.string.fb_button_text_linked));
+            button.setClickable(false);
+        });
     }
 
-    public TextWatcher getTextWatcher() {
-        return mTextWatcher;
-    }
-
-    @Override
-    public void initFacebookSdk() {
-        FacebookSdk.sdkInitialize(mContext.getApplicationContext());
-    }
-
-    @Override
-    public void loginWithFacebook() {
+    private void loginWithFacebook() {
         LoginManager.getInstance().logInWithReadPermissions((Activity) mContext, Arrays.asList("public_profile"));
     }
 
     @Override
-    public void requestSessionAndRegistration(boolean validateValue, RegistrationForm form) {
+    public void onSignupButtonClickListener(Button button, TextInputEditText email, TextInputEditText pass, TextInputEditText confpass, TextInputEditText name, TextInputEditText web) {
+        button.setOnClickListener(view -> {
+            RegistrationForm form = new RegistrationForm();
+            form.setEmail(email.getText().toString());
+            form.setPassword(pass.getText().toString());
+            form.setFullName(name.getText().toString());
+            form.setWebsite(web.getText().toString());
+
+            boolean validateValue = validateRegForm(
+                    email.getText().toString(),
+                    pass.getText().toString(),
+                    confpass.getText().toString());
+
+            requestSessionAndRegistration(validateValue, form, button);
+        });
+    }
+
+    public void requestSessionAndRegistration(boolean validateValue, RegistrationForm form, Button button) {
         if (validateValue) {
             mModel.getSessionNoAuth()
+                    .doOnRequest(request -> mView.showProgressBar())
                     .subscribe(sessionResponse -> {
+
                         String token = sessionResponse.getSession().getToken();
-                        Log.e("TEST", token);
                         getRegistrationWithToken(token, form);
+                        Log.e("TEST", token);
 
                     }, throwable -> {
+                        decodeThrowableAndShowAlert(throwable);
                         Log.e("TEST", throwable.getMessage());
-
                     });
+            button.setClickable(false);
         }
     }
 
     private void getRegistrationWithToken(String token, RegistrationForm form) {
+        form.setPhone(mPhoneNumber);
+        //Somehow API backend says wrong user_id, but it is correct
+        //form.setFacebookId(Integer.parseInt(mUserFacebookId));
         mModel.getRegistration(token, form)
+                .doOnNext(registrationResponse -> {
+                    getLoginRegistratedUser(form.getEmail(), form.getPassword(), token);
+                })
                 .subscribe(registrationResponse -> {
                     Log.e("TEST", String.valueOf(registrationResponse.getUser().getId()));
-                    Toast.makeText(mContext, mContext.getString(R.string.registration_complete), Toast.LENGTH_SHORT).show();
                 }, throwable -> {
+                    decodeThrowableAndShowAlert(throwable);
+                    Log.e("TEST", throwable.getMessage());
+                });
+    }
+
+    private void getLoginRegistratedUser(String email, String password, String token) {
+        mModel.getLogin(email, password, token)
+                .doOnNext(loginResponse -> {
+                    if (mUploadFile != null) {
+                        getBlobObjectCreateFile(token, getFileMimeType(mUploadFile), mUploadFile.getName());
+                    } else {
+                        Toast.makeText(mContext, mContext.getString(R.string.registration_complete), Toast.LENGTH_SHORT).show();
+                        mView.navigatetoMainScreen();
+                    }
+                })
+                .subscribe(loginResponse -> {
+                    //at this point user can be added to database
+                }, throwable -> {
+                    decodeThrowableAndShowAlert(throwable);
+                    Log.e("TEST", throwable.getMessage());
+                });
+    }
+
+    private void getBlobObjectCreateFile(String token, String mime, String fileName) {
+        mModel.createFile(token, mime, fileName)
+                .subscribe(registrationCreateFileResponse -> {
+                    long blobId = registrationCreateFileResponse.getBlob().getBlobObjestAccess().getBlobId();
+                    String params = registrationCreateFileResponse.getBlob().getBlobObjestAccess().getParams();
+                    Uri uri = Uri.parse(params);
+                    RequestBody contentR = RequestBody.create(MultipartBody.FORM, uri.getQueryParameter(ApiConstant.UploadParametres.CONTENT_TYPE));
+                    RequestBody expiresR = RequestBody.create(MultipartBody.FORM, uri.getQueryParameter(ApiConstant.UploadParametres.EXPIRES));
+                    RequestBody aclR = RequestBody.create(MultipartBody.FORM, uri.getQueryParameter(ApiConstant.UploadParametres.ACL));
+                    RequestBody keyR = RequestBody.create(MultipartBody.FORM, uri.getQueryParameter(ApiConstant.UploadParametres.KEY));
+                    RequestBody policyR = RequestBody.create(MultipartBody.FORM, uri.getQueryParameter(ApiConstant.UploadParametres.POLICY));
+                    RequestBody successR = RequestBody.create(MultipartBody.FORM, uri.getQueryParameter(ApiConstant.UploadParametres.SUCCESS_ACTION_STATUS));
+                    RequestBody algorithmR = RequestBody.create(MultipartBody.FORM, uri.getQueryParameter(ApiConstant.UploadParametres.ALGORITHM));
+                    RequestBody credentialR = RequestBody.create(MultipartBody.FORM, uri.getQueryParameter(ApiConstant.UploadParametres.CREDENTIAL));
+                    RequestBody dateR = RequestBody.create(MultipartBody.FORM, uri.getQueryParameter(ApiConstant.UploadParametres.DATE));
+                    RequestBody signatureR = RequestBody.create(MultipartBody.FORM, uri.getQueryParameter(ApiConstant.UploadParametres.SIGNATURE));
+
+                    //***
+                    RequestBody file = RequestBody.create(MediaType.parse(getFileMimeType(mUploadFile)), mUploadFile);
+                    MultipartBody.Part multiPart = MultipartBody.Part.createFormData(ApiConstant.UploadParametres.FILE, mUploadFile.getName(), file);
+                    //***
+
+                    uploadFileRetrofit(
+                            token,
+                            blobId,
+                            contentR,
+                            expiresR,
+                            aclR,
+                            keyR,
+                            policyR,
+                            successR,
+                            algorithmR,
+                            credentialR,
+                            dateR,
+                            signatureR,
+                            multiPart);
+
+
+                }, throwable -> {
+                    decodeThrowableAndShowAlert(throwable);
+                    Log.e("TEST", throwable.getMessage());
+                });
+    }
+
+    private void uploadFileRetrofit(
+            String token, long blobId,
+            RequestBody content,
+            RequestBody expires,
+            RequestBody acl,
+            RequestBody key,
+            RequestBody policy,
+            RequestBody success,
+            RequestBody algorithm,
+            RequestBody credential,
+            RequestBody date,
+            RequestBody signature,
+            MultipartBody.Part file) {
+
+        HashMap<String, RequestBody> map = new HashMap<>();
+        map.put(ApiConstant.UploadParametres.CONTENT_TYPE, content);
+        map.put(ApiConstant.UploadParametres.EXPIRES, expires);
+        map.put(ApiConstant.UploadParametres.ACL, acl);
+        map.put(ApiConstant.UploadParametres.KEY, key);
+        map.put(ApiConstant.UploadParametres.POLICY, policy);
+        map.put(ApiConstant.UploadParametres.SUCCESS_ACTION_STATUS, success);
+        map.put(ApiConstant.UploadParametres.ALGORITHM, algorithm);
+        map.put(ApiConstant.UploadParametres.CREDENTIAL, credential);
+        map.put(ApiConstant.UploadParametres.DATE, date);
+        map.put(ApiConstant.UploadParametres.SIGNATURE, signature);
+
+
+        mModel.uploadFileMap(map, file)
+                .subscribe(aVoid -> {
+                    long fileSize = mUploadFile.length();
+                    declareFileUploaded(fileSize, token, blobId);
+                }, throwable -> {
+                    Log.e("TEST", throwable.getMessage());
+                });
+    }
+
+
+
+    private void declareFileUploaded(long size, String token, long blobId) {
+        mModel.declareFileUploaded(size, token, blobId)
+                .doOnNext(aVoid -> mView.navigatetoMainScreen())
+                .subscribe(aVoid -> {
+
+                }, throwable -> {
+                    decodeThrowableAndShowAlert(throwable);
                     Log.e("TEST", throwable.getMessage());
                 });
     }
@@ -134,8 +273,8 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
         LoginManager.getInstance().registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
-                String userFacebookId = loginResult.getAccessToken().getUserId();
-                //save in User Model
+                //Somehow API backend says wrong user_id, but it is correct
+                mUserFacebookId = loginResult.getAccessToken().getUserId();
             }
 
             @Override
@@ -151,30 +290,25 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
     }
 
     @Override
-    public void setTextChangedListenerWithInputMask(TextInputEditText phone) {
-        Slot[] slots = new UnderscoreDigitSlotsParser().parseSlots(PHONE_MASK);
-        FormatWatcher formatWatcher = new MaskFormatWatcher(MaskImpl.createTerminated(slots));
-        formatWatcher.installOn(phone);
-    }
+    public void setTextChangedInputMaskListener(TextInputEditText phone) {
+        MaskedTextChangedListener listener = new MaskedTextChangedListener(
+                PHONE_MASK,
+                true,
+                phone,
+                null,
+                new MaskedTextChangedListener.ValueListener() {
+                    @Override
+                    public void onExtracted(@NotNull String s) {
+                        if (s.length() == 9) mPhoneNumber = "+380" + s;
+                    }
 
-    @Override
-    public void navigateToMainScreen() {
-        Intent intent = new Intent(mContext, MainActivity.class);
-        mContext.startActivity(intent);
-        ((Activity) mContext).finish();
-    }
-
-    @Override
-    public void showDialogImageSourceChooser() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(mContext)
-                .setTitle(mContext.getString(R.string.add_photo))
-                .setPositiveButton(mContext.getString(R.string.photo_gallery), (dialogInterface, i) -> {
-                    getPhotoFromGallery();
-                })
-                .setNegativeButton(mContext.getString(R.string.device_camera), (dialogInterface, i) -> {
-                    getPhotoFromCamera();
-                });
-        builder.create().show();
+                    @Override
+                    public void onMandatoryCharactersFilled(boolean b) {
+                    }
+                }
+        );
+        phone.addTextChangedListener(listener);
+        phone.setOnFocusChangeListener(listener);
     }
 
     @Override
@@ -188,7 +322,7 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
 
     @Override
     public boolean validateEmail(String email) {
-        if (TextUtils.isEmpty(email) || !Pattern.compile(EMAIL_PATTERN).matcher(email).matches()) {
+        if (TextUtils.isEmpty(email) || !Email.checkEmail(email)) {
             mView.setInvalideEmailError();
             return false;
         }
@@ -200,12 +334,12 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
         int passLength = pass.length();
         int digitCounter = 0;
         int capitalizeLetterCounter = 0;
-        //length validation
+
         if (passLength < MIN_PASSWORD_LENGTH || passLength > MAX_PASSWORD_LENGTH) {
             mView.setLengthPasswordError();
             return false;
         }
-        //strength validation
+
         for (int i = 0; i < passLength; i++) {
             if (Character.isDigit(pass.charAt(i))) digitCounter++;
             if (Character.isUpperCase(pass.charAt(i))) capitalizeLetterCounter++;
@@ -227,27 +361,20 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-            case REQUEST_IMAGE_CAMERA:
-                if (resultCode == RESULT_OK) {
-                    mView.getUserpicUri(mCurrentAvatarUri);
-                    Toast.makeText(mContext, mContext.getString(R.string.photo_added), Toast.LENGTH_SHORT).show();
-                }
-                break;
-            case REQUEST_IMAGE_GALLERY:
-                if (resultCode == RESULT_OK) {
-                    mCurrentAvatarUri = data.getData();
-                    mView.getUserpicUri(mCurrentAvatarUri);
-                    Toast.makeText(mContext, mContext.getString(R.string.photo_added), Toast.LENGTH_SHORT).show();
-                }
-                break;
-            default:
-                if (resultCode == RESULT_OK) {
-                    mCallbackManager.onActivityResult(requestCode, resultCode, data);
-                }
-                break;
-        }
+    public void onAvatarClickListener(ImageView imageView) {
+        imageView.setOnClickListener(view -> showDialogImageSourceChooser());
+    }
+
+    private void showDialogImageSourceChooser() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(mContext)
+                .setTitle(mContext.getString(R.string.add_photo))
+                .setPositiveButton(mContext.getString(R.string.photo_gallery), (dialogInterface, i) -> {
+                    getPhotoFromGallery();
+                })
+                .setNegativeButton(mContext.getString(R.string.device_camera), (dialogInterface, i) -> {
+                    getPhotoFromCamera();
+                });
+        builder.create().show();
     }
 
     public void getPhotoFromGallery() {
@@ -264,9 +391,9 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
                 File storageDir = mContext.getExternalFilesDir(String.valueOf(Environment.DIRECTORY_PICTURES));
                 String timestamp = new SimpleDateFormat(DATE_FORMAT).format(new Date());
                 File file = new File(storageDir + "/" + timestamp + AVATAR_FILE_NAME);
-                mCurrentAvatarUri = Uri.fromFile(file);
+                mFullSizeAvatarUri = Uri.fromFile(file);
 
-                pictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, mCurrentAvatarUri);
+                pictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, mFullSizeAvatarUri);
                 ((Activity) mContext).startActivityForResult(pictureIntent, REQUEST_IMAGE_CAMERA);
             }
         } else {
@@ -274,11 +401,62 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
         }
     }
 
-    public CallbackManager getCallbackManager() {
-        return mCallbackManager;
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case REQUEST_IMAGE_CAMERA:
+                if (resultCode == RESULT_OK) {
+                    mView.getUserpicUri(mFullSizeAvatarUri);
+                    try {
+                        mUploadFile = StorageHelper.decodeAndSaveUri(mContext, mFullSizeAvatarUri);
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                    Toast.makeText(mContext, mContext.getString(R.string.photo_added), Toast.LENGTH_SHORT).show();
+                }
+                break;
+            case REQUEST_IMAGE_GALLERY:
+                if (resultCode == RESULT_OK) {
+                    mFullSizeAvatarUri = data.getData();
+                    mView.getUserpicUri(mFullSizeAvatarUri);
+                    try {
+                        mUploadFile = StorageHelper.decodeAndSaveUri(mContext, mFullSizeAvatarUri);
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                    Toast.makeText(mContext, mContext.getString(R.string.photo_added), Toast.LENGTH_SHORT).show();
+                }
+                break;
+            default:
+                if (resultCode == RESULT_OK) {
+                    mCallbackManager.onActivityResult(requestCode, resultCode, data);
+                }
+                break;
+        }
     }
 
-    public Uri getCurrentAvatarUri() {
-        return mCurrentAvatarUri;
+    private void decodeThrowableAndShowAlert(Throwable t) {
+        String title = t.getMessage();
+        String message = ErrorsCode.getErrorMessage(mContext, t);
+        mView.showResponseDialogError(title, message);
+    }
+
+    private String getFileMimeType(File file) {
+        return URLConnection.guessContentTypeFromName(file.getName());
+    }
+
+    public TextWatcher getTextWatcher() {
+        return mTextWatcher;
+    }
+
+    @Override
+    public void onDestroy() {
+        mView = null;
+        mModel = null;
+    }
+
+    @Override
+    public boolean isOnline() {
+        return Network.isOnline(mContext);
     }
 }

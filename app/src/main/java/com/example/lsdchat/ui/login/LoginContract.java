@@ -1,7 +1,10 @@
 package com.example.lsdchat.ui.login;
 
 
+import android.content.Context;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.example.lsdchat.api.login.response.LoginResponse;
 import com.example.lsdchat.api.login.response.SessionResponse;
@@ -14,11 +17,14 @@ public interface LoginContract {
         Observable<SessionResponse> getSessionAuth(String email, String password);
 
         Observable<LoginResponse> getLogin(String email, String password, String token);
+
     }
 
     interface Presenter {
 
         void onDestroy();
+        void onResume();
+        void onPause();
 
         void validateCredentials(EditText email, EditText password);
 
@@ -26,16 +32,24 @@ public interface LoginContract {
 
         boolean isValidPassword(CharSequence password);
 
-        boolean isValidEmail(CharSequence email);
+        void btnSignInClick(Button btnSignIn, EditText email, EditText password);
 
-        void btnSignInClick(String email, String password);
+        void btnSignUpClick(Button btnSignUp);
 
-        void btnSignUpClick();
+        void btnSignForgotPasswordClick(TextView btnForgotPassword);
 
-        void btnSignForgotPasswordClick();
+        void startService(Context context);
+
+        void stopService(Context context);
+
+        boolean isOnline();
     }
 
     interface View {
+        void dialogError(Throwable throwable);
+
+        Context getContext();
+
         void showProgressBar();
 
         void hideProgressBar();

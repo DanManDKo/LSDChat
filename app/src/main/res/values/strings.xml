@@ -12,7 +12,6 @@
     <string name="retry">Retry</string>
 
 
-
     <!--Login screen-->
     <string name="login.sign_in">Sign In</string>
     <string name="login.sign_up">Sign Up</string>
@@ -45,18 +44,46 @@
     <string name="invalid_email">Invalid email</string>
     <string name="password_is_weak">Password is weak. Please use at least two digits and two capitalized letters</string>
     <string name="passwords_donot_match">Passwords do not match</string>
-    <string name="password_length">Password length should be 6-12 symbols</string>
+    <string name="password_length">Password length should be 8-12 symbols</string>
     <!--registration alert dialog-->
     <string name="add_photo">Add photo</string>
     <string name="device_camera">Device camera</string>
     <string name="photo_gallery">Photo Gallery</string>
+    <string name="alert_ok">Ok</string>
     <!--toasts-->
     <string name="registration_complete">Registration complete</string>
     <string name="there_is_no_device_camera">Your device doesn`t have camera</string>
     <string name="photo_added">Photo added</string>
+
     <!--forgotpassword-->
     <string name="restore_password">Restore password</string>
     <string name="button_cancel">Cancel</string>
     <string name="send">Send</string>
     <string name="emai_success">Password recovery email was sent</string>
+
+
+    <!--notify-->
+    <string name="notify_title">LSD Chat</string>
+    <string name="notify_message">Seems like you forgot to authorize the app?</string>
+    <string name="dialog.error.title">Error dialog</string>
+
+    <!--error code-->
+    <string name="error.code.400">Missing or invalid parameter. Possible causes:\n
+        - malformed request parameters</string>
+    <string name="error.code.401">Authorization missing or incorrect. Possible causes:\n
+        - a user tries to authorise with wrong login and password\n
+        - a user uses invalid session token</string>
+    <string name="error.code.403">Access has been refused. Possible causes:\n
+        - a user tries to retrieve chat messages for chat dialog he is not in occupants list.</string>
+    <string name="error.code.404">The requested resource could not be found. Possible causes:\n
+        - a user tries to retrieve chat messages for invalid chat dialog id.\n
+        - a user tries to retrieve a custom object record with invalid id.</string>
+    <string name="error.code.422">The request was well-formed but was unable to be followed due to validation errors. Possible causes:\n
+        - create a user with existent login or email.
+        - provide values in wrong format to create some object.</string>
+    <string name="error.code.500">Server encountered an error, try again later</string>
+    <string name="error.code.503">Server is at capacity, try again later</string>
+    <string name="error.code.unknown">Unknown code</string>
+    <string name="error.code.noconnect">No connections!</string>
+
 </resources>

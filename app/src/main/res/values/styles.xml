@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
@@ -6,8 +6,8 @@
         <item name="colorPrimary">@color/colorGreen</item>
         <item name="colorPrimaryDark">@color/colorGreenDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:colorControlHighlight" tools:targetApi="lollipop">@color/colorWhiteOpacity</item>
         <item name="android:fontFamily">Roboto-Regular</item>
-
     </style>
 
     <style name="AppTheme.NoActionBar">
@@ -84,7 +84,7 @@
         <item name="android:textColorHint">@color/colorWhite</item>
         <item name="android:textSize">@dimen/fb_btn_font_size</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:background">@drawable/button_shape_fbsignup</item>
+        <item name="android:background">@drawable/ripple_facebook</item>
         <item name="android:drawableStart">@drawable/fb_icon</item>
     </style>
 
@@ -97,4 +97,5 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">wrap_content</item>
     </style>
+
 </resources>
