@@ -12,15 +12,14 @@ import com.example.lsdchat.api.login.response.SessionResponse;
 import com.example.lsdchat.api.registration.response.RegistrationCreateFileResponse;
 import com.example.lsdchat.api.registration.response.RegistrationResponse;
 
-import java.io.File;
+import java.util.Map;
 
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
-import retrofit2.http.Field;
-import retrofit2.http.Part;
 import rx.Observable;
 
 public interface RegistrationContract {
+
     interface Presenter {
         boolean isOnline();
 
@@ -74,10 +73,12 @@ public interface RegistrationContract {
         void showResponseDialogError(String title, String message);
 
         void navigatetoMainScreen();
+
         //just alert for test
         void showAlertD();
 
     }
+
 
     interface Model {
         Observable<SessionResponse> getSessionNoAuth();
@@ -88,21 +89,13 @@ public interface RegistrationContract {
 
         Observable<RegistrationCreateFileResponse> createFile(String token, String mime, String fileName);
 
-        Observable<Void> uploadFile(
-                String token,
-                long blobId,
-                RequestBody content,
-                RequestBody expires,
-                RequestBody acl,
-                RequestBody key,
-                RequestBody policy,
-                RequestBody success,
-                RequestBody algorithm,
-                RequestBody credential,
-                RequestBody date,
-                RequestBody signature,
-                MultipartBody.Part part);
 
         Observable<Void> declareFileUploaded(long size, String token, long blobId);
+
+
+
+        Observable<Void> uploadFileMap(Map<String, RequestBody> map,MultipartBody.Part part);
     }
+
+
 }

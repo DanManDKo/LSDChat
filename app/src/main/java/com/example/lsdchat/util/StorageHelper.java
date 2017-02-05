@@ -10,8 +10,6 @@ import android.os.Environment;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 public class StorageHelper {
     private static final String AVATAR_FILE_NAME = "avatar.jpg";
@@ -52,4 +50,6 @@ public class StorageHelper {
         }
         return file;
     }
+
+
 }
