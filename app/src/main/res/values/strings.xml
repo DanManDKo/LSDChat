@@ -86,5 +86,6 @@
     <string name="error.code.unknown">Unknown code</string>
     <string name="error.code.noconnect">No connections!</string>
     <string name="screen_sign_in">SIGN IN</string>
+    <string name="login_presenter_error_input">Please input email/password</string>
 
 </resources>

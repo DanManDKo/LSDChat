@@ -7,16 +7,16 @@ import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.example.lsdchat.R;
 import com.example.lsdchat.manager.DataManager;
 import com.example.lsdchat.model.User;
-
 import com.example.lsdchat.service.NotifyService;
 import com.example.lsdchat.util.Email;
 import com.example.lsdchat.util.Network;
 import com.jakewharton.rxbinding.widget.RxTextView;
 
-import retrofit2.adapter.rxjava.HttpException;
 import rx.Observable;
 
 
@@ -96,7 +96,6 @@ public class LoginPresenter implements LoginContract.Presenter {
                 .doOnUnsubscribe(() -> mView.hideProgressBar())
                 .doOnNext(sessionResponse -> getLoginWithToken(email, password, sessionResponse.getSession().getToken()))
                 .subscribe(sessionResponse -> {
-                            addUserToDb(email, password, mView.isKeepSignIn());
                             Log.e("AAA", "TOKEN  - " + sessionResponse.getSession().getToken());
 //                            save token
 
@@ -104,7 +103,6 @@ public class LoginPresenter implements LoginContract.Presenter {
                         throwable -> {
                             Log.e("11111", throwable.getMessage());
                             mView.dialogError(throwable);
-
 
                         }
                 );
@@ -119,21 +117,14 @@ public class LoginPresenter implements LoginContract.Presenter {
     }
 
 
-
     private void getLoginWithToken(String email, String password, String token) {
         mModel.getLogin(email, password, token)
                 .doOnNext(loginResponse -> mView.navigateToMainScreen())
                 .subscribe(loginUser -> {
-                            //                    save Model users
-                            Log.e("AAA", "id  - " + loginUser.getLoginUser().getId() + " phone - " + loginUser.getLoginUser().getPhone());
+
+                            addUserToDb(email, password, mView.isKeepSignIn());
                         },
-                        // TODO: 28.01.2017 [Code Review] add proper error handling logic
-                        throwable -> {
-                            Log.e("22222", String.valueOf(((HttpException) throwable).response().body()));
-
-                            mView.dialogError(throwable);
-
-                        });
+                        throwable -> mView.dialogError(throwable));
     }
 
     //    add current user to db
@@ -152,10 +143,8 @@ public class LoginPresenter implements LoginContract.Presenter {
     }
 
 
-
-
     @Override
-  public void btnSignInClick(Button btnSignIn, EditText etEmail, EditText etPassword) {
+    public void btnSignInClick(Button btnSignIn, EditText etEmail, EditText etPassword) {
         btnSignIn.setOnClickListener(view -> {
             String email = etEmail.getText().toString();
             String password = etPassword.getText().toString();
@@ -163,6 +152,8 @@ public class LoginPresenter implements LoginContract.Presenter {
                 if (isOnline()) {
                     requestSessionAndLogin(email, password);
                 }
+            } else {
+                Toast.makeText(mView.getContext(), R.string.login_presenter_error_input, Toast.LENGTH_SHORT).show();
             }
         });
 
