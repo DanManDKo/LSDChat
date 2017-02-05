@@ -4,7 +4,7 @@ import com.example.lsdchat.App;
 import com.example.lsdchat.api.forgot_password.ForgotPasswordService;
 import com.example.lsdchat.api.login.request.SessionRequestNoAuth;
 import com.example.lsdchat.api.login.response.SessionResponse;
-import com.example.lsdchat.api.registration.RegistrationService;
+import com.example.lsdchat.api.registration.service.RegistrationService;
 import com.example.lsdchat.constant.ApiConstant;
 import com.example.lsdchat.util.Signature;
 

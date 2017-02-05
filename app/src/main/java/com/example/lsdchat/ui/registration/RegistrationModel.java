@@ -5,7 +5,7 @@ import com.example.lsdchat.api.login.request.LoginRequest;
 import com.example.lsdchat.api.login.request.SessionRequestNoAuth;
 import com.example.lsdchat.api.login.response.LoginResponse;
 import com.example.lsdchat.api.login.response.SessionResponse;
-import com.example.lsdchat.api.registration.RegistrationService;
+import com.example.lsdchat.api.registration.service.RegistrationService;
 import com.example.lsdchat.api.registration.request.RegistrationCreateFileRequest;
 import com.example.lsdchat.api.registration.request.RegistrationCreateFileRequestBlob;
 import com.example.lsdchat.api.registration.request.RegistrationDeclaringRequest;

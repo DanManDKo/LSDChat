@@ -2,7 +2,7 @@ package com.example.lsdchat.api;
 
 import com.example.lsdchat.api.forgot_password.ForgotPasswordService;
 import com.example.lsdchat.api.login.service.LoginService;
-import com.example.lsdchat.api.registration.RegistrationService;
+import com.example.lsdchat.api.registration.service.RegistrationService;
 import com.example.lsdchat.constant.ApiConstant;
 import com.google.gson.GsonBuilder;
 

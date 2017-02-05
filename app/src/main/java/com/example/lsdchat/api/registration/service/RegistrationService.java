@@ -1,4 +1,4 @@
-package com.example.lsdchat.api.registration;
+package com.example.lsdchat.api.registration.service;
 
 import com.example.lsdchat.api.login.request.LoginRequest;
 import com.example.lsdchat.api.login.request.SessionRequestNoAuth;
