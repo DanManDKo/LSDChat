@@ -36,6 +36,7 @@ public class RegistrationModel implements RegistrationContract.Model {
         mRegistrationAmazonService = App.getApiManager().getRegistrationAmazonService();
     }
 
+
     @Override
     public Observable<SessionResponse> getSessionNoAuth() {
         int nonce = new Random().nextInt();
