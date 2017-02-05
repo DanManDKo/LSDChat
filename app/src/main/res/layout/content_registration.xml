@@ -74,8 +74,7 @@
                     android:textColorHint="@color/colorWhiteOpacity"
                     app:errorEnabled="true"
                     app:errorTextAppearance="@style/EditErrorText"
-                    app:hintTextAppearance="@style/EditHintText"
-                    app:passwordToggleEnabled="true">
+                    app:hintTextAppearance="@style/EditHintText">
 
                     <android.support.design.widget.TextInputEditText
                         android:id="@+id/tiet_pass_reg"
@@ -99,8 +98,7 @@
                     android:textColorHint="@color/colorWhiteOpacity"
                     app:errorEnabled="true"
                     app:errorTextAppearance="@style/EditErrorText"
-                    app:hintTextAppearance="@style/EditHintText"
-                    app:passwordToggleEnabled="true">
+                    app:hintTextAppearance="@style/EditHintText">
 
                     <android.support.design.widget.TextInputEditText
                         android:id="@+id/tiet_confpass_reg"
