@@ -1,5 +1,6 @@
 package com.example.lsdchat.ui.registration;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -15,6 +16,7 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 
 import com.example.lsdchat.R;
+import com.example.lsdchat.ui.MainActivity;
 import com.facebook.drawee.view.SimpleDraweeView;
 
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
@@ -107,6 +109,16 @@ public class RegistrationActivity extends AppCompatActivity implements Registrat
     }
 
     @Override
+    public void navigatetoMainScreen() {
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+        overridePendingTransition(R.anim.push_up_in, R.anim.push_up_out);
+        finish();
+        overridePendingTransition(R.anim.push_down_in, R.anim.push_down_out);
+    }
+
+    @Override
     public void getUserpicUri(Uri uri) {
         mImageView.setImageURI(uri);
     }
@@ -179,5 +191,17 @@ public class RegistrationActivity extends AppCompatActivity implements Registrat
     @Override
     public void hideProgressBar() {
         mProgressBar.setVisibility(View.INVISIBLE);
+    }
+
+    //just alert for test
+    @Override
+    public void showAlertD() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Daaaa")
+                .setPositiveButton(getString(R.string.alert_ok), (dialogInterface, i) -> dialogInterface.dismiss())
+                .setOnCancelListener(dialogInterface -> dialogInterface.dismiss())
+                .setCancelable(false)
+                .create()
+                .show();
     }
 }
