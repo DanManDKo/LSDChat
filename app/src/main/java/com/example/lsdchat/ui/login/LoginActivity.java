@@ -22,6 +22,8 @@ import com.example.lsdchat.ui.forgot_password.ForgotPasswordFragment;
 import com.example.lsdchat.ui.registration.RegistrationActivity;
 import com.example.lsdchat.util.ErrorsCode;
 
+import retrofit2.adapter.rxjava.HttpException;
+
 public class LoginActivity extends AppCompatActivity implements LoginContract.View {
 
     private static final String FORGOT_PASSWORD_DIALOG = "forgot";
@@ -96,7 +98,7 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
     }
     @Override
     public void dialogError(Throwable throwable) {
-        String title = throwable.getMessage();
+        String title = "Error " + String.valueOf(((HttpException) throwable).code());
         String message = ErrorsCode.getErrorMessage(this, throwable);
 
         new AlertDialog.Builder(this)
