@@ -211,8 +211,6 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
                             dateR,
                             signatureR,
                             multiPart);
-
-
                 }, throwable -> {
                     decodeThrowableAndShowAlert(throwable);
                     Log.e("TEST", throwable.getMessage());
