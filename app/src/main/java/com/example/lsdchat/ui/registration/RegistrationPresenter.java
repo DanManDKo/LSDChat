@@ -136,7 +136,6 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
         if (validateValue) {
             mModel.getSessionNoAuth()
                     .doOnRequest(request -> mView.showProgressBar())
-                    .doOnUnsubscribe(() -> mView.hideProgressBar())
                     .subscribe(sessionResponse -> {
 
                         String token = sessionResponse.getSession().getToken();
@@ -156,8 +155,6 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
         //Somehow API backend says wrong user_id, but it is correct
         //form.setFacebookId(Integer.parseInt(mUserFacebookId));
         mModel.getRegistration(token, form)
-                .doOnRequest(request -> mView.showProgressBar())
-                .doOnUnsubscribe(() -> mView.hideProgressBar())
                 .doOnNext(registrationResponse -> {
                     getLoginRegistratedUser(form.getEmail(), form.getPassword(), token);
                 })
@@ -171,8 +168,6 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
 
     private void getLoginRegistratedUser(String email, String password, String token) {
         mModel.getLogin(email, password, token)
-                .doOnRequest(request -> mView.showProgressBar())
-                .doOnUnsubscribe(() -> mView.hideProgressBar())
                 .doOnNext(loginResponse -> {
                     if (mUploadFile != null) {
                         getBlobObjectCreateFile(token, getFileMimeType(mUploadFile), mUploadFile.getName());
@@ -196,21 +191,34 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
                     String params = registrationCreateFileResponse.getBlob().getBlobObjestAccess().getParams();
                     Uri uri = Uri.parse(params);
 
-                    RequestBody file = RequestBody.create(MediaType.parse("image/jpg"), mUploadFile);
+                    RequestBody contentR = RequestBody.create(MultipartBody.FORM, uri.getQueryParameter(ApiConstant.UploadParametres.CONTENT_TYPE));
+                    RequestBody expiresR = RequestBody.create(MultipartBody.FORM, uri.getQueryParameter(ApiConstant.UploadParametres.EXPIRES));
+                    RequestBody aclR = RequestBody.create(MultipartBody.FORM, uri.getQueryParameter(ApiConstant.UploadParametres.ACL));
+                    RequestBody keyR = RequestBody.create(MultipartBody.FORM, uri.getQueryParameter(ApiConstant.UploadParametres.KEY));
+                    RequestBody policyR = RequestBody.create(MultipartBody.FORM, uri.getQueryParameter(ApiConstant.UploadParametres.POLICY));
+                    RequestBody successR = RequestBody.create(MultipartBody.FORM, uri.getQueryParameter(ApiConstant.UploadParametres.SUCCESS_ACTION_STATUS));
+                    RequestBody algorithmR = RequestBody.create(MultipartBody.FORM, uri.getQueryParameter(ApiConstant.UploadParametres.ALGORITHM));
+                    RequestBody credentialR = RequestBody.create(MultipartBody.FORM, uri.getQueryParameter(ApiConstant.UploadParametres.CREDENTIAL));
+                    RequestBody dateR = RequestBody.create(MultipartBody.FORM, uri.getQueryParameter(ApiConstant.UploadParametres.DATE));
+                    RequestBody signatureR = RequestBody.create(MultipartBody.FORM, uri.getQueryParameter(ApiConstant.UploadParametres.SIGNATURE));
+
                     //***
+                    RequestBody file = RequestBody.create(MediaType.parse(getFileMimeType(mUploadFile)), mUploadFile);
                     MultipartBody.Part multiPart = MultipartBody.Part.createFormData(ApiConstant.UploadParametres.FILE, mUploadFile.getName(), file);
                     //***
                     uploadFileRetrofit(
-                            uri.getQueryParameter(ApiConstant.UploadParametres.CONTENT_TYPE),
-                            uri.getQueryParameter(ApiConstant.UploadParametres.EXPIRES),
-                            uri.getQueryParameter(ApiConstant.UploadParametres.ACL),
-                            uri.getQueryParameter(ApiConstant.UploadParametres.KEY),
-                            uri.getQueryParameter(ApiConstant.UploadParametres.POLICY),
-                            uri.getQueryParameter(ApiConstant.UploadParametres.SUCCESS_ACTION_STATUS),
-                            uri.getQueryParameter(ApiConstant.UploadParametres.ALGORITHM),
-                            uri.getQueryParameter(ApiConstant.UploadParametres.CREDENTIAL),
-                            uri.getQueryParameter(ApiConstant.UploadParametres.DATE),
-                            uri.getQueryParameter(ApiConstant.UploadParametres.SIGNATURE),
+                            token,
+                            blobId,
+                            contentR,
+                            expiresR,
+                            aclR,
+                            keyR,
+                            policyR,
+                            successR,
+                            algorithmR,
+                            credentialR,
+                            dateR,
+                            signatureR,
                             multiPart);
 
 //                    uploadFile(token, blobId,
@@ -232,22 +240,27 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
                 });
     }
 
-    private void uploadFileRetrofit(String content,
-                                    String expires,
-                                    String acl,
-                                    String key,
-                                    String policy,
-                                    String success,
-                                    String algorithm,
-                                    String credential,
-                                    String date,
-                                    String signature,
-                                    MultipartBody.Part file) {
-        mModel.uploadFile(content, expires, acl, key, policy, success, algorithm, credential, date, signature, file)
+    private void uploadFileRetrofit(
+            String token, long blobId,
+            RequestBody content,
+            RequestBody expires,
+            RequestBody acl,
+            RequestBody key,
+            RequestBody policy,
+            RequestBody success,
+            RequestBody algorithm,
+            RequestBody credential,
+            RequestBody date,
+            RequestBody signature,
+            MultipartBody.Part file) {
+        mModel.uploadFile(token, blobId, content, expires, acl, key, policy, success, algorithm, credential, date, signature, file)
                 .doOnNext(aVoid -> {
-                    mView.showAlertD();
+              //      mView.showAlertD();
+                    long fileSize = mUploadFile.length();
+                    declareFileUploaded(fileSize, token, blobId);
                 })
-                .subscribe(aVoid -> {}, throwable -> {
+                .subscribe(aVoid -> {
+                }, throwable -> {
                     Log.e("TEST", throwable.getMessage());
                 });
     }

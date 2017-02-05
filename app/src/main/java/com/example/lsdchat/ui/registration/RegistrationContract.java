@@ -89,16 +89,18 @@ public interface RegistrationContract {
         Observable<RegistrationCreateFileResponse> createFile(String token, String mime, String fileName);
 
         Observable<Void> uploadFile(
-                String content,
-                String expires,
-                String acl,
-                String key,
-                String policy,
-                String success,
-                String algorithm,
-                String credential,
-                String date,
-                String signature,
+                String token,
+                long blobId,
+                RequestBody content,
+                RequestBody expires,
+                RequestBody acl,
+                RequestBody key,
+                RequestBody policy,
+                RequestBody success,
+                RequestBody algorithm,
+                RequestBody credential,
+                RequestBody date,
+                RequestBody signature,
                 MultipartBody.Part part);
 
         Observable<Void> declareFileUploaded(long size, String token, long blobId);
