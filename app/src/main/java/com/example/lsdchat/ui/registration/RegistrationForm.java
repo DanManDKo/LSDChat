@@ -6,7 +6,7 @@ public class RegistrationForm {
     private Integer mBlobId;
     private String mFullName;
     private String mWebsite;
-    private Integer mFacebookId;
+    private String mFacebookId;
     private String mPhone;
 
     public String getEmail() {
@@ -49,11 +49,11 @@ public class RegistrationForm {
         mWebsite = website;
     }
 
-    public Integer getFacebookId() {
+    public String getFacebookId() {
         return mFacebookId;
     }
 
-    public void setFacebookId(Integer facebookId) {
+    public void setFacebookId(String facebookId) {
         mFacebookId = facebookId;
     }
 

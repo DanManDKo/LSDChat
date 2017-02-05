@@ -23,7 +23,9 @@ public interface LoginContract {
     interface Presenter {
 
         void onDestroy();
+
         void onResume();
+
         void onPause();
 
         void validateCredentials(EditText email, EditText password);
@@ -42,10 +44,18 @@ public interface LoginContract {
 
         void stopService(Context context);
 
+        boolean isEmptyFields(String email, String password);
+
         boolean isOnline();
+
+        void goToForgotPassword();
+
+        void goToRegistrationScreen();
+
     }
 
     interface View {
+
         void dialogError(Throwable throwable);
 
         Context getContext();
@@ -69,7 +79,9 @@ public interface LoginContract {
         void navigateToMainScreen();
 
         boolean isKeepSignIn();
+
         void showDialogForgotPassword();
+
 
     }
 

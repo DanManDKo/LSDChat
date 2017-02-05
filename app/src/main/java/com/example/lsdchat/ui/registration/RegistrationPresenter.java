@@ -63,7 +63,7 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
     private Context mContext;
     private CallbackManager mCallbackManager;
 
-    private String mUserFacebookId = null;
+    private String mUserFacebookId;
     private Uri mFullSizeAvatarUri = null;
     private File mUploadFile = null;
     private String mPhoneNumber = null;
@@ -96,6 +96,9 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
     public void onFacebookButtonClickListener(Button button) {
         button.setOnClickListener(view -> {
             LoginManager.getInstance().logInWithReadPermissions((Activity) mContext, Arrays.asList("public_profile"));
+
+            getFacebookToken();
+
             button.setText(mContext.getString(R.string.fb_button_text_linked));
             button.setClickable(false);
         });
@@ -103,6 +106,7 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
 
     @Override
     public void getFacebookToken() {
+
         LoginManager.getInstance().registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
@@ -117,6 +121,8 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
 
             @Override
             public void onError(FacebookException error) {
+
+                Log.e("FB", error.getMessage());
 
             }
         });
@@ -161,9 +167,11 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
 
     private void getRegistrationWithToken(String token, RegistrationForm form) {
         form.setPhone(mPhoneNumber);
-        //Somehow API backend says wrong user_id, but it is correct
+
+
         if (mUserFacebookId != null) {
-//            form.setFacebookId(Integer.parseInt(mUserFacebookId));
+            form.setFacebookId(mUserFacebookId);
+
         }
         mModel.getRegistration(token, form)
                 .doOnRequest(request -> mView.showProgressBar())
@@ -172,11 +180,7 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
                     getLoginRegistratedUser(form.getEmail(), form.getPassword(), token);
                 })
                 .subscribe(registrationResponse -> {
-                    Log.e("TEST", String.valueOf(registrationResponse.getUser().getId()));
-                }, throwable -> {
-                    decodeThrowableAndShowAlert(throwable);
-                    Log.e("TEST", throwable.getMessage());
-                });
+                }, this::decodeThrowableAndShowAlert);
     }
 
     private void getLoginRegistratedUser(String email, String password, String token) {
@@ -193,10 +197,7 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
                 })
                 .subscribe(loginResponse -> {
                     //at this point user can be added to database
-                }, throwable -> {
-                    decodeThrowableAndShowAlert(throwable);
-                    Log.e("TEST", throwable.getMessage());
-                });
+                }, this::decodeThrowableAndShowAlert);
     }
 
     private void getBlobObjectCreateFile(String token, String mime, String fileName) {
@@ -261,27 +262,25 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
                 .doOnUnsubscribe(() -> mView.hideProgressBar())
                 .doOnNext(aVoid -> {
                     long fileSize = mUploadFile.length();
+
                     if (fileSize != 0 && blobId != 0) {
                         declareFileUploaded(fileSize, token, blobId);
                     }
-                })
-                .subscribe(aVoid -> {
-                }, throwable -> {
-                    Log.e("TEST", throwable.getMessage());
-                });
+                }, this::decodeThrowableAndShowAlert);
     }
+
+
 
     private void declareFileUploaded(long size, String token, long blobId) {
         mModel.declareFileUploaded(size, token, blobId)
                 .doOnRequest(request -> mView.showProgressBar())
                 .doOnUnsubscribe(() -> mView.hideProgressBar())
                 .subscribe(aVoid -> {
-                    Toast.makeText(mContext, mContext.getString(R.string.registration_complete), Toast.LENGTH_SHORT).show();
+
+Toast.makeText(mContext, mContext.getString(R.string.registration_complete), Toast.LENGTH_SHORT).show();
                     mView.navigatetoMainScreen();
-                }, throwable -> {
-                    decodeThrowableAndShowAlert(throwable);
-                    Log.e("TEST", throwable.getMessage());
-                });
+                }, this::decodeThrowableAndShowAlert);
+
     }
 
 
@@ -397,6 +396,8 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
         }
     }
 
+
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
@@ -435,6 +436,8 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
         String title = t.getMessage();
         String message = ErrorsCode.getErrorMessage(mContext, t);
         mView.showResponseDialogError(title, message);
+        mView.hideProgressBar();
+
     }
 
     private String getFileMimeType(File file) {

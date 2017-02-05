@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AlertDialog;
@@ -45,20 +44,23 @@ public class RegistrationActivity extends AppCompatActivity implements Registrat
     private Toolbar mToolbar;
     private RegistrationPresenter mRegistrationPresenter;
 
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
+
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         FacebookSdk.sdkInitialize(getApplicationContext());
-        mRegistrationPresenter = new RegistrationPresenter(this);
 
         setContentView(R.layout.activity_registration);
+
+        mRegistrationPresenter = new RegistrationPresenter(this);
         initView();
 
-        mRegistrationPresenter.getFacebookToken();
 
         setRegFormHint();
 
+
         setSupportActionBar(mToolbar);
         configurateToolbar();
+
 
         mEmailEdit.addTextChangedListener(mRegistrationPresenter.getTextWatcher());
         mPassEdit.addTextChangedListener(mRegistrationPresenter.getTextWatcher());
@@ -70,6 +72,8 @@ public class RegistrationActivity extends AppCompatActivity implements Registrat
         mRegistrationPresenter.onFacebookButtonClickListener(mFacebookButton);
         mRegistrationPresenter.onSignupButtonClickListener(mSignUpButton,
                 mEmailEdit, mPassEdit, mConfPassEdit, mNameEdit, mWebEdit);
+
+
     }
 
     private void initView() {

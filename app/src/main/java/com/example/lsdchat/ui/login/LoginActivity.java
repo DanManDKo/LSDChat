@@ -214,4 +214,5 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
         mForgotPasswordFragment.show(getFragmentManager(), FORGOT_PASSWORD_DIALOG);
     }
 
+
 }

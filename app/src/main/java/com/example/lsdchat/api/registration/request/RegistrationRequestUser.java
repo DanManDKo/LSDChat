@@ -14,12 +14,12 @@ public class RegistrationRequestUser {
     @SerializedName("website")
     private String website;
     @SerializedName("facebook_id")
-    private Integer facebookId;
+    private String facebookId;
     @SerializedName("blob_id")
     private Integer blobId;
 
 
-    public RegistrationRequestUser(String email, String password, String fullName, String phone, String website, Integer facebookId, Integer blobId) {
+    public RegistrationRequestUser(String email, String password, String fullName, String phone, String website, String facebookId, Integer blobId) {
         this.email = email;
         this.password = password;
         this.fullName = fullName;

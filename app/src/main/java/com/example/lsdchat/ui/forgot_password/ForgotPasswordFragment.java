@@ -35,7 +35,7 @@ public class ForgotPasswordFragment extends DialogFragment implements ForgotPass
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         getDialog().setTitle(R.string.restore_password);
-        View view = inflater.inflate(R.layout.fragmenr_forgot_password, container, false);
+        View view = inflater.inflate(R.layout.fragment_forgot_password, container, false);
         initView(view);
         onClickButtons();
         return view;
