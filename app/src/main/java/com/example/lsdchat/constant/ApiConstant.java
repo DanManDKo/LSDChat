@@ -15,6 +15,7 @@ public class ApiConstant {
 
     public static final String REGISTRATION_REQUEST = "/users.json";
     public static final String HEADER_CONTENT_TYPE = "Content-Type: application/json";
+    public static final String HEADER_QB_TOKEN_KEY = "QB-Token:";
 
-
+    public static final String FORGOT_PASSWORD_REQUEST = "/users/password/reset.json" ;
 }

@@ -1,6 +1,7 @@
 package com.example.lsdchat.ui.forgot_password;
 
 import android.app.DialogFragment;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
@@ -8,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.example.lsdchat.R;
 
@@ -57,13 +59,25 @@ public class ForgotPasswordFragment extends DialogFragment implements ForgotPass
 
 
     @Override
-    public void setEmailError(int stringId) {
-        mEmailInput.setError(getString(stringId));
+    public void setEmailError(String error) {
+        mEmailInput.setError(error);
     }
 
     @Override
     public void hideEmailError() {
         mEmailInput.setError(null);
+    }
+
+    @Override
+    public void showEmailSuccessToast() {
+        Toast.makeText(getActivity(), R.string.emai_success, Toast.LENGTH_SHORT).show();
+
+    }
+
+
+    @Override
+    public void showEmailError(String msg) {
+        mEmailInput.setError(msg);
     }
 
     @Override
@@ -73,6 +87,13 @@ public class ForgotPasswordFragment extends DialogFragment implements ForgotPass
 
     @Override
     public void dismiss() {
-        dismiss();
+        getDialog().dismiss();
     }
+
+    @Override
+    public Context getContext() {
+        return getActivity();
+    }
+
+
 }
