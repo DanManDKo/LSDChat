@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Path;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
@@ -19,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.lsdchat.R;
+import com.example.lsdchat.constant.ApiConstant;
 import com.example.lsdchat.ui.MainActivity;
 import com.example.lsdchat.util.Email;
 import com.example.lsdchat.util.ErrorsCode;
@@ -28,6 +30,7 @@ import com.example.lsdchat.util.StorageHelper;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
+import com.facebook.common.file.FileUtils;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.redmadrobot.inputmask.MaskedTextChangedListener;
@@ -159,10 +162,7 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
                     getLoginRegistratedUser(form.getEmail(), form.getPassword(), token);
                 })
                 .subscribe(registrationResponse -> {
-
                     Log.e("TEST", String.valueOf(registrationResponse.getUser().getId()));
-                    //navigateToMainScreen();
-
                 }, throwable -> {
                     decodeThrowableAndShowAlert(throwable);
                     Log.e("TEST", throwable.getMessage());
@@ -178,7 +178,7 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
                         getBlobObjectCreateFile(token, getFileMimeType(mUploadFile), mUploadFile.getName());
                     } else {
                         Toast.makeText(mContext, mContext.getString(R.string.registration_complete), Toast.LENGTH_SHORT).show();
-                        navigateToMainScreen();
+                        mView.navigatetoMainScreen();
                     }
                 })
                 .subscribe(loginResponse -> {
@@ -192,44 +192,69 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
     private void getBlobObjectCreateFile(String token, String mime, String fileName) {
         mModel.createFile(token, mime, fileName)
                 .subscribe(registrationCreateFileResponse -> {
-                    String blobId = registrationCreateFileResponse.getBlob().getBlobObjestAccess().getBlobId().toString();
+                    long blobId = registrationCreateFileResponse.getBlob().getBlobObjestAccess().getBlobId();
                     String params = registrationCreateFileResponse.getBlob().getBlobObjestAccess().getParams();
                     Uri uri = Uri.parse(params);
-                    String contentType = uri.getQueryParameter("Content-Type");
-                    String expires = uri.getQueryParameter("Expires");
-                    String acl = uri.getQueryParameter("acl");
-                    String key = uri.getQueryParameter("key");
-                    String policy = uri.getQueryParameter("policy");
-                    String actionStatus = uri.getQueryParameter("success_action_status");
-                    String algorithm = uri.getQueryParameter("x-amz-algorithm");
-                    String credential = uri.getQueryParameter("x-amz-credential");
-                    String date = uri.getQueryParameter("x-amz-date");
-                    String signature = uri.getQueryParameter("x-amz-signature");
 
-                    uploadFile(contentType, expires, acl, key, policy, actionStatus, algorithm, credential, date, signature, mUploadFile);
+                    RequestBody file = RequestBody.create(MediaType.parse("image/jpg"), mUploadFile);
+                    //***
+                    MultipartBody.Part multiPart = MultipartBody.Part.createFormData(ApiConstant.UploadParametres.FILE, mUploadFile.getName(), file);
+                    //***
+                    uploadFileRetrofit(
+                            uri.getQueryParameter(ApiConstant.UploadParametres.CONTENT_TYPE),
+                            uri.getQueryParameter(ApiConstant.UploadParametres.EXPIRES),
+                            uri.getQueryParameter(ApiConstant.UploadParametres.ACL),
+                            uri.getQueryParameter(ApiConstant.UploadParametres.KEY),
+                            uri.getQueryParameter(ApiConstant.UploadParametres.POLICY),
+                            uri.getQueryParameter(ApiConstant.UploadParametres.SUCCESS_ACTION_STATUS),
+                            uri.getQueryParameter(ApiConstant.UploadParametres.ALGORITHM),
+                            uri.getQueryParameter(ApiConstant.UploadParametres.CREDENTIAL),
+                            uri.getQueryParameter(ApiConstant.UploadParametres.DATE),
+                            uri.getQueryParameter(ApiConstant.UploadParametres.SIGNATURE),
+                            multiPart);
 
-                    Log.e("TEST", "blob_id= " + blobId + "; params= ");
+//                    uploadFile(token, blobId,
+//                            uri.getQueryParameter(ApiConstant.UploadParametres.CONTENT_TYPE),
+//                            uri.getQueryParameter(ApiConstant.UploadParametres.EXPIRES),
+//                            uri.getQueryParameter(ApiConstant.UploadParametres.ACL),
+//                            uri.getQueryParameter(ApiConstant.UploadParametres.KEY),
+//                            uri.getQueryParameter(ApiConstant.UploadParametres.POLICY),
+//                            uri.getQueryParameter(ApiConstant.UploadParametres.SUCCESS_ACTION_STATUS),
+//                            uri.getQueryParameter(ApiConstant.UploadParametres.ALGORITHM),
+//                            uri.getQueryParameter(ApiConstant.UploadParametres.CREDENTIAL),
+//                            uri.getQueryParameter(ApiConstant.UploadParametres.DATE),
+//                            uri.getQueryParameter(ApiConstant.UploadParametres.SIGNATURE),
+//                            mUploadFile);
+
                 }, throwable -> {
                     decodeThrowableAndShowAlert(throwable);
                     Log.e("TEST", throwable.getMessage());
                 });
     }
 
-//    private void uploadFileTwo(String type, String expires, String acl, String key, String policy, String actionStatus, String algorithm, String credential, String date, String signature, MultipartBody.Part file) {
-//        mModel.uploadFile(type, expires, acl, key, policy, actionStatus, algorithm, credential, date, signature, file)
-//                .subscribe(aVoid -> {
-//                    Log.e("TEST", "OK");
-//                }, throwable -> {
-//                    Log.e("TEST", throwable.getMessage());
-//                });
-//    }
+    private void uploadFileRetrofit(String content,
+                                    String expires,
+                                    String acl,
+                                    String key,
+                                    String policy,
+                                    String success,
+                                    String algorithm,
+                                    String credential,
+                                    String date,
+                                    String signature,
+                                    MultipartBody.Part file) {
+        mModel.uploadFile(content, expires, acl, key, policy, success, algorithm, credential, date, signature, file)
+                .doOnNext(aVoid -> {
+                    mView.showAlertD();
+                })
+                .subscribe(aVoid -> {}, throwable -> {
+                    Log.e("TEST", throwable.getMessage());
+                });
+    }
 
-    private void uploadFile(String type, String expires, String acl, String key, String policy, String actionStatus, String algorithm, String credential, String date, String signature, File file) {
+    private void uploadFile(String token, long blobId, String type, String expires, String acl, String key, String policy, String actionStatus, String algorithm, String credential, String date, String signature, File file) {
         final HttpUrl url = new HttpUrl.Builder().scheme("https").host("qbprod.s3.amazonaws.com").build();
         final OkHttpClient client = new OkHttpClient();
-
-        if (file.exists())
-            Log.d("stas", "file exists");
 
         new AsyncTask<Void, Void, Response>() {
 
@@ -244,7 +269,6 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
                             .build();
 
                     response = client.newCall(request).execute();
-                    Log.d("stas", response.body().string() + "");
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -254,20 +278,21 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
             @Override
             protected void onPostExecute(okhttp3.Response response) {
                 if (response != null) {
-                    long fileSize = file.length();
-                    Log.d("stas", "file size = " + Long.toString(fileSize));
-
-
+                    declareFileUploaded(file.length(), token, blobId);
                 }
             }
         }.execute();
     }
 
-    private void navigateToMainScreen() {
-        Intent intent = new Intent(mContext, MainActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        mContext.startActivity(intent);
-        ((Activity) mContext).finish();
+    private void declareFileUploaded(long size, String token, long blobId) {
+        mModel.declareFileUploaded(size, token, blobId)
+                .doOnNext(aVoid -> mView.navigatetoMainScreen())
+                .subscribe(aVoid -> {
+
+                }, throwable -> {
+                    decodeThrowableAndShowAlert(throwable);
+                    Log.e("TEST", throwable.getMessage());
+                });
     }
 
     @Override

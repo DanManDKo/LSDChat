@@ -2,12 +2,14 @@ package com.example.lsdchat.ui.registration;
 
 import com.example.lsdchat.App;
 import com.example.lsdchat.api.login.request.LoginRequest;
-import com.example.lsdchat.api.login.request.SessionRequestAuth;
 import com.example.lsdchat.api.login.request.SessionRequestNoAuth;
 import com.example.lsdchat.api.login.response.LoginResponse;
 import com.example.lsdchat.api.login.response.SessionResponse;
+import com.example.lsdchat.api.registration.RegistrationAmazonService;
 import com.example.lsdchat.api.registration.request.RegistrationCreateFileRequest;
 import com.example.lsdchat.api.registration.request.RegistrationCreateFileRequestBlob;
+import com.example.lsdchat.api.registration.request.RegistrationDeclaringRequest;
+import com.example.lsdchat.api.registration.request.RegistrationDeclaringRequestSize;
 import com.example.lsdchat.api.registration.response.RegistrationCreateFileResponse;
 import com.example.lsdchat.api.registration.request.RegistrationRequest;
 import com.example.lsdchat.api.registration.request.RegistrationRequestUser;
@@ -19,15 +21,18 @@ import com.example.lsdchat.util.Signature;
 import java.util.Random;
 
 import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 public class RegistrationModel implements RegistrationContract.Model {
     private RegistrationService mRegistrationService;
+    private RegistrationAmazonService mRegistrationAmazonService;
 
     public RegistrationModel() {
         mRegistrationService = App.getApiManager().getRegistrationService();
+        mRegistrationAmazonService = App.getApiManager().getRegistrationAmazonService();
     }
 
     @Override
@@ -73,9 +78,19 @@ public class RegistrationModel implements RegistrationContract.Model {
     }
 
     @Override
-    public Observable<Void> uploadFile(String type, String expires, String acl, String key, String policy, String actionStatus, String algorithm, String credential, String date, String signature, MultipartBody.Part file) {
+    public Observable<Void> uploadFile(String content, String expires, String acl, String key, String policy, String success, String algorithm, String credential, String date, String signature, MultipartBody.Part part) {
+        //return mRegistrationService.uploadFileRequest(content, expires, acl, key, policy, success, algorithm, credential, date, signature, part)
+        return mRegistrationAmazonService.uploadFileRequest(content, expires, acl, key, policy, success, algorithm, credential, date, signature, part)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
 
-        return mRegistrationService.getUploadFileRequest(type, expires, acl, key, policy, actionStatus, algorithm, credential, date, signature, file)
+    @Override
+    public Observable<Void> declareFileUploaded(long size, String token, long blobId) {
+        RegistrationDeclaringRequestSize fileSize = new RegistrationDeclaringRequestSize(size);
+        RegistrationDeclaringRequest body = new RegistrationDeclaringRequest(fileSize);
+
+        return mRegistrationService.declaringFileUploadedRequest(blobId, token, body)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
