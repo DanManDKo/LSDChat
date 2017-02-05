@@ -63,7 +63,7 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
     private Context mContext;
     private CallbackManager mCallbackManager;
 
-    private String mUserFacebookId = null;
+    private String mUserFacebookId;
     private Uri mFullSizeAvatarUri = null;
     private File mUploadFile = null;
     private String mPhoneNumber = null;
@@ -95,14 +95,34 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
     @Override
     public void onFacebookButtonClickListener(Button button) {
         button.setOnClickListener(view -> {
-            loginWithFacebook();
+            LoginManager.getInstance().logInWithReadPermissions((Activity) mContext, Arrays.asList("public_profile"));
+            getFacebookToken();
+
             button.setText(mContext.getString(R.string.fb_button_text_linked));
             button.setClickable(false);
         });
     }
 
-    private void loginWithFacebook() {
-        LoginManager.getInstance().logInWithReadPermissions((Activity) mContext, Arrays.asList("public_profile"));
+    @Override
+    public void getFacebookToken() {
+
+        LoginManager.getInstance().registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+                //Somehow API backend says wrong user_id, but it is correct
+                mUserFacebookId = loginResult.getAccessToken().getUserId();
+            }
+
+            @Override
+            public void onCancel() {
+
+            }
+
+            @Override
+            public void onError(FacebookException error) {
+                Log.e("FB", error.getMessage());
+            }
+        });
     }
 
     @Override
@@ -143,18 +163,16 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
 
     private void getRegistrationWithToken(String token, RegistrationForm form) {
         form.setPhone(mPhoneNumber);
-        //Somehow API backend says wrong user_id, but it is correct
-        form.setFacebookId(Integer.parseInt(mUserFacebookId));
+
+        if (mUserFacebookId != null) {
+            form.setFacebookId(mUserFacebookId);
+        }
         mModel.getRegistration(token, form)
                 .doOnNext(registrationResponse -> {
                     getLoginRegistratedUser(form.getEmail(), form.getPassword(), token);
                 })
                 .subscribe(registrationResponse -> {
-                    Log.e("TEST", String.valueOf(registrationResponse.getUser().getId()));
-                }, throwable -> {
-                    decodeThrowableAndShowAlert(throwable);
-                    Log.e("TEST", throwable.getMessage());
-                });
+                }, this::decodeThrowableAndShowAlert);
     }
 
     private void getLoginRegistratedUser(String email, String password, String token) {
@@ -169,10 +187,7 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
                 })
                 .subscribe(loginResponse -> {
                     //at this point user can be added to database
-                }, throwable -> {
-                    decodeThrowableAndShowAlert(throwable);
-                    Log.e("TEST", throwable.getMessage());
-                });
+                }, this::decodeThrowableAndShowAlert);
     }
 
     private void getBlobObjectCreateFile(String token, String mime, String fileName) {
@@ -250,11 +265,8 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
                 .subscribe(aVoid -> {
                     long fileSize = mUploadFile.length();
                     declareFileUploaded(fileSize, token, blobId);
-                }, throwable -> {
-                    Log.e("TEST", throwable.getMessage());
-                });
+                }, this::decodeThrowableAndShowAlert);
     }
-
 
 
     private void declareFileUploaded(long size, String token, long blobId) {
@@ -262,32 +274,9 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
                 .doOnNext(aVoid -> mView.navigatetoMainScreen())
                 .subscribe(aVoid -> {
 
-                }, throwable -> {
-                    decodeThrowableAndShowAlert(throwable);
-                    Log.e("TEST", throwable.getMessage());
-                });
+                }, this::decodeThrowableAndShowAlert);
     }
 
-    @Override
-    public void getFacebookToken() {
-        LoginManager.getInstance().registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
-            @Override
-            public void onSuccess(LoginResult loginResult) {
-                //Somehow API backend says wrong user_id, but it is correct
-                mUserFacebookId = loginResult.getAccessToken().getUserId();
-            }
-
-            @Override
-            public void onCancel() {
-
-            }
-
-            @Override
-            public void onError(FacebookException error) {
-
-            }
-        });
-    }
 
     @Override
     public void setTextChangedInputMaskListener(TextInputEditText phone) {
@@ -401,6 +390,8 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
         }
     }
 
+
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
@@ -439,6 +430,8 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
         String title = t.getMessage();
         String message = ErrorsCode.getErrorMessage(mContext, t);
         mView.showResponseDialogError(title, message);
+        mView.hideProgressBar();
+
     }
 
     private String getFileMimeType(File file) {

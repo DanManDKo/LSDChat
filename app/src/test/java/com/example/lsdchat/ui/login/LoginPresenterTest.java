@@ -50,4 +50,6 @@ public class LoginPresenterTest {
         presenter.goToRegistrationScreen();
         verify(view,times(1)).navigateToRegistration();
     }
+
+
 }

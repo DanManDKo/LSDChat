@@ -24,7 +24,7 @@ public class RegistrationUser {
     @SerializedName("external_user_id")
     private Integer externalUserId;
     @SerializedName("facebook_id")
-    private Integer facebookId;
+    private String facebookId;
     @SerializedName("blob_id")
     private Integer blobId;
     @SerializedName("custom_data")
@@ -112,11 +112,11 @@ public class RegistrationUser {
         this.externalUserId = externalUserId;
     }
 
-    public int getFacebookId() {
+    public String getFacebookId() {
         return facebookId;
     }
 
-    public void setFacebookId(int facebookId) {
+    public void setFacebookId(String facebookId) {
         this.facebookId = facebookId;
     }
 
