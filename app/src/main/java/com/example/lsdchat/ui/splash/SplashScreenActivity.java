@@ -49,11 +49,17 @@ public class SplashScreenActivity extends AppCompatActivity implements SplashCon
     @Override
     public void navigateToLogin() {
         startActivity(new Intent(this, LoginActivity.class));
+        overridePendingTransition(R.anim.push_up_in, R.anim.push_up_out);
+        finish();
+        overridePendingTransition(R.anim.push_down_in, R.anim.push_down_out);
     }
 
     @Override
     public void navigateToMain() {
         startActivity(new Intent(this, MainActivity.class));
+        overridePendingTransition(R.anim.push_up_in, R.anim.push_up_out);
+        finish();
+        overridePendingTransition(R.anim.push_down_in, R.anim.push_down_out);
     }
 }
 

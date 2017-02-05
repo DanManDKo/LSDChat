@@ -187,8 +187,8 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
 
     @Override
     public void navigateToRegistration() {
-//        TODO: start activity registration
         startActivity(new Intent(this, RegistrationActivity.class));
+        overridePendingTransition(R.anim.push_up_in, R.anim.push_up_out);
     }
 
 
@@ -196,6 +196,9 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
     @Override
     public void navigateToMainScreen() {
         startActivity(new Intent(this, MainActivity.class));
+        overridePendingTransition(R.anim.push_up_in, R.anim.push_up_out);
+        finish();
+        overridePendingTransition(R.anim.push_down_in, R.anim.push_down_out);
     }
 
     @Override
