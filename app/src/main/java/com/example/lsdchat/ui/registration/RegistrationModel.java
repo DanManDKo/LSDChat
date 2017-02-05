@@ -7,9 +7,6 @@ import com.example.lsdchat.api.login.response.LoginResponse;
 import com.example.lsdchat.api.login.response.SessionResponse;
 import com.example.lsdchat.api.registration.RegistrationService;
 import com.example.lsdchat.api.registration.request.RegistrationCreateFileRequest;
-import com.example.lsdchat.api.registration.request.RegistrationCreateFileRequestBlob;
-import com.example.lsdchat.api.registration.request.RegistrationDeclaringRequest;
-import com.example.lsdchat.api.registration.request.RegistrationDeclaringRequestSize;
 import com.example.lsdchat.api.registration.request.RegistrationRequest;
 import com.example.lsdchat.api.registration.request.RegistrationRequestUser;
 import com.example.lsdchat.api.registration.response.RegistrationCreateFileResponse;
@@ -48,8 +45,8 @@ public class RegistrationModel implements RegistrationContract.Model {
 
     @Override
     public Observable<RegistrationResponse> getRegistration(String token, RegistrationForm form) {
-        RegistrationRequestUser user = new RegistrationRequestUser(form.getEmail(),form.getPassword(),
-                form.getFullName(),form.getPhone(),form.getWebsite(),form.getFacebookId(),form.getBlobId());
+        RegistrationRequestUser user = new RegistrationRequestUser(form.getEmail(), form.getPassword(),
+                form.getFullName(), form.getPhone(), form.getWebsite(), form.getFacebookId(), form.getBlobId());
 
         RegistrationRequest body = new RegistrationRequest(user);
         return mRegistrationService.getRegistrationRequest(token, body)
