@@ -98,4 +98,18 @@
         <item name="android:layout_width">wrap_content</item>
     </style>
 
+    <style name="ForgotPassword">
+        <item name="android:textSize">@dimen/font_normal</item>
+        <item name="colorAccent">@color/colorForgotPassword</item>
+        <item name="android:textColorHint">@color/colorForgotPassword</item>
+        <item name="colorControlNormal">@color/colorForgotPassword</item>
+        <item name="colorControlActivated">@color/colorForgotPassword</item>
+        <item name="colorControlHighlight">@color/colorForgotPassword</item>
+        <item name="android:textColor">@color/colorForgotPassword</item>
+    </style>
+    <style name="EditTextForgotPassword">
+        <item name="android:textSize">@dimen/font_normal</item>
+        <item name="android:textColor">@color/colorForgotPassword</item>
+    </style>
+
 </resources>

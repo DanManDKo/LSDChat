@@ -68,7 +68,7 @@ public class ForgotPasswordPresenter implements ForgotPasswordContract.Presenter
                     });
 
         }, throwable -> {
-            mView.showEmailError(throwable.getMessage());
+            mView.setEmailError(throwable.getMessage());
         });
 
     }

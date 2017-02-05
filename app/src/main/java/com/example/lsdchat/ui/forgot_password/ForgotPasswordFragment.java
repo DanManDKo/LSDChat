@@ -4,6 +4,7 @@ import android.app.DialogFragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TextInputLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +23,7 @@ public class ForgotPasswordFragment extends DialogFragment implements ForgotPass
     private Button mSend;
     private Button mCancel;
     private EditText mEmailInput;
+    private TextInputLayout mTextInputLayout;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -49,6 +51,7 @@ public class ForgotPasswordFragment extends DialogFragment implements ForgotPass
         mCancel = (Button) view.findViewById(R.id.btn_cancel_forgot_password);
         mSend = (Button) view.findViewById(R.id.btn_send_forgot_password);
         mEmailInput = (EditText) view.findViewById(R.id.email_input_forgot_password);
+        mTextInputLayout = (TextInputLayout) view.findViewById(R.id.forgot_password_input_layout);
     }
 
     @Override
@@ -60,12 +63,12 @@ public class ForgotPasswordFragment extends DialogFragment implements ForgotPass
 
     @Override
     public void setEmailError(String error) {
-        mEmailInput.setError(error);
+        mTextInputLayout.setError(error);
     }
 
     @Override
     public void hideEmailError() {
-        mEmailInput.setError(null);
+        mTextInputLayout.setError(null);
     }
 
     @Override
@@ -75,10 +78,7 @@ public class ForgotPasswordFragment extends DialogFragment implements ForgotPass
     }
 
 
-    @Override
-    public void showEmailError(String msg) {
-        mEmailInput.setError(msg);
-    }
+
 
     @Override
     public String getEmail() {

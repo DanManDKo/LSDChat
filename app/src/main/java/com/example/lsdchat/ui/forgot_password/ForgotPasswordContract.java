@@ -38,7 +38,6 @@ public class ForgotPasswordContract {
 
         void showEmailSuccessToast();
 
-        void showEmailError(String msg);
 
         String getEmail();
 
