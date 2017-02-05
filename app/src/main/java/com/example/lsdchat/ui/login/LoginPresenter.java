@@ -98,7 +98,6 @@ public class LoginPresenter implements LoginContract.Presenter {
 //                            save token
 
                         },
-                        // TODO: 28.01.2017 [Code Review] add proper error handling logic
                         throwable -> {
                             Log.e("11111", throwable.getMessage());
                             mView.dialogError(throwable);

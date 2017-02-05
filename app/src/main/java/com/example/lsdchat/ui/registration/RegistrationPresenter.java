@@ -4,9 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Path;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.design.widget.TextInputEditText;
@@ -21,16 +19,13 @@ import android.widget.Toast;
 
 import com.example.lsdchat.R;
 import com.example.lsdchat.constant.ApiConstant;
-import com.example.lsdchat.ui.MainActivity;
 import com.example.lsdchat.util.Email;
 import com.example.lsdchat.util.ErrorsCode;
 import com.example.lsdchat.util.Network;
-import com.example.lsdchat.util.RequestBuilder;
 import com.example.lsdchat.util.StorageHelper;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
-import com.facebook.common.file.FileUtils;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.redmadrobot.inputmask.MaskedTextChangedListener;
@@ -39,19 +34,15 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.net.URLConnection;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 
-import okhttp3.HttpUrl;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
 import okhttp3.RequestBody;
-import okhttp3.Response;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -190,7 +181,6 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
                     long blobId = registrationCreateFileResponse.getBlob().getBlobObjestAccess().getBlobId();
                     String params = registrationCreateFileResponse.getBlob().getBlobObjestAccess().getParams();
                     Uri uri = Uri.parse(params);
-
                     RequestBody contentR = RequestBody.create(MultipartBody.FORM, uri.getQueryParameter(ApiConstant.UploadParametres.CONTENT_TYPE));
                     RequestBody expiresR = RequestBody.create(MultipartBody.FORM, uri.getQueryParameter(ApiConstant.UploadParametres.EXPIRES));
                     RequestBody aclR = RequestBody.create(MultipartBody.FORM, uri.getQueryParameter(ApiConstant.UploadParametres.ACL));
@@ -206,6 +196,7 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
                     RequestBody file = RequestBody.create(MediaType.parse(getFileMimeType(mUploadFile)), mUploadFile);
                     MultipartBody.Part multiPart = MultipartBody.Part.createFormData(ApiConstant.UploadParametres.FILE, mUploadFile.getName(), file);
                     //***
+
                     uploadFileRetrofit(
                             token,
                             blobId,
@@ -221,18 +212,6 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
                             signatureR,
                             multiPart);
 
-//                    uploadFile(token, blobId,
-//                            uri.getQueryParameter(ApiConstant.UploadParametres.CONTENT_TYPE),
-//                            uri.getQueryParameter(ApiConstant.UploadParametres.EXPIRES),
-//                            uri.getQueryParameter(ApiConstant.UploadParametres.ACL),
-//                            uri.getQueryParameter(ApiConstant.UploadParametres.KEY),
-//                            uri.getQueryParameter(ApiConstant.UploadParametres.POLICY),
-//                            uri.getQueryParameter(ApiConstant.UploadParametres.SUCCESS_ACTION_STATUS),
-//                            uri.getQueryParameter(ApiConstant.UploadParametres.ALGORITHM),
-//                            uri.getQueryParameter(ApiConstant.UploadParametres.CREDENTIAL),
-//                            uri.getQueryParameter(ApiConstant.UploadParametres.DATE),
-//                            uri.getQueryParameter(ApiConstant.UploadParametres.SIGNATURE),
-//                            mUploadFile);
 
                 }, throwable -> {
                     decodeThrowableAndShowAlert(throwable);
@@ -253,49 +232,30 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
             RequestBody date,
             RequestBody signature,
             MultipartBody.Part file) {
-        mModel.uploadFile(token, blobId, content, expires, acl, key, policy, success, algorithm, credential, date, signature, file)
-                .doOnNext(aVoid -> {
-              //      mView.showAlertD();
+
+        HashMap<String, RequestBody> map = new HashMap<>();
+        map.put(ApiConstant.UploadParametres.CONTENT_TYPE, content);
+        map.put(ApiConstant.UploadParametres.EXPIRES, expires);
+        map.put(ApiConstant.UploadParametres.ACL, acl);
+        map.put(ApiConstant.UploadParametres.KEY, key);
+        map.put(ApiConstant.UploadParametres.POLICY, policy);
+        map.put(ApiConstant.UploadParametres.SUCCESS_ACTION_STATUS, success);
+        map.put(ApiConstant.UploadParametres.ALGORITHM, algorithm);
+        map.put(ApiConstant.UploadParametres.CREDENTIAL, credential);
+        map.put(ApiConstant.UploadParametres.DATE, date);
+        map.put(ApiConstant.UploadParametres.SIGNATURE, signature);
+
+
+        mModel.uploadFileMap(map, file)
+                .subscribe(aVoid -> {
                     long fileSize = mUploadFile.length();
                     declareFileUploaded(fileSize, token, blobId);
-                })
-                .subscribe(aVoid -> {
                 }, throwable -> {
                     Log.e("TEST", throwable.getMessage());
                 });
     }
 
-    private void uploadFile(String token, long blobId, String type, String expires, String acl, String key, String policy, String actionStatus, String algorithm, String credential, String date, String signature, File file) {
-        final HttpUrl url = new HttpUrl.Builder().scheme("https").host("qbprod.s3.amazonaws.com").build();
-        final OkHttpClient client = new OkHttpClient();
 
-        new AsyncTask<Void, Void, Response>() {
-
-            @Override
-            protected okhttp3.Response doInBackground(Void... voids) {
-                okhttp3.Response response = null;
-                try {
-                    Request request = new Request.Builder()
-                            .url(url)
-                            .post(RequestBuilder.uploadRequestBody(type, expires, acl, key, policy, actionStatus,
-                                    algorithm, credential, date, signature, file))
-                            .build();
-
-                    response = client.newCall(request).execute();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                return response;
-            }
-
-            @Override
-            protected void onPostExecute(okhttp3.Response response) {
-                if (response != null) {
-                    declareFileUploaded(file.length(), token, blobId);
-                }
-            }
-        }.execute();
-    }
 
     private void declareFileUploaded(long size, String token, long blobId) {
         mModel.declareFileUploaded(size, token, blobId)
