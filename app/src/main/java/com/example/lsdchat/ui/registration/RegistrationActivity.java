@@ -97,11 +97,6 @@ public class RegistrationActivity extends AppCompatActivity implements Registrat
         mNameEdit = (TextInputEditText) findViewById(R.id.tiet_name_reg);
         mWebEdit = (TextInputEditText) findViewById(R.id.tiet_web_reg);
 
-        mEmailEdit.setText("aaaaaa11@uff.fm");
-        mPassEdit.setText("WWeerr55");
-        mConfPassEdit.setText("WWeerr55");
-        mWebEdit.setText("www.lol.com");
-        mNameEdit.setText("Jim Bim");
     }
 
     public void setRegFormHint() {

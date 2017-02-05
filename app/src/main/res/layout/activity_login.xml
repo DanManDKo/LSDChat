@@ -18,10 +18,11 @@
             app:theme="@style/ToolbarBackArrowColor">
 
             <TextView
+                android:inputType="textCapWords"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="@string/login.sign_in"
+                android:text="@string/screen_sign_in"
                 android:textColor="@color/colorWhite"
                 android:textSize="@dimen/title_font_size" />
         </android.support.v7.widget.Toolbar>

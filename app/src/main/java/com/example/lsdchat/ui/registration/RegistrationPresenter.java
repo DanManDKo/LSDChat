@@ -260,15 +260,13 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
         mModel.uploadFileMap(map, file)
                 .doOnRequest(request -> mView.showProgressBar())
                 .doOnUnsubscribe(() -> mView.hideProgressBar())
-                .doOnNext(aVoid -> {
+                .subscribe(aVoid -> {
                     long fileSize = mUploadFile.length();
-
                     if (fileSize != 0 && blobId != 0) {
                         declareFileUploaded(fileSize, token, blobId);
                     }
                 }, this::decodeThrowableAndShowAlert);
     }
-
 
 
     private void declareFileUploaded(long size, String token, long blobId) {
@@ -277,7 +275,7 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
                 .doOnUnsubscribe(() -> mView.hideProgressBar())
                 .subscribe(aVoid -> {
 
-Toast.makeText(mContext, mContext.getString(R.string.registration_complete), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(mContext, mContext.getString(R.string.registration_complete), Toast.LENGTH_SHORT).show();
                     mView.navigatetoMainScreen();
                 }, this::decodeThrowableAndShowAlert);
 
@@ -395,7 +393,6 @@ Toast.makeText(mContext, mContext.getString(R.string.registration_complete), Toa
             Toast.makeText(mContext, mContext.getString(R.string.there_is_no_device_camera), Toast.LENGTH_SHORT).show();
         }
     }
-
 
 
     @Override

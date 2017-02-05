@@ -85,5 +85,6 @@
     <string name="error.code.503">Server is at capacity, try again later</string>
     <string name="error.code.unknown">Unknown code</string>
     <string name="error.code.noconnect">No connections!</string>
+    <string name="screen_sign_in">SIGN IN</string>
 
 </resources>
