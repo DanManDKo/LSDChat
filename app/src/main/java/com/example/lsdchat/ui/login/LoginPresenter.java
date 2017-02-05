@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.example.lsdchat.manager.DataManager;
 import com.example.lsdchat.model.User;
+
 import com.example.lsdchat.service.NotifyService;
 import com.example.lsdchat.util.Email;
 import com.example.lsdchat.util.Network;
@@ -20,6 +21,7 @@ import rx.Observable;
 
 
 public class LoginPresenter implements LoginContract.Presenter {
+
     private LoginContract.View mView;
     private LoginContract.Model mModel;
     private DataManager mDataManager;
@@ -150,7 +152,10 @@ public class LoginPresenter implements LoginContract.Presenter {
     }
 
     @Override
-    public void btnSignInClick(Button btnSignIn, EditText etEmail, EditText etPassword) {
+    public boolean isValidEmail(CharSequence email) {
+        return Email.checkEmail(email.toString());
+}
+  public void btnSignInClick(Button btnSignIn, EditText etEmail, EditText etPassword) {
         btnSignIn.setOnClickListener(view -> {
             String email = etEmail.getText().toString();
             String password = etPassword.getText().toString();
@@ -181,6 +186,9 @@ public class LoginPresenter implements LoginContract.Presenter {
     }
 
     @Override
+    public void btnSignForgotPasswordClick() {
+        mView.showDialogForgotPassword();
+}
     public void startService(Context context) {
         context.startService(new Intent(context, NotifyService.class));
     }
@@ -189,5 +197,7 @@ public class LoginPresenter implements LoginContract.Presenter {
     public void stopService(Context context) {
         context.stopService(new Intent(context, NotifyService.class));
     }
+
+
 
 }

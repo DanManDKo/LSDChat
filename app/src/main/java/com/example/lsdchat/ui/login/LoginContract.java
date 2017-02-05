@@ -66,12 +66,10 @@ public interface LoginContract {
 
         void navigateToRegistration();
 
-        void navigateToForgotPassword();
-
         void navigateToMainScreen();
 
         boolean isKeepSignIn();
-
+        void showDialogForgotPassword();
 
     }
 

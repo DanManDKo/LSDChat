@@ -21,7 +21,7 @@
         android:layout_below="@+id/logo"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="@dimen/splash_title_margin_top"
-        android:text="LCD Chat"
+        android:text="@string/app_name"
         android:textColor="@color/colorWhite"
         android:textSize="@dimen/splash_title_size"/>
 </RelativeLayout>

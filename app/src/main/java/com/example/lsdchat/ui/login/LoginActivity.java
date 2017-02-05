@@ -18,11 +18,13 @@ import android.widget.TextView;
 import com.example.lsdchat.App;
 import com.example.lsdchat.R;
 import com.example.lsdchat.ui.MainActivity;
+import com.example.lsdchat.ui.forgot_password.ForgotPasswordFragment;
 import com.example.lsdchat.ui.registration.RegistrationActivity;
 import com.example.lsdchat.util.ErrorsCode;
 
 public class LoginActivity extends AppCompatActivity implements LoginContract.View {
 
+    private static final String FORGOT_PASSWORD_DIALOG = "forgot";
     private ProgressBar mProgressBar;
     private EditText mEmail;
     private EditText mPassword;
@@ -33,7 +35,11 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
     private CheckBox mKeepMeSignIn;
     private TextInputLayout mIlEmail;
     private TextInputLayout mIlPassword;
+
+    private ForgotPasswordFragment mForgotPasswordFragment;
+
     private Toolbar mToolbar;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +78,9 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
         mKeepMeSignIn = (CheckBox) findViewById(R.id.cb_keep_me_signed_in);
         mIlEmail = (TextInputLayout) findViewById(R.id.input_layout_email);
         mIlPassword = (TextInputLayout) findViewById(R.id.input_layout_password);
+
+        mForgotPasswordFragment = new ForgotPasswordFragment();
+
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
 
         setSupportActionBar(mToolbar);
@@ -182,10 +191,7 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
         startActivity(new Intent(this, RegistrationActivity.class));
     }
 
-    @Override
-    public void navigateToForgotPassword() {
-//        TODO: start activity forgotpassword
-    }
+
 
     @Override
     public void navigateToMainScreen() {
@@ -195,6 +201,11 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
     @Override
     public boolean isKeepSignIn() {
         return mKeepMeSignIn.isChecked();
+    }
+
+    @Override
+    public void showDialogForgotPassword() {
+        mForgotPasswordFragment.show(getFragmentManager(), FORGOT_PASSWORD_DIALOG);
     }
 
 }

@@ -49,4 +49,8 @@
     <dimen name="splash_logo_margin_top">200dp</dimen>
     <dimen name="splash_title_margin_top">50dp</dimen>
     <dimen name="splash_title_size">42sp</dimen>
+    <!--forgot password-->
+    <dimen name="restore_password_title_size">26sp</dimen>
+    <dimen name="restore_password_edit_text_margin_left">22dp</dimen>
+    <dimen name="restore_password_edit_text_margin_right">22dp</dimen>
 </resources>

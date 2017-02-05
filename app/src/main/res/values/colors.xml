@@ -13,4 +13,5 @@
     <color name="colorNavyBlueDark">#004951</color>
     <color name="colorButtonDisable">#165258</color>
     <color name="colorFbButton">#3b5998</color>
+    <color name="colorButtonText">#009688</color>
 </resources>
