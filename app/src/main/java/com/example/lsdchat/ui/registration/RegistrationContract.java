@@ -72,11 +72,9 @@ public interface RegistrationContract {
 
         void showResponseDialogError(String title, String message);
 
+        void showNetworkErrorDialog();
+
         void navigatetoMainScreen();
-
-        //just alert for test
-        void showAlertD();
-
     }
 
 

@@ -192,6 +192,16 @@ public class RegistrationActivity extends AppCompatActivity implements Registrat
     }
 
     @Override
+    public void showNetworkErrorDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(getString(R.string.no_internet_connection))
+                .setPositiveButton(getString(R.string.alert_ok), (dialogInterface, i) -> dialogInterface.dismiss())
+                .setCancelable(false)
+                .create()
+                .show();
+    }
+
+    @Override
     public void showProgressBar() {
         mProgressBar.setVisibility(View.VISIBLE);
     }
@@ -199,17 +209,5 @@ public class RegistrationActivity extends AppCompatActivity implements Registrat
     @Override
     public void hideProgressBar() {
         mProgressBar.setVisibility(View.INVISIBLE);
-    }
-
-    //just alert for test
-    @Override
-    public void showAlertD() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Daaaa")
-                .setPositiveButton(getString(R.string.alert_ok), (dialogInterface, i) -> dialogInterface.dismiss())
-                .setOnCancelListener(dialogInterface -> dialogInterface.dismiss())
-                .setCancelable(false)
-                .create()
-                .show();
     }
 }

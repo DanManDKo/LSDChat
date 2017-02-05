@@ -95,12 +95,16 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
     @Override
     public void onFacebookButtonClickListener(Button button) {
         button.setOnClickListener(view -> {
-            LoginManager.getInstance().logInWithReadPermissions((Activity) mContext, Arrays.asList("public_profile"));
+            if (isOnline()) {
+                LoginManager.getInstance().logInWithReadPermissions((Activity) mContext, Arrays.asList("public_profile"));
 
-            getFacebookToken();
+                getFacebookToken();
 
-            button.setText(mContext.getString(R.string.fb_button_text_linked));
-            button.setClickable(false);
+                button.setText(mContext.getString(R.string.fb_button_text_linked));
+                button.setClickable(false);
+            } else {
+                mView.showNetworkErrorDialog();
+            }
         });
     }
 
@@ -110,7 +114,6 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
         LoginManager.getInstance().registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
-                //Somehow API backend says wrong user_id, but it is correct
                 mUserFacebookId = loginResult.getAccessToken().getUserId();
             }
 
@@ -121,9 +124,7 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
 
             @Override
             public void onError(FacebookException error) {
-
                 Log.e("FB", error.getMessage());
-
             }
         });
     }
@@ -142,7 +143,11 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
                     pass.getText().toString(),
                     confpass.getText().toString());
 
-            requestSessionAndRegistration(validateValue, form, button);
+            if (isOnline()) {
+                requestSessionAndRegistration(validateValue, form, button);
+            } else {
+                mView.showNetworkErrorDialog();
+            }
         });
     }
 
@@ -444,6 +449,7 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
     public TextWatcher getTextWatcher() {
         return mTextWatcher;
     }
+
 
     @Override
     public void onDestroy() {
