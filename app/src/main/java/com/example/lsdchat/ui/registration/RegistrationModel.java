@@ -18,6 +18,7 @@ import com.example.lsdchat.api.registration.RegistrationService;
 import com.example.lsdchat.constant.ApiConstant;
 import com.example.lsdchat.util.Signature;
 
+import java.io.File;
 import java.util.Random;
 
 import okhttp3.MultipartBody;
@@ -34,6 +35,7 @@ public class RegistrationModel implements RegistrationContract.Model {
         mRegistrationService = App.getApiManager().getRegistrationService();
         mRegistrationAmazonService = App.getApiManager().getRegistrationAmazonService();
     }
+
 
     @Override
     public Observable<SessionResponse> getSessionNoAuth() {
@@ -78,7 +80,7 @@ public class RegistrationModel implements RegistrationContract.Model {
     }
 
     @Override
-    public Observable<Void> uploadFile(String content, String expires, String acl, String key, String policy, String success, String algorithm, String credential, String date, String signature, MultipartBody.Part part) {
+    public Observable<Void> uploadFile(String token, long blobId, RequestBody content, RequestBody expires, RequestBody acl, RequestBody key, RequestBody policy, RequestBody success, RequestBody algorithm, RequestBody credential, RequestBody date, RequestBody signature, MultipartBody.Part part) {
         //return mRegistrationService.uploadFileRequest(content, expires, acl, key, policy, success, algorithm, credential, date, signature, part)
         return mRegistrationAmazonService.uploadFileRequest(content, expires, acl, key, policy, success, algorithm, credential, date, signature, part)
                 .subscribeOn(Schedulers.io())
