@@ -14,7 +14,6 @@ public class ApiManager {
 
     private Retrofit mRetrofit;
     private LoginService mLoginService;
-    private SessionService mSessionService;
     private ForgotPasswordService mForgotPasswordService;
 
     private RegistrationService mRegistrationService;

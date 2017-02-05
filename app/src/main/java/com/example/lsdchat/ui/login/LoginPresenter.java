@@ -39,7 +39,7 @@ public class LoginPresenter implements LoginContract.Presenter {
         this.mDataManager = null;
         this.mView = null;
         this.mModel = null;
-        stopService(mView.getContext());
+
     }
 
     @Override
@@ -151,10 +151,10 @@ public class LoginPresenter implements LoginContract.Presenter {
         return !TextUtils.isEmpty(password) && (password.toString().length() > 7);
     }
 
+
+
+
     @Override
-    public boolean isValidEmail(CharSequence email) {
-        return Email.checkEmail(email.toString());
-}
   public void btnSignInClick(Button btnSignIn, EditText etEmail, EditText etPassword) {
         btnSignIn.setOnClickListener(view -> {
             String email = etEmail.getText().toString();
@@ -182,13 +182,9 @@ public class LoginPresenter implements LoginContract.Presenter {
 
     @Override
     public void btnSignForgotPasswordClick(TextView btnForgotPassword) {
-        btnForgotPassword.setOnClickListener(view -> mView.navigateToForgotPassword());
+        btnForgotPassword.setOnClickListener(view -> mView.showDialogForgotPassword());
     }
 
-    @Override
-    public void btnSignForgotPasswordClick() {
-        mView.showDialogForgotPassword();
-}
     public void startService(Context context) {
         context.startService(new Intent(context, NotifyService.class));
     }
