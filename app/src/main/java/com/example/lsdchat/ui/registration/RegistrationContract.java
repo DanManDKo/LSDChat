@@ -7,13 +7,19 @@ import android.support.design.widget.TextInputEditText;
 import android.widget.Button;
 import android.widget.ImageView;
 
+import com.example.lsdchat.api.login.response.LoginResponse;
 import com.example.lsdchat.api.login.response.SessionResponse;
 import com.example.lsdchat.api.registration.response.RegistrationCreateFileResponse;
 import com.example.lsdchat.api.registration.response.RegistrationResponse;
 
+import java.util.Map;
+
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import rx.Observable;
 
 public interface RegistrationContract {
+
     interface Presenter {
         boolean isOnline();
 
@@ -64,13 +70,32 @@ public interface RegistrationContract {
 
         Context getContext();
 
+        void showResponseDialogError(String title, String message);
+
+        void navigatetoMainScreen();
+
+        //just alert for test
+        void showAlertD();
+
     }
+
 
     interface Model {
         Observable<SessionResponse> getSessionNoAuth();
 
+        Observable<LoginResponse> getLogin(String email, String password, String token);
+
         Observable<RegistrationResponse> getRegistration(String token, RegistrationForm form);
 
         Observable<RegistrationCreateFileResponse> createFile(String token, String mime, String fileName);
+
+
+        Observable<Void> declareFileUploaded(long size, String token, long blobId);
+
+
+
+        Observable<Void> uploadFileMap(Map<String, RequestBody> map,MultipartBody.Part part);
     }
+
+
 }

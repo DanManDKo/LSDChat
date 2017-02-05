@@ -44,11 +44,12 @@
     <string name="invalid_email">Invalid email</string>
     <string name="password_is_weak">Password is weak. Please use at least two digits and two capitalized letters</string>
     <string name="passwords_donot_match">Passwords do not match</string>
-    <string name="password_length">Password length should be 6-12 symbols</string>
+    <string name="password_length">Password length should be 8-12 symbols</string>
     <!--registration alert dialog-->
     <string name="add_photo">Add photo</string>
     <string name="device_camera">Device camera</string>
     <string name="photo_gallery">Photo Gallery</string>
+    <string name="alert_ok">Ok</string>
     <!--toasts-->
     <string name="registration_complete">Registration complete</string>
     <string name="there_is_no_device_camera">Your device doesn`t have camera</string>

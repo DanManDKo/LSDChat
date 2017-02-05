@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -14,6 +15,7 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 
 import com.example.lsdchat.R;
+import com.example.lsdchat.ui.MainActivity;
 import com.facebook.drawee.view.SimpleDraweeView;
 
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
@@ -106,6 +108,16 @@ public class RegistrationActivity extends AppCompatActivity implements Registrat
     }
 
     @Override
+    public void navigatetoMainScreen() {
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+        overridePendingTransition(R.anim.push_up_in, R.anim.push_up_out);
+        finish();
+        overridePendingTransition(R.anim.push_down_in, R.anim.push_down_out);
+    }
+
+    @Override
     public void getUserpicUri(Uri uri) {
         mImageView.setImageURI(uri);
     }
@@ -160,6 +172,17 @@ public class RegistrationActivity extends AppCompatActivity implements Registrat
     }
 
     @Override
+    public void showResponseDialogError(String title, String message) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(title)
+                .setMessage(message)
+                .setPositiveButton(getString(R.string.alert_ok), (dialogInterface, i) -> dialogInterface.dismiss())
+                .setCancelable(false)
+                .create()
+                .show();
+    }
+
+    @Override
     public void showProgressBar() {
         mProgressBar.setVisibility(View.VISIBLE);
     }
@@ -167,5 +190,17 @@ public class RegistrationActivity extends AppCompatActivity implements Registrat
     @Override
     public void hideProgressBar() {
         mProgressBar.setVisibility(View.INVISIBLE);
+    }
+
+    //just alert for test
+    @Override
+    public void showAlertD() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Daaaa")
+                .setPositiveButton(getString(R.string.alert_ok), (dialogInterface, i) -> dialogInterface.dismiss())
+                .setOnCancelListener(dialogInterface -> dialogInterface.dismiss())
+                .setCancelable(false)
+                .create()
+                .show();
     }
 }

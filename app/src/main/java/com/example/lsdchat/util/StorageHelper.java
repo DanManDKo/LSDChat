@@ -10,15 +10,13 @@ import android.os.Environment;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 public class StorageHelper {
     private static final String AVATAR_FILE_NAME = "avatar.jpg";
     private static final int IMAGE_QUALITY = 100;
     private static final int REQUERED_SIZE = 320;
 
-    public static Uri decodeAndSaveUri(Context c, Uri uri)
+    public static File decodeAndSaveUri(Context c, Uri uri)
             throws FileNotFoundException {
         //resizing...
         BitmapFactory.Options o = new BitmapFactory.Options();
@@ -50,6 +48,8 @@ public class StorageHelper {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return Uri.parse(file.getAbsolutePath());
+        return file;
     }
+
+
 }
