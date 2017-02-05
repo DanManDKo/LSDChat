@@ -1,4 +1,8 @@
-package com.example.lsdchat.ui.registration;
+package com.example.lsdchat.unit.registration;
+
+import com.example.lsdchat.ui.registration.RegistrationActivity;
+import com.example.lsdchat.ui.registration.RegistrationContract;
+import com.example.lsdchat.ui.registration.RegistrationPresenter;
 
 import org.junit.Before;
 import org.junit.runner.RunWith;

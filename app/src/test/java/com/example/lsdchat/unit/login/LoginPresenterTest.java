@@ -1,6 +1,9 @@
-package com.example.lsdchat.ui.login;
+package com.example.lsdchat.unit.login;
 
 import com.example.lsdchat.manager.DataManager;
+import com.example.lsdchat.ui.login.LoginActivity;
+import com.example.lsdchat.ui.login.LoginContract;
+import com.example.lsdchat.ui.login.LoginPresenter;
 
 import org.junit.Before;
 import org.junit.Test;
