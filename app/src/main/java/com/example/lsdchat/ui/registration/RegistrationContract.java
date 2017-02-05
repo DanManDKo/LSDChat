@@ -12,7 +12,10 @@ import com.example.lsdchat.api.login.response.SessionResponse;
 import com.example.lsdchat.api.registration.response.RegistrationCreateFileResponse;
 import com.example.lsdchat.api.registration.response.RegistrationResponse;
 
+import java.io.File;
+
 import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.http.Field;
 import retrofit2.http.Part;
 import rx.Observable;
@@ -70,6 +73,10 @@ public interface RegistrationContract {
 
         void showResponseDialogError(String title, String message);
 
+        void navigatetoMainScreen();
+        //just alert for test
+        void showAlertD();
+
     }
 
     interface Model {
@@ -81,16 +88,19 @@ public interface RegistrationContract {
 
         Observable<RegistrationCreateFileResponse> createFile(String token, String mime, String fileName);
 
-        Observable<Void> uploadFile(String type,
-                                    String expires,
-                                    String acl,
-                                    String key,
-                                    String policy,
-                                    String actionStatus,
-                                    String algorithm,
-                                    String credential,
-                                    String date,
-                                    String signature,
-                                    MultipartBody.Part part);
+        Observable<Void> uploadFile(
+                String content,
+                String expires,
+                String acl,
+                String key,
+                String policy,
+                String success,
+                String algorithm,
+                String credential,
+                String date,
+                String signature,
+                MultipartBody.Part part);
+
+        Observable<Void> declareFileUploaded(long size, String token, long blobId);
     }
 }
