@@ -52,6 +52,7 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
     private static final int MIN_DIGITS_AND_LETTERS_VALUE = 2;
     private static final int MIN_PASSWORD_LENGTH = 8;
     private static final int MAX_PASSWORD_LENGTH = 12;
+    private static final long MAX_AVATAR_SIZE = 1048576;
 
     private static final String DATE_FORMAT = "yyyyMMdd_HHmmss";
     private static final String AVATAR_FILE_NAME = "_avatar.jpg";
@@ -359,22 +360,11 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
     }
 
     @Override
-    public void onAvatarClickListener(ImageView imageView) {
-        imageView.setOnClickListener(view -> showDialogImageSourceChooser());
+    public void onAvatarClickListener() {
+        mView.showDialogImageSourceChooser();
     }
 
-    private void showDialogImageSourceChooser() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(mContext)
-                .setTitle(mContext.getString(R.string.add_photo))
-                .setPositiveButton(mContext.getString(R.string.photo_gallery), (dialogInterface, i) -> {
-                    getPhotoFromGallery();
-                })
-                .setNegativeButton(mContext.getString(R.string.device_camera), (dialogInterface, i) -> {
-                    getPhotoFromCamera();
-                });
-        builder.create().show();
-    }
-
+    @Override
     public void getPhotoFromGallery() {
         Intent pickPhoto = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         ((Activity) mContext).startActivityForResult(pickPhoto, REQUEST_IMAGE_GALLERY);
@@ -406,10 +396,12 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
             case REQUEST_IMAGE_CAMERA:
                 if (resultCode == RESULT_OK) {
                     mView.getUserpicUri(mFullSizeAvatarUri);
-                    try {
-                        mUploadFile = StorageHelper.decodeAndSaveUri(mContext, mFullSizeAvatarUri);
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
+                    if (checkUserAvatarImageSize(mFullSizeAvatarUri)) {
+                        try {
+                            mUploadFile = StorageHelper.decodeAndSaveUri(mContext, mFullSizeAvatarUri);
+                        } catch (FileNotFoundException e) {
+                            e.printStackTrace();
+                        }
                     }
                     Toast.makeText(mContext, mContext.getString(R.string.photo_added), Toast.LENGTH_SHORT).show();
                 }
@@ -418,10 +410,12 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
                 if (resultCode == RESULT_OK) {
                     mFullSizeAvatarUri = data.getData();
                     mView.getUserpicUri(mFullSizeAvatarUri);
-                    try {
-                        mUploadFile = StorageHelper.decodeAndSaveUri(mContext, mFullSizeAvatarUri);
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
+                    if (checkUserAvatarImageSize(mFullSizeAvatarUri)) {
+                        try {
+                            mUploadFile = StorageHelper.decodeAndSaveUri(mContext, mFullSizeAvatarUri);
+                        } catch (FileNotFoundException e) {
+                            e.printStackTrace();
+                        }
                     }
                     Toast.makeText(mContext, mContext.getString(R.string.photo_added), Toast.LENGTH_SHORT).show();
                 }
@@ -450,11 +444,16 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
         return mTextWatcher;
     }
 
+    private boolean checkUserAvatarImageSize(Uri uri) {
+        File file = new File(uri.getPath());
+        return file.length() > MAX_AVATAR_SIZE ? true : false;
+    }
 
     @Override
     public void onDestroy() {
         mView = null;
         mModel = null;
+        mCallbackManager = null;
     }
 
     @Override

@@ -39,7 +39,11 @@ public interface RegistrationContract {
 
         void onActivityResult(int requestCode, int resultCode, Intent data);
 
-        void onAvatarClickListener(ImageView imageView);
+        void onAvatarClickListener();
+
+        void getPhotoFromGallery();
+
+        void getPhotoFromCamera();
 
         void onFacebookButtonClickListener(Button button);
 
@@ -73,6 +77,8 @@ public interface RegistrationContract {
         void showResponseDialogError(String title, String message);
 
         void showNetworkErrorDialog();
+
+        void showDialogImageSourceChooser();
 
         void navigatetoMainScreen();
     }

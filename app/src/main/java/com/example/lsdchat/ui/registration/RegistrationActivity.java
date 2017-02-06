@@ -67,8 +67,7 @@ public class RegistrationActivity extends AppCompatActivity implements Registrat
         mConfPassEdit.addTextChangedListener(mRegistrationPresenter.getTextWatcher());
 
         mRegistrationPresenter.setTextChangedInputMaskListener(mPhoneEdit);
-
-        mRegistrationPresenter.onAvatarClickListener(mImageView);
+        mImageView.setOnClickListener(view -> mRegistrationPresenter.onAvatarClickListener());
         mRegistrationPresenter.onFacebookButtonClickListener(mFacebookButton);
         mRegistrationPresenter.onSignupButtonClickListener(mSignUpButton,
                 mEmailEdit, mPassEdit, mConfPassEdit, mNameEdit, mWebEdit);
@@ -199,6 +198,19 @@ public class RegistrationActivity extends AppCompatActivity implements Registrat
                 .setCancelable(false)
                 .create()
                 .show();
+    }
+
+    @Override
+    public void showDialogImageSourceChooser() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this)
+                .setTitle(getString(R.string.add_photo))
+                .setPositiveButton(getString(R.string.photo_gallery), (dialogInterface, i) -> {
+                    mRegistrationPresenter.getPhotoFromGallery();
+                })
+                .setNegativeButton(getString(R.string.device_camera), (dialogInterface, i) -> {
+                    mRegistrationPresenter.getPhotoFromCamera();
+                });
+        builder.create().show();
     }
 
     @Override
