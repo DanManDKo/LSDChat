@@ -18,10 +18,10 @@
             app:theme="@style/ToolbarBackArrowColor">
 
             <TextView
-                android:inputType="textCapWords"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                android:inputType="textCapWords"
                 android:text="@string/screen_sign_in"
                 android:textColor="@color/colorWhite"
                 android:textSize="@dimen/title_font_size" />
@@ -29,9 +29,15 @@
 
     </android.support.design.widget.AppBarLayout>
 
+    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/scrollViewLogin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-    <include layout="@layout/content_login" />
-
+        <include layout="@layout/content_login" />
+    </ScrollView>
 
 </android.support.design.widget.CoordinatorLayout>
 

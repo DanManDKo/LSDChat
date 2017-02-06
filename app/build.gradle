@@ -34,9 +34,10 @@ android {
         targetSdkVersion 25
         versionCode versionMajor * 1000000 + versionMinor * 10000 + versionPatch * 100 + versionBuild
         versionName "${versionMajor}.${versionMinor}.${versionPatch}"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        testInstrumentationRunner 'com.whiterabbit.windlocator.EspressoTestRunner'
 
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+//        testInstrumentationRunner 'com.whiterabbit.windlocator.EspressoTestRunner'
+//        testInstrumentationRunner "android.test.InstrumentationTestRunner"
     }
 
     applicationVariants.all { variant ->
