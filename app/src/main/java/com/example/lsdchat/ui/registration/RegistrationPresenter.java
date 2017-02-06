@@ -227,8 +227,19 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
                     RequestBody file = RequestBody.create(MediaType.parse(getFileMimeType(mUploadFile)), mUploadFile);
                     MultipartBody.Part multiPart = MultipartBody.Part.createFormData(ApiConstant.UploadParametres.FILE, mUploadFile.getName(), file);
 
-                    uploadFileRetrofit(token, blobId, contentR, expiresR, aclR, keyR, policyR, successR, algorithmR, credentialR, dateR, signatureR, multiPart);
+                    HashMap<String, RequestBody> map = new HashMap<>();
+                    map.put(ApiConstant.UploadParametres.CONTENT_TYPE, contentR);
+                    map.put(ApiConstant.UploadParametres.EXPIRES, expiresR);
+                    map.put(ApiConstant.UploadParametres.ACL, aclR);
+                    map.put(ApiConstant.UploadParametres.KEY, keyR);
+                    map.put(ApiConstant.UploadParametres.POLICY, policyR);
+                    map.put(ApiConstant.UploadParametres.SUCCESS_ACTION_STATUS, successR);
+                    map.put(ApiConstant.UploadParametres.ALGORITHM, algorithmR);
+                    map.put(ApiConstant.UploadParametres.CREDENTIAL, credentialR);
+                    map.put(ApiConstant.UploadParametres.DATE, dateR);
+                    map.put(ApiConstant.UploadParametres.SIGNATURE, signatureR);
 
+                    uploadFileRetrofit(token, blobId, map, multiPart);
                 }, throwable -> {
 
                     decodeThrowableAndShowAlert(throwable);
@@ -236,31 +247,7 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
                 });
     }
 
-    private void uploadFileRetrofit(
-            String token, long blobId,
-            RequestBody content,
-            RequestBody expires,
-            RequestBody acl,
-            RequestBody key,
-            RequestBody policy,
-            RequestBody success,
-            RequestBody algorithm,
-            RequestBody credential,
-            RequestBody date,
-            RequestBody signature,
-            MultipartBody.Part file) {
-
-        HashMap<String, RequestBody> map = new HashMap<>();
-        map.put(ApiConstant.UploadParametres.CONTENT_TYPE, content);
-        map.put(ApiConstant.UploadParametres.EXPIRES, expires);
-        map.put(ApiConstant.UploadParametres.ACL, acl);
-        map.put(ApiConstant.UploadParametres.KEY, key);
-        map.put(ApiConstant.UploadParametres.POLICY, policy);
-        map.put(ApiConstant.UploadParametres.SUCCESS_ACTION_STATUS, success);
-        map.put(ApiConstant.UploadParametres.ALGORITHM, algorithm);
-        map.put(ApiConstant.UploadParametres.CREDENTIAL, credential);
-        map.put(ApiConstant.UploadParametres.DATE, date);
-        map.put(ApiConstant.UploadParametres.SIGNATURE, signature);
+    private void uploadFileRetrofit(String token, long blobId, HashMap<String, RequestBody> map, MultipartBody.Part file) {
 
         mModel.uploadFileMap(map, file)
                 .doOnRequest(request -> mView.showProgressBar())
@@ -297,7 +284,6 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
     public void setPhoneNumber(String phone) {
         mPhoneNumber = phone;
     }
-
 
 
     @Override
@@ -386,12 +372,10 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
             case REQUEST_IMAGE_CAMERA:
                 if (resultCode == RESULT_OK) {
                     mView.getUserpicUri(mFullSizeAvatarUri);
-                    if (checkUserAvatarImageSize(mFullSizeAvatarUri)) {
-                        try {
-                            mUploadFile = StorageHelper.decodeAndSaveUri(mContext, mFullSizeAvatarUri);
-                        } catch (FileNotFoundException e) {
-                            e.printStackTrace();
-                        }
+                    try {
+                        mUploadFile = StorageHelper.decodeAndSaveUri(mContext, mFullSizeAvatarUri);
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
                     }
                     Toast.makeText(mContext, mContext.getString(R.string.photo_added), Toast.LENGTH_SHORT).show();
                 }
@@ -400,12 +384,10 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
                 if (resultCode == RESULT_OK) {
                     mFullSizeAvatarUri = data.getData();
                     mView.getUserpicUri(mFullSizeAvatarUri);
-                    if (checkUserAvatarImageSize(mFullSizeAvatarUri)) {
-                        try {
-                            mUploadFile = StorageHelper.decodeAndSaveUri(mContext, mFullSizeAvatarUri);
-                        } catch (FileNotFoundException e) {
-                            e.printStackTrace();
-                        }
+                    try {
+                        mUploadFile = StorageHelper.decodeAndSaveUri(mContext, mFullSizeAvatarUri);
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
                     }
                     Toast.makeText(mContext, mContext.getString(R.string.photo_added), Toast.LENGTH_SHORT).show();
                 }
@@ -431,11 +413,6 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
 
     public TextWatcher getTextWatcher() {
         return mTextWatcher;
-    }
-
-    private boolean checkUserAvatarImageSize(Uri uri) {
-        File file = new File(uri.getPath());
-        return file.length() > MAX_AVATAR_SIZE ? true : false;
     }
 
     @Override
