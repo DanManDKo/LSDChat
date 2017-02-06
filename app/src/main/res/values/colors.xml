@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimary">#327780</color>
     <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
+    <color name="colorAccent">#2BBC9B</color>
+
+    <color name="colorWhite">#ffffff</color>
+    <color name="colorWhiteOpacity">#99ffffff</color>
+    <color name="colorGreen">#2BBC9B</color>
+    <color name="colorGreenDark">#219177</color>
+    <color name="colorRed">#EE6767</color>
+    <color name="colorNavyBlue">#327780</color>
+    <color name="colorNavyBlueDark">#004951</color>
+    <color name="colorButtonDisable">#165258</color>
+    <color name="colorFbButton">#3b5998</color>
+    <color name="colorButtonText">#009688</color>
+    <color name="colorForgotPassword">#50000000</color>
 </resources>

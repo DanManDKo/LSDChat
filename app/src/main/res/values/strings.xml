@@ -1,3 +1,92 @@
 <resources>
     <string name="app_name">LSD chat</string>
+    <string name="title_activity_main">MainActivity</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="network_is_absent">The network is absent</string>
+    <string name="check_connection">Check your connection to the internet and retry</string>
+    <string name="cancel">Cancel</string>
+    <string name="retry">Retry</string>
+
+
+    <!--Login screen-->
+    <string name="login.sign_in">Sign In</string>
+    <string name="login.sign_up">Sign Up</string>
+    <string name="login.forgot_password">Forgot password</string>
+    <string name="login.keep_me_sign_in">Keep me signed in</string>
+    <string name="login.email">Email Address</string>
+    <string name="login.password">Password</string>
+    <string name="login.error.email">Error input email</string>
+    <string name="login.error.password">Error input password</string>
+
+
+    <!--registration screen strings-->
+    <string name="sign_up">SIGN UP</string>
+    <string name="fb_button_text">Link Facebook</string>
+    <string name="fb_button_text_linked">Linked</string>
+    <string name="email_reg">Email Address</string>
+    <string name="password_reg">Password</string>
+    <string name="conf_pass_reg">Confirm Password</string>
+    <string name="full_name_reg">Full Name</string>
+    <string name="phone_reg">Phone</string>
+    <string name="website_reg">Website</string>
+    <string name="cda_userpic_reg">User picture</string>
+
+    <string name="et_num_of_lines">1</string>
+    <string name="et_phone_max_length">19</string>
+
+    <string name="facebook_app_id">1839106639675401</string>
+
+    <!--registration form string-->
+    <string name="invalid_email">Invalid email</string>
+    <string name="password_is_weak">Password is weak. Please use at least two digits and two capitalized letters</string>
+    <string name="passwords_donot_match">Passwords do not match</string>
+    <string name="password_length">Password length should be 8-12 symbols</string>
+    <!--registration alert dialog-->
+    <string name="add_photo">Add photo</string>
+    <string name="device_camera">Device camera</string>
+    <string name="photo_gallery">Photo Gallery</string>
+    <string name="alert_ok">Ok</string>
+    <string name="no_internet_connection">No internet connection</string>
+    <!--toasts-->
+    <string name="registration_complete">Registration complete</string>
+    <string name="there_is_no_device_camera">Your device doesn`t have camera</string>
+    <string name="photo_added">Photo added</string>
+
+    <!--forgotpassword-->
+    <string name="restore_password">Restore password</string>
+    <string name="button_cancel">Cancel</string>
+    <string name="send">Send</string>
+    <string name="emai_success">Password recovery email was sent</string>
+
+
+    <!--notify-->
+    <string name="notify_title">LSD Chat</string>
+    <string name="notify_message">Seems like you forgot to authorize the app?</string>
+    <string name="dialog.error.title">Error dialog</string>
+
+    <!--error code-->
+    <string name="error.code.400">Missing or invalid parameter. Possible causes:\n
+        - malformed request parameters</string>
+    <string name="error.code.401">Authorization missing or incorrect. Possible causes:\n
+        - a user tries to authorise with wrong login and password\n
+        - a user uses invalid session token</string>
+    <string name="error.code.403">Access has been refused. Possible causes:\n
+        - a user tries to retrieve chat messages for chat dialog he is not in occupants list.</string>
+    <string name="error.code.404">The requested resource could not be found. Possible causes:\n
+        - a user tries to retrieve chat messages for invalid chat dialog id.\n
+        - a user tries to retrieve a custom object record with invalid id.</string>
+    <string name="error.code.422">The request was well-formed but was unable to be followed due to validation errors. Possible causes:\n
+        - create a user with existent login or email.
+        - provide values in wrong format to create some object.</string>
+    <string name="error.code.500">Server encountered an error, try again later</string>
+    <string name="error.code.503">Server is at capacity, try again later</string>
+    <string name="error.code.unknown">Unknown code</string>
+    <string name="error.code.noconnect">No connections!</string>
+    <string name="screen_sign_in">SIGN IN</string>
+    <string name="login_presenter_error_input">Please input email/password</string>
+
 </resources>
