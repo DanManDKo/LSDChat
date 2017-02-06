@@ -11,6 +11,7 @@ import com.example.lsdchat.api.login.response.LoginResponse;
 import com.example.lsdchat.api.login.response.SessionResponse;
 import com.example.lsdchat.api.registration.response.RegistrationCreateFileResponse;
 import com.example.lsdchat.api.registration.response.RegistrationResponse;
+import com.redmadrobot.inputmask.MaskedTextChangedListener;
 
 import java.util.Map;
 
@@ -25,9 +26,7 @@ public interface RegistrationContract {
 
         void onDestroy();
 
-        void getFacebookToken();
-
-        void setTextChangedInputMaskListener(TextInputEditText phone);
+        void setPhoneNumber(String phone);
 
         boolean validateRegForm(String email, String pass, String confPass);
 
@@ -45,17 +44,14 @@ public interface RegistrationContract {
 
         void getPhotoFromCamera();
 
-        void onFacebookButtonClickListener(Button button);
+        void onFacebookButtonClickListener();
 
-        void onSignupButtonClickListener(Button button,
-                                         TextInputEditText email,
-                                         TextInputEditText pass,
-                                         TextInputEditText confpass,
-                                         TextInputEditText name,
-                                         TextInputEditText web);
+        void onSignupButtonClickListener(String email, String password, String confPassword, String name, String website);
     }
 
     interface View {
+        Context getContext();
+
         void setInvalideEmailError();
 
         void setWeakPasswordError();
@@ -66,13 +62,17 @@ public interface RegistrationContract {
 
         void resetErrorMessages();
 
+        void setClickableSignupButton(boolean value);
+
+        void setClickableFacebookButton(boolean value);
+
         void showProgressBar();
 
         void hideProgressBar();
 
-        void getUserpicUri(Uri uri);
+        void setLinkedStatus();
 
-        Context getContext();
+        void getUserpicUri(Uri uri);
 
         void showResponseDialogError(String title, String message);
 
@@ -93,13 +93,8 @@ public interface RegistrationContract {
 
         Observable<RegistrationCreateFileResponse> createFile(String token, String mime, String fileName);
 
-
         Observable<Void> declareFileUploaded(long size, String token, long blobId);
-
-
 
         Observable<Void> uploadFileMap(Map<String, RequestBody> map,MultipartBody.Part part);
     }
-
-
 }

@@ -17,6 +17,9 @@ import com.example.lsdchat.R;
 import com.example.lsdchat.ui.MainActivity;
 import com.facebook.FacebookSdk;
 import com.facebook.drawee.view.SimpleDraweeView;
+import com.redmadrobot.inputmask.MaskedTextChangedListener;
+
+import org.jetbrains.annotations.NotNull;
 
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
@@ -44,6 +47,9 @@ public class RegistrationActivity extends AppCompatActivity implements Registrat
     private Toolbar mToolbar;
     private RegistrationPresenter mRegistrationPresenter;
 
+    private static final String PHONE_MASK = "+38 (0[00]) [000]-[00]-[00]";
+    private static final String PHONE_FORMAT = "+380";
+    private static final int PHONE_LENGTH = 9;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,25 +60,38 @@ public class RegistrationActivity extends AppCompatActivity implements Registrat
         mRegistrationPresenter = new RegistrationPresenter(this);
         initView();
 
-
         setRegFormHint();
-
 
         setSupportActionBar(mToolbar);
         configurateToolbar();
-
 
         mEmailEdit.addTextChangedListener(mRegistrationPresenter.getTextWatcher());
         mPassEdit.addTextChangedListener(mRegistrationPresenter.getTextWatcher());
         mConfPassEdit.addTextChangedListener(mRegistrationPresenter.getTextWatcher());
 
-        mRegistrationPresenter.setTextChangedInputMaskListener(mPhoneEdit);
+        MaskedTextChangedListener listener = new MaskedTextChangedListener(PHONE_MASK, true, mPhoneEdit, null,
+                new MaskedTextChangedListener.ValueListener() {
+                    @Override
+                    public void onExtracted(@NotNull String s) {
+                        if (s.length() == PHONE_LENGTH) mRegistrationPresenter.setPhoneNumber(PHONE_FORMAT + s);
+                    }
+
+                    @Override
+                    public void onMandatoryCharactersFilled(boolean b) {
+                    }
+                }
+        );
+        mPhoneEdit.addTextChangedListener(listener);
+        mPhoneEdit.setOnFocusChangeListener(listener);
+
         mImageView.setOnClickListener(view -> mRegistrationPresenter.onAvatarClickListener());
-        mRegistrationPresenter.onFacebookButtonClickListener(mFacebookButton);
-        mRegistrationPresenter.onSignupButtonClickListener(mSignUpButton,
-                mEmailEdit, mPassEdit, mConfPassEdit, mNameEdit, mWebEdit);
-
-
+        mFacebookButton.setOnClickListener(view -> mRegistrationPresenter.onFacebookButtonClickListener());
+        mSignUpButton.setOnClickListener(view -> mRegistrationPresenter.onSignupButtonClickListener(
+                mEmailEdit.getText().toString(),
+                mPassEdit.getText().toString(),
+                mConfPassEdit.getText().toString(),
+                mNameEdit.getText().toString(),
+                mWebEdit.getText().toString()));
     }
 
     private void initView() {
@@ -95,7 +114,6 @@ public class RegistrationActivity extends AppCompatActivity implements Registrat
         mPhoneEdit = (TextInputEditText) findViewById(R.id.tiet_phone_reg);
         mNameEdit = (TextInputEditText) findViewById(R.id.tiet_name_reg);
         mWebEdit = (TextInputEditText) findViewById(R.id.tiet_web_reg);
-
     }
 
     public void setRegFormHint() {
@@ -165,6 +183,21 @@ public class RegistrationActivity extends AppCompatActivity implements Registrat
     @Override
     public void setEquelsPasswordError() {
         mConfPass.setError(getString(R.string.passwords_donot_match));
+    }
+
+    @Override
+    public void setClickableSignupButton(boolean value) {
+        mSignUpButton.setClickable(value);
+    }
+
+    @Override
+    public void setLinkedStatus() {
+        mFacebookButton.setText(getString(R.string.fb_button_text_linked));
+    }
+
+    @Override
+    public void setClickableFacebookButton(boolean value) {
+        mFacebookButton.setClickable(value);
     }
 
     @Override
