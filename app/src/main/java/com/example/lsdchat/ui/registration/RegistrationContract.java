@@ -22,7 +22,7 @@ import rx.Observable;
 public interface RegistrationContract {
 
     interface Presenter {
-        boolean isOnline();
+        boolean isOnline(Context context);
 
         void onDestroy();
 
@@ -45,6 +45,8 @@ public interface RegistrationContract {
         void getPhotoFromCamera();
 
         void onFacebookButtonClickListener();
+
+        void requestSessionAndRegistration(boolean validateValue, RegistrationForm form);
 
         void onSignupButtonClickListener(String email, String password, String confPassword, String name, String website);
     }
@@ -80,7 +82,7 @@ public interface RegistrationContract {
 
         void showDialogImageSourceChooser();
 
-        void navigatetoMainScreen();
+        void navigateToMainScreen();
     }
 
 

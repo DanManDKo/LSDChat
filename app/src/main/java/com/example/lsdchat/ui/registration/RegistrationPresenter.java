@@ -52,7 +52,6 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
     private static final int MIN_DIGITS_AND_LETTERS_VALUE = 2;
     private static final int MIN_PASSWORD_LENGTH = 8;
     private static final int MAX_PASSWORD_LENGTH = 12;
-    private static final long MAX_AVATAR_SIZE = 1048576;
 
     private static final String DATE_FORMAT = "yyyyMMdd_HHmmss";
     private static final String AVATAR_FILE_NAME = "_avatar.jpg";
@@ -93,7 +92,7 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
 
     @Override
     public void onFacebookButtonClickListener() {
-        if (isOnline()) {
+        if (isOnline(mContext)) {
             LoginManager.getInstance().logInWithReadPermissions((Activity) mContext, Arrays.asList("public_profile"));
             getFacebookToken();
 
@@ -135,13 +134,14 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
 
         boolean validateValue = validateRegForm(email, password, confPassword);
 
-        if (isOnline()) {
+        if (isOnline(mContext)) {
             requestSessionAndRegistration(validateValue, form);
         } else {
             mView.showNetworkErrorDialog();
         }
     }
 
+    @Override
     public void requestSessionAndRegistration(boolean validateValue, RegistrationForm form) {
         if (validateValue) {
             mModel.getSessionNoAuth()
@@ -192,7 +192,7 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
                         getBlobObjectCreateFile(token, getFileMimeType(mUploadFile), mUploadFile.getName());
                     } else {
                         Toast.makeText(mContext, mContext.getString(R.string.registration_complete), Toast.LENGTH_SHORT).show();
-                        mView.navigatetoMainScreen();
+                        mView.navigateToMainScreen();
                     }
                 })
                 .subscribe(loginResponse -> {
@@ -272,7 +272,7 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
                 .subscribe(aVoid -> {
 
                     Toast.makeText(mContext, mContext.getString(R.string.registration_complete), Toast.LENGTH_SHORT).show();
-                    mView.navigatetoMainScreen();
+                    mView.navigateToMainScreen();
                 }, throwable -> {
 
                     mView.setClickableSignupButton(true);
@@ -416,8 +416,8 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
     }
 
     @Override
-    public boolean isOnline() {
-        return Network.isOnline(mContext);
+    public boolean isOnline(Context context) {
+        return Network.isOnline(context);
     }
 
     @Override
