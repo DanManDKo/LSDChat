@@ -1,5 +1,6 @@
 package com.example.lsdchat.api;
 
+import com.example.lsdchat.api.dialog.DialogService;
 import com.example.lsdchat.api.forgot_password.ForgotPasswordService;
 import com.example.lsdchat.api.login.service.LoginService;
 import com.example.lsdchat.api.registration.service.RegistrationService;
@@ -18,13 +19,16 @@ public class ApiManager {
 
     private RegistrationService mRegistrationService;
 
+    private DialogService mDialogService;
 
     public ApiManager() {
         initRetrofit();
         initServices();
     }
 
-
+    public DialogService getDialogService() {
+        return mDialogService;
+    }
 
     public LoginService getmLoginService() {
         return mLoginService;
@@ -40,7 +44,7 @@ public class ApiManager {
 
     private void initRetrofit() {
 
-             mRetrofit = new Retrofit.Builder()
+        mRetrofit = new Retrofit.Builder()
                 .baseUrl(ApiConstant.SERVER)
                 .addConverterFactory(createGsonConverter())
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
@@ -52,6 +56,7 @@ public class ApiManager {
             mLoginService = mRetrofit.create(LoginService.class);
             mRegistrationService = mRetrofit.create(RegistrationService.class);
             mForgotPasswordService = mRetrofit.create(ForgotPasswordService.class);
+            mDialogService = mRetrofit.create(DialogService.class);
         }
 
     }

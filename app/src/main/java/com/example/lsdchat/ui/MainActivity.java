@@ -20,7 +20,10 @@ public class MainActivity extends AppCompatActivity {
         sharedPreferencesManager = new SharedPreferencesManager(this);
 
         token = sharedPreferencesManager.getToken();
-        Log.e("MAIN TOKEB",token);
+        Log.e("MAIN TOKEB", token);
+
+
+
 
     }
 }
