@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import com.example.lsdchat.R;
 import com.example.lsdchat.manager.DataManager;
+import com.example.lsdchat.manager.SharedPreferencesManager;
 import com.example.lsdchat.model.User;
 import com.example.lsdchat.service.NotifyService;
 import com.example.lsdchat.util.Email;
@@ -25,11 +26,12 @@ public class LoginPresenter implements LoginContract.Presenter {
     private LoginContract.View mView;
     private LoginContract.Model mModel;
     private DataManager mDataManager;
+    private SharedPreferencesManager mSharedPreferencesManager;
 
-    public LoginPresenter(LoginContract.View mView, DataManager dataManager) {
+    public LoginPresenter(LoginContract.View mView, DataManager dataManager,SharedPreferencesManager sharedPreferencesManager) {
         this.mView = mView;
         this.mDataManager = dataManager;
-
+        this.mSharedPreferencesManager = sharedPreferencesManager;
         mModel = new LoginModel();
 
     }
@@ -99,8 +101,8 @@ public class LoginPresenter implements LoginContract.Presenter {
                 .doOnNext(sessionResponse -> getLoginWithToken(email, password, sessionResponse.getSession().getToken()))
                 .subscribe(sessionResponse -> {
                             Log.e("AAA", "TOKEN  - " + sessionResponse.getSession().getToken());
-//                            save token
 
+                        mSharedPreferencesManager.saveToken(sessionResponse.getSession().getToken());
                         },
                         throwable -> {
                             Log.e("11111", throwable.getMessage());

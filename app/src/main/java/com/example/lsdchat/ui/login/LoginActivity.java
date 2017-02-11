@@ -47,7 +47,7 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        mPresenter = new LoginPresenter(this, App.getDataManager());
+        mPresenter = new LoginPresenter(this, App.getDataManager(),App.getSharedPreferencesManager(this));
         initView();
 
 //        set button disable
