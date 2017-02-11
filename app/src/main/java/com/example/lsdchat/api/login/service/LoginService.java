@@ -20,6 +20,8 @@ public interface LoginService {
 
     @Headers(ApiConstant.HEADER_CONTENT_TYPE)
     @POST(ApiConstant.LOGIN_REQUEST)
-    Observable<LoginResponse> getLogin(@Header("QB-Token") String token, @Body LoginRequest body);
+    Observable<LoginResponse> getLogin(@Header(ApiConstant.QB_TOKEN) String token, @Body LoginRequest body);
+
+
 
 }

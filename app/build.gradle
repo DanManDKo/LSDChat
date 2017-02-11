@@ -107,6 +107,7 @@ dependencies {
     testCompile "org.mockito:mockito-all:1.10.19"
 
     androidTestCompile "com.android.support.test:rules:0.5"
+    androidTestCompile 'com.android.support.test.espresso:espresso-intents:2.2.2'
 
 // Espresso UI Testing dependencies.
 

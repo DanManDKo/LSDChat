@@ -11,6 +11,7 @@ import android.util.Log;
 import com.example.lsdchat.App;
 import com.example.lsdchat.R;
 import com.example.lsdchat.manager.DataManager;
+import com.example.lsdchat.manager.SharedPreferencesManager;
 import com.example.lsdchat.model.User;
 import com.example.lsdchat.util.Network;
 
@@ -29,13 +30,15 @@ public class SplashScreenPresenter implements SplashContract.Presenter {
     private DataManager mDataManager;
     private User mUser;
     private boolean mNavigateToMain;
+    private SharedPreferencesManager mSharedPreferencesManager;
 
-    public SplashScreenPresenter(SplashContract.View view) {
+    public SplashScreenPresenter(SplashContract.View view, SharedPreferencesManager sharedPreferencesManager) {
         mView = view;
         mModel = new SplashModel();
         mContext = mView.getContext();
         mDataManager = App.getDataManager();
         mUser = mDataManager.getUser();
+        mSharedPreferencesManager = sharedPreferencesManager;
     }
 
     @Override
@@ -49,10 +52,10 @@ public class SplashScreenPresenter implements SplashContract.Presenter {
         new Handler().postDelayed(() -> {
             if (mNavigateToMain) {
                 mView.navigateToMain();
-                ((Activity)mContext).finish();
+                ((Activity) mContext).finish();
             } else {
                 mView.navigateToLogin();
-                ((Activity)mContext).finish();
+                ((Activity) mContext).finish();
             }
         }, SPLASH_TIME_OUT);
 
@@ -67,8 +70,19 @@ public class SplashScreenPresenter implements SplashContract.Presenter {
 
         mModel.getSessionAuth(email, password)
                 .subscribe(sessionResponse -> {
+                    getLoginWithToken(email, password, sessionResponse.getSession().getToken());
                     Log.e(TOKEN_TAG, sessionResponse.getSession().getToken());
                 }, throwable -> Log.e(ERROR_TAG, throwable.getMessage()));
+    }
+
+    private void getLoginWithToken(String email, String password, String token) {
+        mModel.getLogin(email, password, token)
+                .subscribe(loginUser -> {
+                mSharedPreferencesManager.saveToken(token);
+                        },
+                        throwable -> {
+
+                        });
     }
 
     @Override

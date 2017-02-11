@@ -18,6 +18,13 @@ public class ApiConstant {
     public static final String BLOB_REQUEST = "/blobs.json";
     public static final String REGISTRATION_REQUEST = "/users.json";
     public static final String DECLARING_REQUEST = "/blobs/{blob_id}/complete.json";
+
+//    dialog
+    public static final String DIALOGS_REQUEST = "/chat/Dialog.json";
+    public static final String MESSAGES_REQUEST = "/chat/Message.json";
+
+
+
     //headers
     public static final String HEADER_CONTENT_TYPE = "Content-Type: application/json";
 
