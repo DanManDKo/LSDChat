@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group
+        android:id="@+id/chat_options_group"
+        android:checkableBehavior="single">
+            <item
+                android:id="@+id/item_create_new_chat"
+                android:icon="@drawable/ic_add_box_black_24dp"
+                android:title="Create new chat"/>
+            <item
+                android:id="@+id/item_users"
+                android:icon="@drawable/ic_account_box_black_24dp"
+                android:title="Users"/>
+            <item
+                android:id="@+id/item_invite_users"
+                android:icon="@drawable/ic_group_black_24dp"
+                android:title="Invite friends"/>
+    </group>
+
+    <group
+        android:id="@+id/app_options_group"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/item_settings"
+            android:icon="@drawable/ic_settings_black_24dp"
+            android:title="Settings"/>
+        <item
+            android:id="@+id/item_log_out"
+            android:icon="@drawable/ic_input_black_24dp"
+            android:title="Log out"/>
+    </group>
+</menu>
