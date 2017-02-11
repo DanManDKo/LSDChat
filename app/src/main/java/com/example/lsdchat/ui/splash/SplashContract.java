@@ -2,6 +2,7 @@ package com.example.lsdchat.ui.splash;
 
 import android.content.Context;
 
+import com.example.lsdchat.api.login.response.LoginResponse;
 import com.example.lsdchat.api.login.response.SessionResponse;
 
 import rx.Observable;
@@ -28,6 +29,8 @@ public interface SplashContract {
 
     interface Model {
         Observable<SessionResponse> getSessionAuth(String email, String password);
+        Observable<LoginResponse> getLogin(String email, String password, String token);
+
     }
 
     interface View {

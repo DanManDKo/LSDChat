@@ -36,6 +36,8 @@ public class LoginPresenter implements LoginContract.Presenter {
 
     @Override
     public void onDestroy() {
+        stopService(mView.getContext());
+
         this.mDataManager = null;
         this.mView = null;
         this.mModel = null;
