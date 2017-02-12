@@ -20,9 +20,10 @@ public class ApiConstant {
     public static final String UPDATE_REQUEST = "users/{id}.json";
     public static final String DECLARING_REQUEST = "/blobs/{blob_id}/complete.json";
 
-    //    dialog
+//    dialog
     public static final String DIALOGS_REQUEST = "/chat/Dialog.json";
     public static final String MESSAGES_REQUEST = "/chat/Message.json";
+
 
 
     //headers
@@ -30,7 +31,7 @@ public class ApiConstant {
 
     public static final String HEADER_QB_TOKEN_KEY = "QB-Token:";
 
-    public static final String FORGOT_PASSWORD_REQUEST = "/users/password/reset.json";
+    public static final String FORGOT_PASSWORD_REQUEST = "/users/password/reset.json" ;
 
     public static final String QB_TOKEN = "QB-Token";
     //    60 -  second, 15 - minutes
