@@ -48,7 +48,6 @@
             android:id="@+id/message_nochats_root_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="#cccccc"
             android:gravity="center"
             android:orientation="vertical"
             android:visibility="visible">
@@ -66,7 +65,7 @@
                 android:layout_height="wrap_content"
                 android:clickable="true"
                 android:gravity="center"
-                android:textColor="@color/colorWhite"/>
+                android:textColor="@color/colorGray"/>
         </LinearLayout>
 
 

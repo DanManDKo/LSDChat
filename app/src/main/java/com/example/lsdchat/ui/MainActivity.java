@@ -3,6 +3,8 @@ package com.example.lsdchat.ui;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -25,6 +27,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -47,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
     private TabLayout mTabLayout;
     private NonSwipeableViewPager mViewPager;
     private TextView mSpannableText;
+    private ImageView mNoChatsImage;
     private LinearLayout mNoChatsMessage;
 
     private ArrayList<ViewPagerPageFragment> fragmentList = new ArrayList<>();
@@ -137,6 +141,9 @@ public class MainActivity extends AppCompatActivity {
         mTabLayout = (TabLayout) findViewById(R.id.chats_tabs);
         mSpannableText = (TextView) findViewById(R.id.message_nochats_text_view);
         mNoChatsMessage = (LinearLayout) findViewById(R.id.message_nochats_root_layout);
+        mNoChatsImage = (ImageView) findViewById(R.id.message_nochats_image_view);
+
+        setGrayScale(mNoChatsImage);
     }
 
     private void toggleTabsVisibility(boolean value) {
@@ -149,6 +156,13 @@ public class MainActivity extends AppCompatActivity {
             mViewPager.setVisibility(View.GONE);
             mNoChatsMessage.setVisibility(View.VISIBLE);
         }
+    }
+
+    private void setGrayScale(ImageView v) {
+        ColorMatrix matrix = new ColorMatrix();
+        matrix.setSaturation(0);
+        ColorMatrixColorFilter cf = new ColorMatrixColorFilter(matrix);
+        v.setColorFilter(cf);
     }
 
     private void fillFragmentList() {
