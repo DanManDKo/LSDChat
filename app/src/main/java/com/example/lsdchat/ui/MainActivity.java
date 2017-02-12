@@ -79,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
         //change back arrow icon here
         mToolbar.setNavigationIcon(R.drawable.ic_menu_white_24dp);
         //toggle visibility of viewpager tabs...temporary method.
-        toggleTabsVisibility(false);
+        toggleTabsVisibility(true);
 
         mFloatingActionButton.setOnClickListener(view -> {
             //TODO: fab onClicked hadling
@@ -138,8 +138,6 @@ public class MainActivity extends AppCompatActivity {
         mSpannableText = (TextView) findViewById(R.id.message_nochats_text_view);
         mNoChatsMessage = (LinearLayout) findViewById(R.id.message_nochats_root_layout);
         mNoChatsImage = (ImageView) findViewById(R.id.message_nochats_image_view);
-
-        setGrayScale(mNoChatsImage);
     }
 
     private void toggleTabsVisibility(boolean value) {
@@ -152,13 +150,6 @@ public class MainActivity extends AppCompatActivity {
             mViewPager.setVisibility(View.GONE);
             mNoChatsMessage.setVisibility(View.VISIBLE);
         }
-    }
-
-    private void setGrayScale(ImageView v) {
-        ColorMatrix matrix = new ColorMatrix();
-        matrix.setSaturation(0);
-        ColorMatrixColorFilter cf = new ColorMatrixColorFilter(matrix);
-        v.setColorFilter(cf);
     }
 
     private void fillFragmentList() {
