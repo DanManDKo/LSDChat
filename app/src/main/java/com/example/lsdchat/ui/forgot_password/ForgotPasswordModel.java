@@ -35,6 +35,8 @@ public class ForgotPasswordModel implements ForgotPasswordContract.Model {
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
+
+
     @Override
     public Observable<SessionResponse> getSessionNoAuth() {
         int nonce = new Random().nextInt();

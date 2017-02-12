@@ -24,6 +24,7 @@ public class ForgotPasswordPresenter implements ForgotPasswordContract.Presenter
 
     public void onDestroy() {
         mView = null;
+        mModel = null;
     }
 
     @Override

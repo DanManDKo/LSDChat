@@ -13,7 +13,6 @@ import rx.Observable;
 public class ForgotPasswordContract {
     interface Model {
         Observable sendEmail(String email, String token);
-
         Observable<SessionResponse> getSessionNoAuth();
     }
 
