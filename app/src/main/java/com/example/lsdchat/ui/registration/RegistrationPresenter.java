@@ -291,7 +291,7 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
             if (Character.isDigit(pass.charAt(i))) digitCounter++;
             if (Character.isUpperCase(pass.charAt(i))) capitalizeLetterCounter++;
         }
-        if (digitCounter < MIN_DIGITS_AND_LETTERS_VALUE || capitalizeLetterCounter < MIN_DIGITS_AND_LETTERS_VALUE || passLength == (digitCounter + capitalizeLetterCounter)) {
+        if (digitCounter < MIN_DIGITS_AND_LETTERS_VALUE || capitalizeLetterCounter < MIN_DIGITS_AND_LETTERS_VALUE) {
             mView.setWeakPasswordError();
             return false;
         }
