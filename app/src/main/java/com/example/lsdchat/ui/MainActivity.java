@@ -31,6 +31,7 @@ import android.widget.Toast;
 
 import com.example.lsdchat.R;
 import com.example.lsdchat.behavior.NonSwipeableViewPager;
+import com.example.lsdchat.ui.dialog.CreateChatActivity;
 import com.example.lsdchat.ui.main.ViewPagerAdapter;
 import com.example.lsdchat.ui.main.ViewPagerPageFragment;
 
@@ -79,6 +80,9 @@ public class MainActivity extends AppCompatActivity {
 
         mFloatingActionButton.setOnClickListener(view -> {
             //TODO: fab onClicked hadling
+//            for test
+            startActivity(new Intent(this, CreateChatActivity.class));
+            finish();
             Toast.makeText(this, "FAB clicked", Toast.LENGTH_SHORT).show();
         });
 

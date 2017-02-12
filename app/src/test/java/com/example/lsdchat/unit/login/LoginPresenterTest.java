@@ -1,6 +1,7 @@
 package com.example.lsdchat.unit.login;
 
 import com.example.lsdchat.manager.DataManager;
+import com.example.lsdchat.manager.SharedPreferencesManager;
 import com.example.lsdchat.ui.login.LoginActivity;
 import com.example.lsdchat.ui.login.LoginContract;
 import com.example.lsdchat.ui.login.LoginPresenter;
@@ -26,7 +27,7 @@ public class LoginPresenterTest {
     @Before
     public void setUp() throws Exception {
         view = mock(LoginActivity.class);
-        presenter = new LoginPresenter(view,dataManager);
+        presenter = new LoginPresenter(view,dataManager,new SharedPreferencesManager(view.getContext()));
     }
 
     @Test

@@ -23,7 +23,9 @@ public class ApiConstant {
     public static final String DIALOGS_REQUEST = "/chat/Dialog.json";
     public static final String MESSAGES_REQUEST = "/chat/Message.json";
 
-
+    public static final int TYPE_DIALOG_PUBLIC=1;
+    public static final int TYPE_DIALOG_GROUP=2;
+    public static final int TYPE_DIALOG_PRIVATE=3;
 
     //headers
     public static final String HEADER_CONTENT_TYPE = "Content-Type: application/json";

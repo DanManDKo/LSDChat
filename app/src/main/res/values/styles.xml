@@ -41,6 +41,12 @@
         <item name="android:textColor">@color/colorWhite</item>
     </style>
 
+    <!--EditText new Chat-->
+    <style name="TextNewChat">
+        <item name="android:textSize">@dimen/font_normal</item>
+        <item name="android:textColor">@color/colorNewChatText</item>
+    </style>
+
     <!--TextInputLayout login-->
     <style name="TextInputLayoutLogin">
         <item name="android:textSize">@dimen/font_normal</item>
@@ -50,6 +56,17 @@
         <item name="colorControlActivated">@color/colorWhite</item>
         <item name="colorControlHighlight">@color/colorWhite</item>
         <item name="android:textColor">@color/colorWhite</item>
+    </style>
+
+    <!--TextInputLayout New Chat-->
+    <style name="TextInputLayoutNewChat">
+        <item name="android:textSize">@dimen/font_normal</item>
+        <item name="colorAccent">@color/colorBlack</item>
+        <item name="android:textColorHint">@color/colorBlack</item>
+        <item name="colorControlNormal">@color/colorBlack</item>
+        <item name="colorControlActivated">@color/colorBlack</item>
+        <item name="colorControlHighlight">@color/colorBlack</item>
+        <item name="android:textColor">@color/colorBlack</item>
     </style>
 
     <style name="error_appearance" parent="@android:style/TextAppearance">
