@@ -7,18 +7,15 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.design.widget.TextInputEditText;
-import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.lsdchat.R;
 import com.example.lsdchat.constant.ApiConstant;
+import com.example.lsdchat.util.CreateMapRequestBody;
 import com.example.lsdchat.util.Email;
 import com.example.lsdchat.util.ErrorsCode;
 import com.example.lsdchat.util.Network;
@@ -28,9 +25,6 @@ import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
-import com.redmadrobot.inputmask.MaskedTextChangedListener;
-
-import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -213,33 +207,11 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
                     String params = registrationCreateFileResponse.getBlob().getBlobObjestAccess().getParams();
                     Uri uri = Uri.parse(params);
 
-                    RequestBody contentR = RequestBody.create(MultipartBody.FORM, uri.getQueryParameter(ApiConstant.UploadParametres.CONTENT_TYPE));
-                    RequestBody expiresR = RequestBody.create(MultipartBody.FORM, uri.getQueryParameter(ApiConstant.UploadParametres.EXPIRES));
-                    RequestBody aclR = RequestBody.create(MultipartBody.FORM, uri.getQueryParameter(ApiConstant.UploadParametres.ACL));
-                    RequestBody keyR = RequestBody.create(MultipartBody.FORM, uri.getQueryParameter(ApiConstant.UploadParametres.KEY));
-                    RequestBody policyR = RequestBody.create(MultipartBody.FORM, uri.getQueryParameter(ApiConstant.UploadParametres.POLICY));
-                    RequestBody successR = RequestBody.create(MultipartBody.FORM, uri.getQueryParameter(ApiConstant.UploadParametres.SUCCESS_ACTION_STATUS));
-                    RequestBody algorithmR = RequestBody.create(MultipartBody.FORM, uri.getQueryParameter(ApiConstant.UploadParametres.ALGORITHM));
-                    RequestBody credentialR = RequestBody.create(MultipartBody.FORM, uri.getQueryParameter(ApiConstant.UploadParametres.CREDENTIAL));
-                    RequestBody dateR = RequestBody.create(MultipartBody.FORM, uri.getQueryParameter(ApiConstant.UploadParametres.DATE));
-                    RequestBody signatureR = RequestBody.create(MultipartBody.FORM, uri.getQueryParameter(ApiConstant.UploadParametres.SIGNATURE));
-
                     RequestBody file = RequestBody.create(MediaType.parse(getFileMimeType(mUploadFile)), mUploadFile);
                     MultipartBody.Part multiPart = MultipartBody.Part.createFormData(ApiConstant.UploadParametres.FILE, mUploadFile.getName(), file);
 
-                    HashMap<String, RequestBody> map = new HashMap<>();
-                    map.put(ApiConstant.UploadParametres.CONTENT_TYPE, contentR);
-                    map.put(ApiConstant.UploadParametres.EXPIRES, expiresR);
-                    map.put(ApiConstant.UploadParametres.ACL, aclR);
-                    map.put(ApiConstant.UploadParametres.KEY, keyR);
-                    map.put(ApiConstant.UploadParametres.POLICY, policyR);
-                    map.put(ApiConstant.UploadParametres.SUCCESS_ACTION_STATUS, successR);
-                    map.put(ApiConstant.UploadParametres.ALGORITHM, algorithmR);
-                    map.put(ApiConstant.UploadParametres.CREDENTIAL, credentialR);
-                    map.put(ApiConstant.UploadParametres.DATE, dateR);
-                    map.put(ApiConstant.UploadParametres.SIGNATURE, signatureR);
+                    uploadFileRetrofit(token, blobId, CreateMapRequestBody.createMapRequestBody(uri), multiPart);
 
-                    uploadFileRetrofit(token, blobId, map, multiPart);
                 }, throwable -> {
 
                     decodeThrowableAndShowAlert(throwable);

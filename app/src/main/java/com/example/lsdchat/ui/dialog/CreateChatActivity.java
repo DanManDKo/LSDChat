@@ -1,19 +1,24 @@
 package com.example.lsdchat.ui.dialog;
 
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
 
 import com.example.lsdchat.R;
+import com.example.lsdchat.model.ContactsModel;
 import com.example.lsdchat.manager.SharedPreferencesManager;
 import com.facebook.drawee.view.SimpleDraweeView;
+
+import java.util.List;
 
 public class CreateChatActivity extends AppCompatActivity implements CreateChatContract.View {
 
@@ -26,15 +31,30 @@ public class CreateChatActivity extends AppCompatActivity implements CreateChatC
     private SimpleDraweeView mImageView;
     private CreateChatPresenter mCreateChatPresenter;
 
+    private CreateChatRvAdapter mCreateChatRvAdapter;
+    private List<ContactsModel> mContactsModelList;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_new_chat);
-        mCreateChatPresenter = new CreateChatPresenter(this,new SharedPreferencesManager(this));
+        mCreateChatPresenter = new CreateChatPresenter(this, new SharedPreferencesManager(this));
 
+        mCreateChatPresenter.getContactsModel();
         initView();
+//        initAdapter();
 
-        mCreateChatPresenter.btnCreateClick(mBtnCreate,mNameChat);
+
+        mCreateChatPresenter.btnCreateClick(mBtnCreate, mNameChat);
+        mCreateChatPresenter.btnImageClick(mImageView);
+    }
+
+    @Override
+    public void initAdapter() {
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this);
+        mRvSelectMembers.setLayoutManager(mLayoutManager);
+        mCreateChatRvAdapter = new CreateChatRvAdapter(mCreateChatPresenter.getListContactsModel());
+        mRvSelectMembers.setAdapter(mCreateChatRvAdapter);
 
     }
 
@@ -46,6 +66,11 @@ public class CreateChatActivity extends AppCompatActivity implements CreateChatC
         mRvSelectMembers = (RecyclerView) findViewById(R.id.new_chat_members_container);
         mBtnCreate = (Button) findViewById(R.id.new_chat_button_create);
         mImageView = (SimpleDraweeView) findViewById(R.id.iv_user_reg);
+    }
+
+    @Override
+    public String getChatName() {
+        return mNameChat.getText().toString();
     }
 
     @Override
@@ -96,5 +121,10 @@ public class CreateChatActivity extends AppCompatActivity implements CreateChatC
                     mCreateChatPresenter.getPhotoFromCamera();
                 });
         builder.create().show();
+    }
+
+    @Override
+    public Context getContext() {
+        return this;
     }
 }

@@ -1,6 +1,9 @@
 package com.example.lsdchat.manager;
 
+import com.example.lsdchat.model.ContactsModel;
 import com.example.lsdchat.model.User;
+
+import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
@@ -37,4 +40,20 @@ public class DataManager {
         }
     }
 
+
+
+    public void insertContactsModel(ContactsModel contactsModel){
+        mRealm.executeTransaction(realm -> realm.copyToRealmOrUpdate(contactsModel));
+    }
+
+    public List<ContactsModel> getContactsModel() {
+        return mRealm.where(ContactsModel.class).findAll();
+    }
+
+    public void clearContactsModel() {
+        RealmResults<ContactsModel> realmResults = mRealm.where(ContactsModel.class).findAll();
+        if (!realmResults.isEmpty()) {
+            mRealm.executeTransaction(realm -> realm.deleteAll());
+        }
+    }
 }

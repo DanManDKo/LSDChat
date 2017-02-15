@@ -125,7 +125,7 @@ dependencies {
     compile 'uk.co.chrisjenx:calligraphy:2.1.0'
     compile 'com.facebook.android:facebook-android-sdk:[4,5)'
     compile 'com.facebook.fresco:fresco:0.13.0'
-
+    compile 'com.squareup.okio:okio:1.8.0'
     compile('com.crashlytics.sdk.android:crashlytics:2.6.6@aar') {
         transitive = true;
     }

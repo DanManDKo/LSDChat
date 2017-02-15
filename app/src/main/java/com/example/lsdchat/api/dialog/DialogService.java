@@ -6,13 +6,17 @@ import com.example.lsdchat.api.dialog.request.CreateDialogRequest;
 import com.example.lsdchat.api.dialog.request.CreateMessageRequest;
 import com.example.lsdchat.api.dialog.response.DialogsResponse;
 import com.example.lsdchat.api.dialog.response.MessagesResponse;
+import com.example.lsdchat.api.dialog.response.UserListResponse;
 import com.example.lsdchat.constant.ApiConstant;
 
+import okhttp3.ResponseBody;
+import retrofit2.Response;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
+import retrofit2.http.Path;
 import retrofit2.http.Query;
 import rx.Observable;
 
@@ -35,6 +39,15 @@ public interface DialogService {
     @POST(ApiConstant.MESSAGES_REQUEST)
     Observable<ItemMessage> createMessages(@Header(ApiConstant.QB_TOKEN) String token, @Body CreateMessageRequest createMessageRequest);
 
+
+    @Headers(ApiConstant.HEADER_CONTENT_TYPE)
+    @GET(ApiConstant.USER_LIST_REQUEST)
+    Observable<UserListResponse> getUserList(@Header(ApiConstant.QB_TOKEN) String token);
+
+
+    @Headers(ApiConstant.HEADER_CONTENT_TYPE)
+    @GET(ApiConstant.GET_FILE_REQUEST)
+    Observable<Response<ResponseBody>> downloadImage(@Path(ApiConstant.BLOB_ID) long blobId, @Header(ApiConstant.QB_TOKEN) String token);
 
 
 }

@@ -82,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
             //TODO: fab onClicked hadling
 //            for test
             startActivity(new Intent(this, CreateChatActivity.class));
-            finish();
+
             Toast.makeText(this, "FAB clicked", Toast.LENGTH_SHORT).show();
         });
 
