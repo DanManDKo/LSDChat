@@ -45,10 +45,12 @@ public class ConversationAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         ItemMessage message = chatMessageList.get(position);
+        Integer senderId = message.getSender_id();
         View vi = convertView;
         if (convertView == null) vi = inflater.inflate(R.layout.chat_bubble_item, null);
 
         TextView msg = (TextView) vi.findViewById(R.id.bubble_message);
+        TextView time = (TextView) vi.findViewById(R.id.bubble_time);
         RelativeLayout parentLayout = (RelativeLayout) vi.findViewById(R.id.bubble_layout_parent);
         RelativeLayout innerLayout = (RelativeLayout) vi.findViewById(R.id.bubble_layout);
         LinearLayout detailsLayout = (LinearLayout) vi.findViewById(R.id.bubble_details_layout);
@@ -58,7 +60,8 @@ public class ConversationAdapter extends BaseAdapter {
 //        RelativeLayout.LayoutParams paramsRoot = (RelativeLayout.LayoutParams) innerLayout.getLayoutParams();
 
         // if message is mine then align to right
-        if (position % 2 == 0) {
+        Integer userId = 23163511;
+        if (senderId.equals(userId)) {
 //            paramsImage.addRule(RelativeLayout.ALIGN_PARENT_END);
 //            paramsRoot.addRule(RelativeLayout.LEFT_OF, R.id.bubble_image);
             innerLayout.setBackgroundResource(R.drawable.right_bubble);
@@ -77,6 +80,7 @@ public class ConversationAdapter extends BaseAdapter {
             detailsLayout.setPadding(32, 0, 16, 0);
         }
         msg.setText(message.getMessage());
+        time.setText(message.getCreatedAt().split("T")[0]);
         innerLayout.setOnClickListener(view -> {
             Toast.makeText(convertView.getContext(), "message", Toast.LENGTH_SHORT).show();
         });
