@@ -79,5 +79,51 @@ public class ItemMessage {
         return read;
     }
 
+    public void setId(String id) {
+        this.id = id;
+    }
 
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public void setUpdatedAt(String updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public void setAttachments(List<MessageAttachments> attachments) {
+        this.attachments = attachments;
+    }
+
+    public void setReadIdsList(List<Integer> readIdsList) {
+        this.readIdsList = readIdsList;
+    }
+
+    public void setDeliveredIdsList(List<Integer> deliveredIdsList) {
+        this.deliveredIdsList = deliveredIdsList;
+    }
+
+    public void setChatDialogId(String chatDialogId) {
+        this.chatDialogId = chatDialogId;
+    }
+
+    public void setDateSent(String dateSent) {
+        this.dateSent = dateSent;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public void setRecipientId(Integer recipientId) {
+        this.recipientId = recipientId;
+    }
+
+    public void setSender_id(Integer sender_id) {
+        this.sender_id = sender_id;
+    }
+
+    public void setRead(Integer read) {
+        this.read = read;
+    }
 }
