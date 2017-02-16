@@ -36,21 +36,29 @@ public class ConversationActivity extends AppCompatActivity implements Conversat
     private ListView mListView;
 
     private static final String TAG = "ChatActivity";
-    private String contactJid = "23163511-52350@chat.quickblox.com";
+    //for who we send message
+    //private String contactJid = "23163511-52350@chat.quickblox.com";
+
+    //there we have to pass chat_id of chosen dialog
+    private String contactJid = "52350_589f6bfda0eb47ea8400026a@muc.chat.quickblox.com";
     private BroadcastReceiver mBroadcastReceiver;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_conversation);
-//        mConversationPresenter = new ConversationPresenter(this);
-        mMessageList = new ArrayList<>();
+        mConversationPresenter = new ConversationPresenter(this);
+
         initView();
+
         Intent intentService = new Intent(this, ConversationService.class);
         startService(intentService);
 
- //       String dialogId = "";
- //       mConversationPresenter.getMessages(dialogId);
+        /*There we have to get contactJid, e.t. dialog_id AND
+        *concat @muc.chat.quickblox.com to it.*/
+
+        //       String contactJid = "";
+        //       mConversationPresenter.getMessages(dialogId);
 
         mButtonSend.setOnClickListener(view -> sendTextMessage());
 
@@ -90,6 +98,8 @@ public class ConversationActivity extends AppCompatActivity implements Conversat
     }
 
     private void initView() {
+        mMessageList = new ArrayList<>();
+
         mToolbar = (Toolbar) findViewById(R.id.conversation_toolbar);
         configToolbar();
 

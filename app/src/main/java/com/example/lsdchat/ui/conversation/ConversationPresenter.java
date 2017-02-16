@@ -19,6 +19,7 @@ public class ConversationPresenter implements ConversationContract.Presenter {
 
     @Override
     public void getMessages(String dialogId) {
+        //Get token from DataBase
         String token = "";
         mModel.getMessagesByDialogId(token, dialogId)
                 .subscribe(messagesResponse -> {
