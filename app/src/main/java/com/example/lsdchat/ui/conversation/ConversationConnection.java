@@ -42,7 +42,7 @@ public class ConversationConnection implements ConnectionListener {
     String jid;
     MultiUserChat muc;
     MultiUserChatManager manager;
-
+    //app_id + doalog_id
     public static final String mucChat = "52350_589f6bfda0eb47ea8400026a@muc.chat.quickblox.com";
 
     public static enum ConnectionState {

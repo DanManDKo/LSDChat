@@ -39,7 +39,7 @@ public class ConversationActivity extends AppCompatActivity implements Conversat
     //for who we send message
     //private String contactJid = "23163511-52350@chat.quickblox.com";
 
-    //there we have to pass chat_id of chosen dialog
+    //there we have to pass app_id + chat_id of chosen dialog
     private String contactJid = "52350_589f6bfda0eb47ea8400026a@muc.chat.quickblox.com";
     private BroadcastReceiver mBroadcastReceiver;
 
@@ -54,11 +54,13 @@ public class ConversationActivity extends AppCompatActivity implements Conversat
         Intent intentService = new Intent(this, ConversationService.class);
         startService(intentService);
 
-        /*There we have to get contactJid, e.t. dialog_id AND
-        *concat @muc.chat.quickblox.com to it.*/
+        /* There we have to get from intent dialog_name AND contactJid, e.t. app_id + "_" + dialog_id +
+        *  "@" + "muc.chat.quickblox.com" to it.
+        * dialog_name we use for Toolbar title */
 
-        //       String contactJid = "";
-        //       mConversationPresenter.getMessages(dialogId);
+
+        //pass dialog_id
+        //mConversationPresenter.getMessages("589f6bfda0eb47ea8400026a");
 
         mButtonSend.setOnClickListener(view -> sendTextMessage());
 
@@ -147,7 +149,11 @@ public class ConversationActivity extends AppCompatActivity implements Conversat
 
     @Override
     public void fillListOfMessages(List<ItemMessage> list) {
-        mMessageList = (ArrayList<ItemMessage>) list;
+        //mMessageList = (ArrayList<ItemMessage>) list;
+        for (ItemMessage im : list) {
+            adapter.add(im);
+        }
+        adapter.notifyDataSetChanged();
     }
 
     @Override

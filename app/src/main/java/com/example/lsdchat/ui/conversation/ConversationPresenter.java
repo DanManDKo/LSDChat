@@ -1,6 +1,7 @@
 package com.example.lsdchat.ui.conversation;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.example.lsdchat.api.dialog.model.ItemMessage;
 
@@ -20,11 +21,13 @@ public class ConversationPresenter implements ConversationContract.Presenter {
     @Override
     public void getMessages(String dialogId) {
         //Get token from DataBase
-        String token = "";
+        String token = "e971e2f4acd8f5f2b5f546f7599c803e1c00cc7e";
         mModel.getMessagesByDialogId(token, dialogId)
                 .subscribe(messagesResponse -> {
                     List<ItemMessage> listOfMessages = messagesResponse.getItemMessageList();
                     mView.fillListOfMessages(listOfMessages);
+                }, throwable -> {
+                    Log.d("++++", throwable.getMessage());
                 });
     }
 }
