@@ -42,6 +42,8 @@ public interface CreateChatContract {
         String getChatName();
 
         void initAdapter();
+
+        void addModel(List<ContactsModel> list);
     }
 
     interface Presenter {

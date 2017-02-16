@@ -27,6 +27,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.URLConnection;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -223,9 +224,9 @@ public class CreateChatPresenter implements CreateChatContract.Presenter {
     public void getContactsModel() {
 
         mModel.getUserList(getToken())
-                .doOnNext(userListResponse -> mView.initAdapter())
                 .subscribe(userListResponse -> {
                     List<ItemUser> loginResponses = userListResponse.getItemUserList();
+
 
                     getFileImage(loginResponses);
 
@@ -236,10 +237,12 @@ public class CreateChatPresenter implements CreateChatContract.Presenter {
 
     }
 
-//TODO: what the f..? What add only 5 users? (|
-    private void getFileImage(List<ItemUser> loginResponses) {
-        for (ItemUser user : loginResponses) {
 
+    private void getFileImage(List<ItemUser> loginResponses) {
+
+        List<ContactsModel> contactsModelList = new ArrayList<>();
+
+        for (ItemUser user : loginResponses) {
 
             if (user.getUser().getBlobId() != 0) {
                 long id = user.getUser().getBlobId();
@@ -247,20 +250,28 @@ public class CreateChatPresenter implements CreateChatContract.Presenter {
                 mModel.downloadImage(id, getToken())
                         .subscribe(file -> {
                             Log.e("getUserList", "FILE OK");
-
-                            mModel.insertToDb(new ContactsModel(user.getUser().getFullName(), user.getUser().getEmail(), file.getPath()));
+                            List<ContactsModel> contactsModelList1 = new ArrayList<>();
+                            contactsModelList1.add(new ContactsModel(user.getUser().getFullName(),
+                                    user.getUser().getEmail(), file.getPath()));
+                            mView.addModel(contactsModelList1);
                         }, throwable -> {
                             Log.e("getFileImage", throwable.getMessage());
 
                         });
 
-            } else {
 
-                mModel.insertToDb(new ContactsModel(user.getUser().getFullName(), user.getUser().getEmail()));
+            } else {
+                contactsModelList.add(new ContactsModel(user.getUser().getFullName(),
+                        user.getUser().getEmail()));
+
             }
 
 
         }
+
+        mView.addModel(contactsModelList);
+
+
     }
 
     @Override

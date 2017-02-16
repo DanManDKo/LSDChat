@@ -37,12 +37,13 @@ public class CreateChatActivity extends AppCompatActivity implements CreateChatC
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.fragment_new_chat);
         mCreateChatPresenter = new CreateChatPresenter(this, new SharedPreferencesManager(this));
 
         mCreateChatPresenter.getContactsModel();
+        setContentView(R.layout.fragment_new_chat);
+
         initView();
-//        initAdapter();
+        initAdapter();
 
 
         mCreateChatPresenter.btnCreateClick(mBtnCreate, mNameChat);
@@ -53,9 +54,17 @@ public class CreateChatActivity extends AppCompatActivity implements CreateChatC
     public void initAdapter() {
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this);
         mRvSelectMembers.setLayoutManager(mLayoutManager);
-        mCreateChatRvAdapter = new CreateChatRvAdapter(mCreateChatPresenter.getListContactsModel());
+        mCreateChatRvAdapter = new CreateChatRvAdapter();
         mRvSelectMembers.setAdapter(mCreateChatRvAdapter);
 
+    }
+
+    @Override
+    public void addModel(List<ContactsModel> list) {
+        for (ContactsModel contactsModel: list){
+            mCreateChatRvAdapter.add(contactsModel);
+        }
+        mCreateChatRvAdapter.notifyDataSetChanged();
     }
 
     private void initView() {

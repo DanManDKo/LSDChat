@@ -93,7 +93,7 @@ public class CreateChatModel implements CreateChatContract.Model {
 
     @Override
     public void insertToDb(ContactsModel contactsModel) {
-        mDataManager.insertContactsModel(contactsModel);
+        mDataManager.insertCM(contactsModel);
     }
 
     @Override

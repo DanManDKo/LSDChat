@@ -16,6 +16,7 @@ import com.facebook.drawee.view.SimpleDraweeView;
 import com.facebook.imagepipeline.producers.LocalExifThumbnailProducer;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 public class CreateChatRvAdapter extends RecyclerView.Adapter<CreateChatRvAdapter.ViewHolder> {
@@ -23,9 +24,13 @@ public class CreateChatRvAdapter extends RecyclerView.Adapter<CreateChatRvAdapte
     List<ContactsModel> list;
 
 
-    public CreateChatRvAdapter(List<ContactsModel> list) {
-        this.list = list;
+    public CreateChatRvAdapter() {
+        list = new ArrayList<>();
 
+    }
+
+    public void add(ContactsModel contactsModel) {
+        list.add(contactsModel);
     }
 
     @Override
