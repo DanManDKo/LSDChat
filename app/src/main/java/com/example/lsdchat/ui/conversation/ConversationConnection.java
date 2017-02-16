@@ -6,21 +6,29 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.util.Log;
 
-import org.jivesoftware.smack.Chat;
-import org.jivesoftware.smack.ChatManager;
-import org.jivesoftware.smack.ChatMessageListener;
+import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.ConnectionListener;
 import org.jivesoftware.smack.ReconnectionManager;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
+import org.jivesoftware.smack.packet.DefaultExtensionElement;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
+import org.jivesoftware.smackx.muc.MultiUserChat;
+import org.jivesoftware.smackx.muc.MultiUserChatManager;
 
 import java.io.IOException;
+import java.util.Random;
 
-public class ConversationConnection implements ConnectionListener, ChatMessageListener {
+public class ConversationConnection implements ConnectionListener {
+    //back up with alpha dependence
+    //http://pastebin.com/uewjWzYA
+
+    //back up with multyChat
+    //http://pastebin.com/fBEdcT3j
+
     private static final String TAG = "ConversationConnection";
 
     private final Context mApplicationContext;
@@ -28,7 +36,14 @@ public class ConversationConnection implements ConnectionListener, ChatMessageLi
     private final String mPassword;
     private final String mServiceName;
     private XMPPTCPConnection mConnection;
-    private BroadcastReceiver uiThreadMessageReceiver;//Receives messages from the ui thread.
+    //Receives messages from the ui thread.
+    private BroadcastReceiver uiThreadMessageReceiver;
+
+    String jid;
+    MultiUserChat muc;
+    MultiUserChatManager manager;
+
+    public static final String mucChat = "52350_589f6bfda0eb47ea8400026a@muc.chat.quickblox.com";
 
     public static enum ConnectionState {
         CONNECTED, AUTHENTICATED, CONNECTING, DISCONNECTING, DISCONNECTED;
@@ -41,13 +56,16 @@ public class ConversationConnection implements ConnectionListener, ChatMessageLi
     public ConversationConnection(Context context) {
         Log.d(TAG, "RoosterConnection Constructor called.");
         mApplicationContext = context.getApplicationContext();
-        //userId+appId
-        String jid = "23163511-52350@chat.quickblox.com";
+
+        /*There we have to retrive user_id AND app_id AND password from DataBase
+        *concat user_id + "-" + "ApiConstant.APP_ID";*/
+        jid = "23163511-52350@chat.quickblox.com";
+        //password from DataBase
         mPassword = "aaaaaaaa";
 
         if (jid != null) {
-            mUsername = "23163511-52350";
-            mServiceName = "chat.quickblox.com";
+            mUsername = jid.split("@")[0];
+            mServiceName = jid.split("@")[1];
         } else {
             mUsername = "";
             mServiceName = "";
@@ -56,20 +74,24 @@ public class ConversationConnection implements ConnectionListener, ChatMessageLi
 
     public void connect() throws IOException, XMPPException, SmackException {
         Log.d(TAG, "Connecting to server " + mServiceName);
-        XMPPTCPConnectionConfiguration.XMPPTCPConnectionConfigurationBuilder builder =
-                XMPPTCPConnectionConfiguration.builder();
-        builder.setServiceName(mServiceName);
-        builder.setUsernameAndPassword(mUsername, mPassword);
-        builder.setRosterLoadedAtLogin(true);
-        builder.setResource("Rooster");
+        XMPPTCPConnectionConfiguration builder2 = XMPPTCPConnectionConfiguration.builder()
+                .setServiceName(mServiceName)
+                .setUsernameAndPassword(mUsername, mPassword)
+                .setPort(5222)
+                .setSecurityMode(ConnectionConfiguration.SecurityMode.disabled)
+                .build();
 
         //Set up the ui thread broadcast message receiver.
         setupUiThreadBroadCastMessageReceiver();
 
-        mConnection = new XMPPTCPConnection(builder.build());
+        mConnection = new XMPPTCPConnection(builder2);
         mConnection.addConnectionListener(this);
         mConnection.connect();
         mConnection.login();
+
+        manager = MultiUserChatManager.getInstanceFor(mConnection);
+        muc = manager.getMultiUserChat(mucChat);
+        muc.join(mConnection.getUser());
 
         ReconnectionManager reconnectionManager = ReconnectionManager.getInstanceFor(mConnection);
         reconnectionManager.setEnabledPerDefault(true);
@@ -95,49 +117,36 @@ public class ConversationConnection implements ConnectionListener, ChatMessageLi
     }
 
     private void sendMessage(String body, String toJid) {
-        Log.d(TAG, "Sending message to :" + toJid);
-        Chat chat = ChatManager.getInstanceFor(mConnection)
-                .createChat(toJid, this);
+        Message msg = new Message();
+        //rewrite Strings below to Constants
+        //These steps for saving messages to history on server
+        DefaultExtensionElement extensionElement = new DefaultExtensionElement("extraParams", "jabber:client");
+        extensionElement.setValue("save_to_history", "1");
+
+        Log.d(TAG, msg.getBody() + " = getBody");
+        msg.setBody(body);
+        Log.d(TAG, body + " - body");
+        msg.setStanzaId(String.valueOf(new Random(1000).nextInt()));
+        msg.setType(Message.Type.groupchat);
+        msg.setTo(toJid);
+        msg.addExtension(extensionElement);
         try {
-            chat.sendMessage(body);
-        } catch (SmackException.NotConnectedException | XMPPException e) {
+            muc.sendMessage(msg);
+        } catch (SmackException.NotConnectedException e) {
             e.printStackTrace();
         }
-    }
-
-    @Override
-    public void processMessage(Chat chat, Message message) {
-
-        Log.d(TAG, "message.getBody() :" + message.getBody());
-        Log.d(TAG, "message.getFrom() :" + message.getFrom());
-///!!!!!!!
-        String from = String.valueOf(message.getFrom());
-        String contactJid = "";
-        if (from.contains("/")) {
-            contactJid = from.split("/")[0];
-            Log.d(TAG, "The real jid is :" + contactJid);
-        } else {
-            contactJid = from;
-        }
-
         //Bundle up the intent and send the broadcast.
         Intent intent = new Intent(ConversationService.NEW_MESSAGE);
         intent.setPackage(mApplicationContext.getPackageName());
-        intent.putExtra(ConversationService.BUNDLE_FROM_JID, contactJid);
-        intent.putExtra(ConversationService.BUNDLE_MESSAGE_BODY, message.getBody());
+        intent.putExtra(ConversationService.BUNDLE_FROM_JID, jid);
+        intent.putExtra(ConversationService.BUNDLE_MESSAGE_BODY, msg.getBody());
         mApplicationContext.sendBroadcast(intent);
-        Log.d(TAG, "Received message from :" + contactJid + " broadcast sent.");
-
     }
 
     public void disconnect() {
-        Log.d(TAG, "Disconnecting from serser " + mServiceName);
+        Log.d(TAG, "Disconnecting from server " + mServiceName);
         if (mConnection != null) {
-            try {
-                mConnection.disconnect();
-            } catch (SmackException.NotConnectedException e) {
-                e.printStackTrace();
-            }
+            mConnection.disconnect();
         }
         mConnection = null;
         // Unregister the message broadcast receiver.
@@ -145,7 +154,6 @@ public class ConversationConnection implements ConnectionListener, ChatMessageLi
             mApplicationContext.unregisterReceiver(uiThreadMessageReceiver);
             uiThreadMessageReceiver = null;
         }
-
     }
 
     @Override
@@ -155,7 +163,7 @@ public class ConversationConnection implements ConnectionListener, ChatMessageLi
     }
 
     @Override
-    public void authenticated(XMPPConnection connection) {
+    public void authenticated(XMPPConnection connection, boolean resumed) {
         ConversationService.sConnectionState = ConnectionState.CONNECTED;
         Log.d(TAG, "Authenticated Successfully");
     }
@@ -163,7 +171,7 @@ public class ConversationConnection implements ConnectionListener, ChatMessageLi
     @Override
     public void connectionClosed() {
         ConversationService.sConnectionState = ConnectionState.DISCONNECTED;
-        Log.d(TAG, "Connectionclosed()");
+        Log.d(TAG, "Connection closed");
     }
 
     @Override
@@ -175,26 +183,18 @@ public class ConversationConnection implements ConnectionListener, ChatMessageLi
     @Override
     public void reconnectionSuccessful() {
         ConversationService.sConnectionState = ConnectionState.CONNECTING;
-        Log.d(TAG, "ReconnectingIn() ");
+        Log.d(TAG, "Reconnecting In");
     }
 
     @Override
     public void reconnectingIn(int seconds) {
         ConversationService.sConnectionState = ConnectionState.CONNECTED;
-        Log.d(TAG, "ReconnectionSuccessful()");
+        Log.d(TAG, "Reconnection Successful");
     }
 
     @Override
     public void reconnectionFailed(Exception e) {
         ConversationService.sConnectionState = ConnectionState.DISCONNECTED;
-        Log.d(TAG, "ReconnectionFailed()");
-
-    }
-
-    private void showContactListActivityWhenAuthenticated() {
-        Intent i = new Intent(ConversationService.UI_AUTHENTICATED);
-        i.setPackage(mApplicationContext.getPackageName());
-        mApplicationContext.sendBroadcast(i);
-        Log.d(TAG, "Sent the broadcast that we are authenticated");
+        Log.d(TAG, "Reconnection Failed");
     }
 }
