@@ -32,8 +32,11 @@
                 android:resource="@xml/searchable"/>
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH"/>
-
             </intent-filter>
+        </activity>
+        <activity android:name=".ui.conversation.ConversationActivity"
+                  android:windowSoftInputMode="stateHidden">
+
         </activity>
         <activity
             android:name=".ui.login.LoginActivity"
@@ -47,16 +50,15 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.login.LoginActivity"/>
-
         </activity>
         <activity
             android:name=".ui.splash.SplashScreenActivity"
             android:screenOrientation="portrait">
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+
         </activity>
 
         <meta-data
@@ -72,6 +74,10 @@
             android:name=".service.NotifyService"
 
             android:process=":myservice">
+
+        </service>
+
+        <service android:name=".ui.conversation.ConversationService">
 
         </service>
     </application>

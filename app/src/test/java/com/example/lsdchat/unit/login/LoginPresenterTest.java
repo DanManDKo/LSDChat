@@ -26,7 +26,7 @@ public class LoginPresenterTest {
     @Before
     public void setUp() throws Exception {
         view = mock(LoginActivity.class);
-        presenter = new LoginPresenter(view,dataManager);
+//        presenter = new LoginPresenter(view,dataManager);
     }
 
     @Test
