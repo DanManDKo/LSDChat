@@ -42,22 +42,4 @@ public class DataManager {
 
 
 
-    public void insertContactsModel(ContactsModel contactsModel){
-        mRealm.executeTransaction(realm -> realm.copyToRealmOrUpdate(contactsModel));
-    }
-
-    public void insertCM(ContactsModel contactsModel) {
-        mRealm.executeTransaction(realm -> realm.insertOrUpdate(contactsModel));
-    }
-
-    public List<ContactsModel> getContactsModel() {
-        return mRealm.where(ContactsModel.class).findAll();
-    }
-
-    public void clearContactsModel() {
-        RealmResults<ContactsModel> realmResults = mRealm.where(ContactsModel.class).findAll();
-        if (!realmResults.isEmpty()) {
-            mRealm.executeTransaction(realm -> realm.deleteAll());
-        }
-    }
 }
