@@ -3,6 +3,7 @@ package com.example.lsdchat.api.dialog.request;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
+import java.util.Set;
 
 
 public class CreateDialogRequest {
@@ -10,10 +11,17 @@ public class CreateDialogRequest {
     private Integer type;
     @SerializedName("name")
     private String name;
-    @SerializedName("occupants_ids")
+//    @SerializedName("occupants_ids")
     private List<Long> occupantsIdsList;
     @SerializedName("photo")
     private long photoId;
+
+    @SerializedName("occupants_ids")
+    private String idU;
+
+    public void setIdU(String idU) {
+        this.idU = idU;
+    }
 
     public void setType(Integer type) {
         this.type = type;
