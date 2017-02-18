@@ -90,22 +90,6 @@ public class CreateChatModel implements CreateChatContract.Model {
 
     }
 
-
-    @Override
-    public void insertToDb(ContactsModel contactsModel) {
-        mDataManager.insertCM(contactsModel);
-    }
-
-    @Override
-    public List<ContactsModel> getContactsModel() {
-        return mDataManager.getContactsModel();
-    }
-
-    @Override
-    public void clear(){
-        mDataManager.clearContactsModel();
-    }
-
     @Override
     public Observable<File> downloadImage(long blobId, String token) {
         return mDialogService.downloadImage(blobId, token)

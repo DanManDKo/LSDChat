@@ -9,16 +9,21 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
+import android.widget.RadioGroup;
 
 import com.example.lsdchat.R;
 import com.example.lsdchat.model.ContactsModel;
 import com.example.lsdchat.manager.SharedPreferencesManager;
 import com.facebook.drawee.view.SimpleDraweeView;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class CreateChatActivity extends AppCompatActivity implements CreateChatContract.View {
 
@@ -30,20 +35,24 @@ public class CreateChatActivity extends AppCompatActivity implements CreateChatC
     private Button mBtnCreate;
     private SimpleDraweeView mImageView;
     private CreateChatPresenter mCreateChatPresenter;
-
+    private RadioGroup mRbPrivacy;
     private CreateChatRvAdapter mCreateChatRvAdapter;
-    private List<ContactsModel> mContactsModelList;
+    private LinearLayout mLlSelectMembers;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         mCreateChatPresenter = new CreateChatPresenter(this, new SharedPreferencesManager(this));
 
-        mCreateChatPresenter.getContactsModel();
         setContentView(R.layout.fragment_new_chat);
 
         initView();
         initAdapter();
+
+        mCreateChatPresenter.getContactsModel();
+        mCreateChatPresenter.setOnCheckedChangeListener(mRbPrivacy);
 
 
         mCreateChatPresenter.btnCreateClick(mBtnCreate, mNameChat);
@@ -54,17 +63,27 @@ public class CreateChatActivity extends AppCompatActivity implements CreateChatC
     public void initAdapter() {
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this);
         mRvSelectMembers.setLayoutManager(mLayoutManager);
-        mCreateChatRvAdapter = new CreateChatRvAdapter();
+        mCreateChatRvAdapter = new CreateChatRvAdapter(mCreateChatPresenter);
         mRvSelectMembers.setAdapter(mCreateChatRvAdapter);
 
     }
 
+
     @Override
     public void addModel(List<ContactsModel> list) {
-        for (ContactsModel contactsModel: list){
+        for (ContactsModel contactsModel : list) {
             mCreateChatRvAdapter.add(contactsModel);
         }
         mCreateChatRvAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void setRecyclerEnableDisable(boolean enable) {
+        if (!enable) {
+            mLlSelectMembers.setVisibility(View.GONE);
+        } else {
+            mLlSelectMembers.setVisibility(View.VISIBLE);
+        }
     }
 
     private void initView() {
@@ -72,9 +91,11 @@ public class CreateChatActivity extends AppCompatActivity implements CreateChatC
         mIlName = (TextInputLayout) findViewById(R.id.input_layout_chat_name);
         mRbPublic = (RadioButton) findViewById(R.id.radio_public);
         mRbPrivate = (RadioButton) findViewById(R.id.radio_private);
+        mRbPrivacy = (RadioGroup) findViewById(R.id.new_chat_privacy_container);
         mRvSelectMembers = (RecyclerView) findViewById(R.id.new_chat_members_container);
         mBtnCreate = (Button) findViewById(R.id.new_chat_button_create);
         mImageView = (SimpleDraweeView) findViewById(R.id.iv_user_reg);
+        mLlSelectMembers = (LinearLayout) findViewById(R.id.ll_select_members);
     }
 
     @Override
@@ -105,6 +126,24 @@ public class CreateChatActivity extends AppCompatActivity implements CreateChatC
     @Override
     public void getUserpicUri(Uri uri) {
         mImageView.setImageURI(uri);
+    }
+
+    @Override
+    public void setEnableName(boolean enableName) {
+        if (enableName) {
+            mNameChat.setEnabled(true);
+        } else {
+            mNameChat.setEnabled(false);
+        }
+    }
+
+    @Override
+    public void setEnableImage(boolean enableImage) {
+        if (enableImage) {
+            mImageView.setEnabled(true);
+        } else {
+            mImageView.setEnabled(false);
+        }
     }
 
     @Override

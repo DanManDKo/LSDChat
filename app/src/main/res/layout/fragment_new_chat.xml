@@ -1,112 +1,126 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:fresco="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical">
+    android:layout_height="wrap_content">
 
-    <LinearLayout
-        android:id="@+id/linear_layout"
+    <RelativeLayout
+        android:layout_margin="16dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:orientation="horizontal">
+        android:layout_height="wrap_content">
 
-        <android.support.design.widget.TextInputLayout
-            app:errorTextAppearance="@style/error_appearance"
-            app:theme="@style/TextInputLayoutNewChat"
-            android:id="@+id/input_layout_chat_name"
-            android:layout_width="0dp"
+        <LinearLayout
+            android:id="@+id/linear_layout"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_weight="1">
-            <EditText
-                android:id="@+id/input_chat_name"
-                android:layout_width="match_parent"
+            android:layout_alignParentTop="true"
+            android:orientation="horizontal">
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/input_layout_chat_name"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:inputType="text"
-                style="@style/TextNewChat"
-                android:hint="@string/chat_name"/>
+                android:layout_marginEnd="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_weight="1"
+                app:errorTextAppearance="@style/error_appearance"
+                app:theme="@style/TextInputLayoutNewChat">
 
-        </android.support.design.widget.TextInputLayout>
+                <EditText
+                    android:id="@+id/input_chat_name"
+                    style="@style/TextNewChat"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/chat_name"
+                    android:inputType="text" />
 
-        <com.facebook.drawee.view.SimpleDraweeView
-            android:id="@+id/iv_user_reg"
-            android:layout_width="@dimen/usericon_size"
-            android:layout_height="@dimen/usericon_size"
+            </android.support.design.widget.TextInputLayout>
+
+            <com.facebook.drawee.view.SimpleDraweeView
+                android:id="@+id/iv_user_reg"
+                android:layout_width="@dimen/usericon_size"
+                android:layout_height="@dimen/usericon_size"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="@dimen/activity_vertical_margin"
+                android:contentDescription="@string/cda_userpic_reg"
+                android:scaleType="centerCrop"
+                fresco:placeholderImage="@drawable/userpic_group"
+                fresco:roundAsCircle="true" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/new_chat_privacy_title"
+            style="@style/TextNewChat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/linear_layout"
+            android:layout_marginTop="36dp"
+            android:paddingStart="4dp"
+            android:text="@string/chat_privacy"
+
+            />
+
+        <RadioGroup
+            android:id="@+id/new_chat_privacy_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/new_chat_privacy_title"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/radio_public"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/chat_public"
+                android:textColor="@color/colorNewChatText" />
+
+            <RadioButton
+                android:id="@+id/radio_private"
+
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:text="@string/chat_private"
+                android:textColor="@color/colorNewChatText" />
+        </RadioGroup>
+
+        <LinearLayout
+            android:id="@+id/ll_select_members"
+            android:layout_marginTop="36dp"
+            android:layout_below="@id/new_chat_privacy_container"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+
+        <TextView
+            android:id="@+id/new_chat_members_title"
+            style="@style/TextNewChat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingStart="4dp"
+            android:text="@string/chat_select_members" />
+
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/new_chat_members_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"/>
+        </LinearLayout>
+        <Button
+            android:id="@+id/new_chat_button_create"
+            style="@style/ButtonLogin"
+            android:layout_width="182dp"
+            android:layout_height="40dp"
+            android:layout_alignParentBottom="true"
+            android:layout_below="@id/ll_select_members"
             android:layout_centerHorizontal="true"
-            android:layout_marginBottom="@dimen/activity_vertical_margin"
-            android:contentDescription="@string/cda_userpic_reg"
-            android:scaleType="centerCrop"
-            fresco:placeholderImage="@drawable/userpic_group"
-            fresco:roundAsCircle="true" />
-    </LinearLayout>
+            android:layout_marginTop="24dp"
+            android:background="@drawable/ripple_chat_create"
+            android:text="@string/chat_button_create" />
+    </RelativeLayout>
 
-    <TextView
-        style="@style/TextNewChat"
-        android:id="@+id/new_chat_privacy_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/linear_layout"
-        android:layout_marginTop="36dp"
-        android:paddingStart="4dp"
-        android:text="@string/chat_privacy"
-
-        />
-
-    <RadioGroup
-        android:id="@+id/new_chat_privacy_container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/new_chat_privacy_title"
-        android:layout_marginTop="8dp"
-        android:orientation="horizontal">
-
-        <RadioButton
-            android:id="@+id/radio_public"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/chat_public"
-            android:textColor="@color/colorNewChatText" />
-
-        <RadioButton
-            android:id="@+id/radio_private"
-
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="32dp"
-            android:text="@string/chat_private"
-            android:textColor="@color/colorNewChatText" />
-    </RadioGroup>
-
-    <TextView
-        style="@style/TextNewChat"
-        android:id="@+id/new_chat_members_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/new_chat_privacy_container"
-        android:layout_marginTop="36dp"
-        android:paddingStart="4dp"
-        android:text="@string/chat_select_members" />
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/new_chat_members_container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/new_chat_members_title"
-        android:layout_marginTop="8dp" />
-
-    <Button
-        android:id="@+id/new_chat_button_create"
-        style="@style/ButtonLogin"
-        android:layout_width="182dp"
-        android:layout_height="40dp"
-        android:layout_below="@id/new_chat_members_container"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="24dp"
-        android:background="@drawable/ripple_chat_create"
-        android:text="@string/chat_button_create" />
-</RelativeLayout>
+</ScrollView>

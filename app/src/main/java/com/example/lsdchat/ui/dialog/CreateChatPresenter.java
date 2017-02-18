@@ -5,12 +5,16 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.RadioGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.lsdchat.R;
@@ -31,6 +35,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.BooleanSupplier;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -50,12 +56,14 @@ public class CreateChatPresenter implements CreateChatContract.Presenter {
     private CreateChatContract.View mView;
     private CreateChatContract.Model mModel;
     private SharedPreferencesManager mSharedPreferencesManager;
+    private List<Long> idChecked;
 
     public CreateChatPresenter(CreateChatContract.View mView, SharedPreferencesManager sharedPreferencesManager) {
         this.mView = mView;
         mModel = new CreateChatModel();
         this.mSharedPreferencesManager = sharedPreferencesManager;
         mContext = mView.getContext();
+        idChecked = new ArrayList<>();
     }
 
     @Override
@@ -72,7 +80,7 @@ public class CreateChatPresenter implements CreateChatContract.Presenter {
             if (mUploadFile != null) {
                 getBlobObjectCreateFile(getToken());
             } else {
-                createDialog(getToken(), getTypeDialog(mView.getChatName()));
+                createDialog(getToken(), getTypeDialog(0));
             }
 
         });
@@ -80,7 +88,9 @@ public class CreateChatPresenter implements CreateChatContract.Presenter {
 
     @Override
     public void btnImageClick(SimpleDraweeView imageView) {
+
         imageView.setOnClickListener(view -> mView.showDialogImageSourceChooser());
+
     }
 
     @Override
@@ -100,14 +110,41 @@ public class CreateChatPresenter implements CreateChatContract.Presenter {
     }
 
     @Override
-    public CreateDialogRequest getTypeDialog(String nameDialog) {
+    public CreateDialogRequest getTypeDialog(long imageId) {
+        String nameDialog = mView.getChatName();
+        CreateDialogRequest createDialogRequest = new CreateDialogRequest();
+
         if (mView.isRbPublic()) {
-            return new CreateDialogRequest(ApiConstant.TYPE_DIALOG_PUBLIC, nameDialog);
+            createDialogRequest.setType(ApiConstant.TYPE_DIALOG_PUBLIC);
+            createDialogRequest.setName(nameDialog);
+            if (imageId != 0) {
+                createDialogRequest.setPhotoId(imageId);
+            }
+
+        } else if (mView.isRbPrivate()) {
+            if (idChecked.size() == 1) {
+                createDialogRequest.setType(ApiConstant.TYPE_DIALOG_PRIVATE);
+                Log.e("TEST123",idChecked.toString());
+                createDialogRequest.setOccupantsIdsList(idChecked);
+            }
+            else if(idChecked.size() > 1){
+                createDialogRequest.setType(ApiConstant.TYPE_DIALOG_GROUP);
+                createDialogRequest.setName(nameDialog);
+                createDialogRequest.setOccupantsIdsList(idChecked);
+                if (imageId != 0) {
+                    createDialogRequest.setPhotoId(imageId);
+                }
+            }
+            else {
+                Log.e("getTypeDialog","Select item id");
+            }
 
         } else {
-            return new CreateDialogRequest(ApiConstant.TYPE_DIALOG_PUBLIC, nameDialog);
+            Log.e("getTypeDialog","Select public or private");
         }
 
+
+        return createDialogRequest;
     }
 
     @Override
@@ -209,7 +246,7 @@ public class CreateChatPresenter implements CreateChatContract.Presenter {
         mModel.declareFileUploaded(size, token, blobId)
                 .subscribe(aVoid -> {
 
-                    createDialog(token, new CreateDialogRequest(ApiConstant.TYPE_DIALOG_PUBLIC, mView.getChatName(), blobId));
+                    createDialog(token, getTypeDialog(blobId));
                     Log.e("TEST", "SUCCESS");
                 }, throwable -> {
                     Log.e("TEST", throwable.getMessage());
@@ -246,13 +283,12 @@ public class CreateChatPresenter implements CreateChatContract.Presenter {
 
             if (user.getUser().getBlobId() != 0) {
                 long id = user.getUser().getBlobId();
-
                 mModel.downloadImage(id, getToken())
                         .subscribe(file -> {
                             Log.e("getUserList", "FILE OK");
                             List<ContactsModel> contactsModelList1 = new ArrayList<>();
                             contactsModelList1.add(new ContactsModel(user.getUser().getFullName(),
-                                    user.getUser().getEmail(), file.getPath()));
+                                    user.getUser().getEmail(), file.getPath(),user.getUser().getId()));
                             mView.addModel(contactsModelList1);
                         }, throwable -> {
                             Log.e("getFileImage", throwable.getMessage());
@@ -262,7 +298,7 @@ public class CreateChatPresenter implements CreateChatContract.Presenter {
 
             } else {
                 contactsModelList.add(new ContactsModel(user.getUser().getFullName(),
-                        user.getUser().getEmail()));
+                        user.getUser().getEmail(),user.getUser().getId()));
 
             }
 
@@ -275,12 +311,55 @@ public class CreateChatPresenter implements CreateChatContract.Presenter {
     }
 
     @Override
-    public List<ContactsModel> getListContactsModel() {
-        return mModel.getContactsModel();
+    public void setOnCheckedChangeListener(RadioGroup radioGroup) {
+        radioGroup.setOnCheckedChangeListener((group, checkedId) -> {
+            switch (checkedId) {
+                case R.id.radio_public:
+                    mView.setRecyclerEnableDisable(false);
+                    mView.setEnableName(true);
+                    mView.setEnableImage(true);
+
+                    break;
+                case R.id.radio_private:
+                    mView.setRecyclerEnableDisable(true);
+
+
+                    break;
+            }
+
+        });
     }
 
     @Override
     public String getToken() {
         return mSharedPreferencesManager.getToken();
+    }
+
+    @Override
+    public void setOnCheckedChangeListener(CheckBox checkBox, TextView textView, ContactsModel user) {
+        textView.setTextColor(Color.GRAY);
+        checkBox.setOnCheckedChangeListener((compoundButton, isChecked) -> {
+
+                    if (!compoundButton.isChecked()) {
+                        idChecked.remove(user.getUserId());
+                        textView.setTextColor(Color.GRAY);
+
+                    } else {
+                        idChecked.add(user.getUserId());
+                        textView.setTextColor(Color.BLACK);
+                    }
+
+                    if (idChecked.size() == 1) {
+                        mView.setEnableName(false);
+                        mView.setEnableImage(false);
+                    } else {
+                        mView.setEnableName(true);
+                        mView.setEnableImage(true);
+                    }
+                }
+
+        );
+
+
     }
 }

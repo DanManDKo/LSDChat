@@ -1,6 +1,8 @@
 package com.example.lsdchat.ui.dialog;
 
 
+import android.content.Context;
+import android.graphics.Color;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -17,15 +19,20 @@ import com.facebook.imagepipeline.producers.LocalExifThumbnailProducer;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 
 public class CreateChatRvAdapter extends RecyclerView.Adapter<CreateChatRvAdapter.ViewHolder> {
 
-    List<ContactsModel> list;
+    private List<ContactsModel> list;
+    private Map<String, Boolean> mapChecked;
+    private CreateChatContract.Presenter mPresenter;
 
-
-    public CreateChatRvAdapter() {
+    public CreateChatRvAdapter(CreateChatContract.Presenter presenter) {
         list = new ArrayList<>();
+        this.mPresenter = presenter;
 
     }
 
@@ -40,19 +47,20 @@ public class CreateChatRvAdapter extends RecyclerView.Adapter<CreateChatRvAdapte
         return new ViewHolder(view);
     }
 
+
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         ContactsModel user = list.get(position);
         holder.mName.setText(user.getName() + "/" + user.getEmail());
 
         if (user.getUri() != null) {
-            Log.e("URI",user.getUri());
+            Log.e("URI", user.getUri());
             holder.mImageView.setImageURI(Uri.fromFile(new File(user.getUri())));
         }
 
-        holder.mCheckBox.setChecked(user.isChecked());
+        mPresenter.setOnCheckedChangeListener(holder.mCheckBox,holder.mName,user);
 
-        holder.mCheckBox.setOnCheckedChangeListener((compoundButton, isChecked) -> user.setChecked(isChecked));
+
 
     }
 
@@ -74,6 +82,8 @@ public class CreateChatRvAdapter extends RecyclerView.Adapter<CreateChatRvAdapte
             mImageView = (SimpleDraweeView) itemView.findViewById(R.id.new_chat_member_image);
             mName = (TextView) itemView.findViewById(R.id.new_chat_member_name);
             mCheckBox = (CheckBox) itemView.findViewById(R.id.new_chat_member_checkbox);
+
+
 
 
         }

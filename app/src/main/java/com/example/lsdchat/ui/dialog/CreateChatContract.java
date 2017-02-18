@@ -4,8 +4,12 @@ package com.example.lsdchat.ui.dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.support.v7.widget.RecyclerView;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.RadioGroup;
+import android.widget.TextView;
 
 import com.example.lsdchat.api.dialog.model.ItemDialog;
 import com.example.lsdchat.api.dialog.request.CreateDialogRequest;
@@ -28,11 +32,17 @@ public interface CreateChatContract {
 
     interface View {
 
+
         boolean isRbPublic();
         boolean isRbPrivate();
 
         void setNameError();
         void hideNameError();
+
+        void setEnableName(boolean enableName);
+        void setEnableImage(boolean enableImage);
+
+        void setRecyclerEnableDisable(boolean enable);
 
         void getUserpicUri(Uri uri);
         void showDialogImageSourceChooser();
@@ -59,13 +69,15 @@ public interface CreateChatContract {
 
         void createDialog(String token,CreateDialogRequest request);
 
-        CreateDialogRequest getTypeDialog(String nameDialog);
+        CreateDialogRequest getTypeDialog(long imageId);
 
         void getContactsModel();
 
-        List<ContactsModel> getListContactsModel();
+        void setOnCheckedChangeListener(RadioGroup radioGroup);
 
         String getToken();
+
+        void setOnCheckedChangeListener(CheckBox checkBox, TextView textView,ContactsModel model);
 
     }
 
@@ -81,14 +93,11 @@ public interface CreateChatContract {
         Observable<UserListResponse> getUserList(String token);
 
 
-        void insertToDb(ContactsModel contactsModel);
 
-        List<ContactsModel> getContactsModel();
 
         Observable<File> downloadImage(long blobId, String token);
 
         Observable<File> saveImage(Response<ResponseBody> response,long blobId);
 
-        void clear();
     }
 }
