@@ -34,8 +34,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.BooleanSupplier;
 
 import okhttp3.MediaType;
@@ -123,14 +125,16 @@ public class CreateChatPresenter implements CreateChatContract.Presenter {
 
         } else if (mView.isRbPrivate()) {
             if (idChecked.size() == 1) {
-                createDialogRequest.setType(ApiConstant.TYPE_DIALOG_PRIVATE);
-                Log.e("TEST123",idChecked.toString());
-                createDialogRequest.setOccupantsIdsList(idChecked);
+                createDialogRequest.setType(3);
+                for (long id: idChecked){
+                    createDialogRequest.setIdU(String.valueOf(id));
+                }
             }
             else if(idChecked.size() > 1){
                 createDialogRequest.setType(ApiConstant.TYPE_DIALOG_GROUP);
                 createDialogRequest.setName(nameDialog);
-                createDialogRequest.setOccupantsIdsList(idChecked);
+                Log.e("getTypeDialog",idChecked.toString());
+                createDialogRequest.setIdU(idChecked.toString());
                 if (imageId != 0) {
                     createDialogRequest.setPhotoId(imageId);
                 }
