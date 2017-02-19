@@ -26,27 +26,34 @@
                 "keyboard|keyboardHidden|screenLayout|screenSize|orientation"
             android:label="@string/app_name"/>
 
+        <activity android:name=".ui.MainActivity">
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable"/>
         <activity android:name=".ui.chat.ChatActivity">
             <meta-data android:name="android.app.searchable"
                        android:resource="@xml/searchable" />
             <intent-filter>
-                <action android:name="android.intent.action.SEARCH" />
+                <action android:name="android.intent.action.SEARCH"/>
+
             </intent-filter>
         </activity>
-        <activity android:name=".ui.login.LoginActivity"
-            android:windowSoftInputMode="stateHidden"
-            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".ui.login.LoginActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden"/>
         <activity
             android:name=".ui.registration.RegistrationActivity"
             android:parentActivityName=".ui.login.LoginActivity"
-            android:windowSoftInputMode="stateHidden"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.login.LoginActivity"/>
 
         </activity>
-        <activity android:name=".ui.splash.SplashScreenActivity"
+        <activity
+            android:name=".ui.splash.SplashScreenActivity"
             android:screenOrientation="portrait">
 
             <intent-filter>
@@ -68,7 +75,7 @@
 
             android:name=".service.NotifyService"
 
-            android:process=":myservice" >
+            android:process=":myservice">
 
         </service>
     </application>
