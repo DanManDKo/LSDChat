@@ -1,14 +1,11 @@
 package com.example.lsdchat;
 
 import android.app.Application;
-import android.content.Context;
 
 import com.crashlytics.android.Crashlytics;
 import com.example.lsdchat.api.ApiManager;
 import com.example.lsdchat.manager.DataManager;
 import com.example.lsdchat.manager.SharedPreferencesManager;
-import com.facebook.FacebookSdk;
-import com.facebook.appevents.AppEventsLogger;
 import com.facebook.drawee.backends.pipeline.Fresco;
 
 import io.fabric.sdk.android.Fabric;
@@ -33,10 +30,7 @@ public class App extends Application {
         return sApiManager;
     }
 
-    public static SharedPreferencesManager getSharedPreferencesManager(Context context) {
-        if (sSharedPreferencesManager == null) {
-            sSharedPreferencesManager = new SharedPreferencesManager(context);
-        }
+    public static SharedPreferencesManager getSharedPreferencesManager() {
         return sSharedPreferencesManager;
     }
 
@@ -54,7 +48,7 @@ public class App extends Application {
                 .build();
         Realm.setDefaultConfiguration(configuration);
         sDataManager = new DataManager();
-
+        sSharedPreferencesManager = new SharedPreferencesManager(getApplicationContext());
         CalligraphyConfig.initDefault(
                 new CalligraphyConfig.Builder()
                         .setDefaultFontPath("fonts/roboto_regular.ttf")

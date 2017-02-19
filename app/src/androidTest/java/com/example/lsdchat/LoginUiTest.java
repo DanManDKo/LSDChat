@@ -8,7 +8,7 @@ import android.support.test.espresso.intent.Intents;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 
-import com.example.lsdchat.ui.MainActivity;
+import com.example.lsdchat.ui.chat.ChatActivity;
 import com.example.lsdchat.ui.login.LoginActivity;
 
 import org.junit.BeforeClass;
@@ -68,7 +68,7 @@ public class LoginUiTest {
     public void isSuccessfulGoToMainActivity() {
         Intent intent = new Intent();
         ComponentName componentName = new ComponentName("com.example.lsdchat.ui",
-                MainActivity.class.getName());
+                ChatActivity.class.getName());
         intent.setComponent(componentName);
         Intents.init();
         onView(withId(R.id.input_email)).perform(typeText("aa@test.aa"), closeSoftKeyboard());
@@ -84,10 +84,10 @@ public class LoginUiTest {
             }
             onView(withId(R.id.textMain)).check(matches(isDisplayed()));
 //            onView(withId(R.id.btn_sign_in)).check(matched());
-//            intended(toPackage("com.example.lsdchat.ui.MainActivity"));
+//            intended(toPackage("com.example.lsdchat.ui.main.ChatActivity"));
            /* Intent intent = new Intent();
             ComponentName componentName = new ComponentName("com.example.lsdchat.ui",
-                    MainActivity.class.getName());
+                    ChatActivity.class.getName());
             intent.setComponent(componentName);
             Intents.init();
             InstrumentationRegistry.getContext().startActivity(intent);*/

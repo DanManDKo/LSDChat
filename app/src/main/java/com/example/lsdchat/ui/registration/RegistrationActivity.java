@@ -14,7 +14,7 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 
 import com.example.lsdchat.R;
-import com.example.lsdchat.ui.MainActivity;
+import com.example.lsdchat.ui.chat.ChatActivity;
 import com.facebook.FacebookSdk;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.redmadrobot.inputmask.MaskedTextChangedListener;
@@ -135,7 +135,7 @@ public class RegistrationActivity extends AppCompatActivity implements Registrat
 
     @Override
     public void navigateToMainScreen() {
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this, ChatActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
         overridePendingTransition(R.anim.push_up_in, R.anim.push_up_out);

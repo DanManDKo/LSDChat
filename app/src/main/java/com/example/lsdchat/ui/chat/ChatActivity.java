@@ -1,4 +1,4 @@
-package com.example.lsdchat.ui;
+package com.example.lsdchat.ui.chat;
 
 import android.app.SearchManager;
 import android.content.Context;
@@ -12,6 +12,7 @@ import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
@@ -34,14 +35,16 @@ import android.widget.Toast;
 
 import com.example.lsdchat.R;
 import com.example.lsdchat.behavior.NonSwipeableViewPager;
-import com.example.lsdchat.ui.main.ViewPagerAdapter;
-import com.example.lsdchat.ui.main.ViewPagerPageFragment;
+import com.example.lsdchat.ui.chat.pager.DialogFragment;
+import com.example.lsdchat.ui.chat.pager.ViewPagerAdapter;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 
 
-public class MainActivity extends AppCompatActivity {
+public class ChatActivity extends AppCompatActivity implements ChatContract.View {
+    private static final int OFFSCREEN_PAGE_LIMIT = 1;
+    private ChatContract.Presenter mPresenter;
     private Toolbar mToolbar;
     private FloatingActionButton mFloatingActionButton;
     private DrawerLayout mDrawerLayout;
@@ -51,33 +54,25 @@ public class MainActivity extends AppCompatActivity {
     private TextView mSpannableText;
     private ImageView mNoChatsImage;
     private LinearLayout mNoChatsMessage;
-
-    private ArrayList<ViewPagerPageFragment> fragmentList = new ArrayList<>();
+    private ArrayList<DialogFragment> fragmentList = new ArrayList<>();
     private ArrayList<String> titleList = new ArrayList<>();
+    private int mUserId;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        initView();
-        fillFragmentList();
+        mPresenter = new ChatPresenter(this);
+        mUserId = mPresenter.getUserId();
+        ArrayList<Integer> userIdis = new ArrayList<>();
+        userIdis.add(mUserId);
+        fillFragmentList(userIdis);
         fillTitleList();
+        initView();
         //search
         handleIntent(getIntent());
 
-        mViewPager.setOffscreenPageLimit(1);
-        mViewPager.setAdapter(new ViewPagerAdapter(getSupportFragmentManager(), fragmentList, titleList));
-        mTabLayout.setupWithViewPager(mViewPager);
 
-        setSupportActionBar(mToolbar);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setHomeButtonEnabled(true);
-            getSupportActionBar().setTitle("Chats");
-        }
-        //change back arrow icon here
-        mToolbar.setNavigationIcon(R.drawable.ic_menu_white_24dp);
         //toggle visibility of viewpager tabs...temporary method.
         toggleTabsVisibility(false);
 
@@ -107,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
 
                     break;
             }
-            Toast.makeText(MainActivity.this, "item clicked", Toast.LENGTH_SHORT).show();
+            Toast.makeText(ChatActivity.this, "item clicked", Toast.LENGTH_SHORT).show();
             mDrawerLayout.closeDrawers();
             return false;
         });
@@ -118,23 +113,45 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 //TODO: onClick handling
-                Toast.makeText(MainActivity.this, "clicked", Toast.LENGTH_SHORT).show();
+                Toast.makeText(ChatActivity.this, "clicked", Toast.LENGTH_SHORT).show();
             }
         };
         spannableString.setSpan(clickableSpan, 26, 40, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        spannableString.setSpan(new ForegroundColorSpan(ContextCompat.getColor(MainActivity.this, R.color.colorNavyBlue)), 26, 40, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        spannableString.setSpan(new ForegroundColorSpan(ContextCompat.getColor(ChatActivity.this, R.color.colorNavyBlue)), 26, 40, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         spannableString.setSpan(new UnderlineSpan(), 26, 40, 0);
         mSpannableText.setMovementMethod(LinkMovementMethod.getInstance());
         mSpannableText.setText(spannableString);
     }
 
-    private void initView() {
+    private void initToolbar() {
         mToolbar = (Toolbar) findViewById(R.id.chats_toolbar);
+        mToolbar.setNavigationIcon(R.drawable.ic_menu_white_24dp);
+        setSupportActionBar(mToolbar);
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setHomeButtonEnabled(true);
+            actionBar.setTitle(R.string.chats);
+        }
+
+    }
+
+    private void initViewPager() {
         mViewPager = (NonSwipeableViewPager) findViewById(R.id.chats_viewpager);
+        mViewPager.setOffscreenPageLimit(OFFSCREEN_PAGE_LIMIT);
+        mViewPager.setAdapter(new ViewPagerAdapter(getSupportFragmentManager(), fragmentList, titleList));
+        mTabLayout.setupWithViewPager(mViewPager);
+    }
+
+    private void initView() {
+        initToolbar();
+        mTabLayout = (TabLayout) findViewById(R.id.chats_tabs);
+        initViewPager();
+
         mFloatingActionButton = (FloatingActionButton) findViewById(R.id.chats_fab);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.chats_drawer);
         mNavigationView = (NavigationView) findViewById(R.id.chats_nav);
-        mTabLayout = (TabLayout) findViewById(R.id.chats_tabs);
+
         mSpannableText = (TextView) findViewById(R.id.message_nochats_text_view);
         mNoChatsMessage = (LinearLayout) findViewById(R.id.message_nochats_root_layout);
         mNoChatsImage = (ImageView) findViewById(R.id.message_nochats_image_view);
@@ -161,14 +178,14 @@ public class MainActivity extends AppCompatActivity {
         v.setColorFilter(cf);
     }
 
-    private void fillFragmentList() {
-        fragmentList.add(ViewPagerPageFragment.newInstance());
-        fragmentList.add(ViewPagerPageFragment.newInstance());
+    private void fillFragmentList(ArrayList<Integer> userIds) {
+        fragmentList.add(DialogFragment.newInstance(DialogFragment.PUBLIC_GROUP, userIds));
+        fragmentList.add(DialogFragment.newInstance(DialogFragment.PRIVATE, userIds));
     }
 
     private void fillTitleList() {
-        titleList.add("Public");
-        titleList.add("Private");
+        titleList.add(getString(R.string.public_chat));
+        titleList.add(getString(R.string.private_chat));
     }
 
     private void handleIntent(Intent intent) {
@@ -231,4 +248,12 @@ public class MainActivity extends AppCompatActivity {
         //in case singleTop flag
         handleIntent(intent);
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mPresenter.onDestroy();
+    }
+
+
 }

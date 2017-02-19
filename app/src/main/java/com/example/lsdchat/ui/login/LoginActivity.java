@@ -19,7 +19,7 @@ import com.example.lsdchat.App;
 import com.example.lsdchat.R;
 import com.example.lsdchat.ui.forgot_password.ForgotPasswordFragment;
 import com.example.lsdchat.ui.registration.RegistrationActivity;
-import com.example.lsdchat.ui.MainActivity;
+import com.example.lsdchat.ui.chat.ChatActivity;
 import com.example.lsdchat.util.ErrorsCode;
 
 import retrofit2.adapter.rxjava.HttpException;
@@ -47,7 +47,7 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        mPresenter = new LoginPresenter(this, App.getDataManager(),App.getSharedPreferencesManager(this));
+        mPresenter = new LoginPresenter(this, App.getDataManager(),App.getSharedPreferencesManager());
         initView();
 
 //        set button disable
@@ -200,7 +200,7 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
 
     @Override
     public void navigateToMainScreen() {
-        startActivity(new Intent(this, MainActivity.class));
+        startActivity(new Intent(this, ChatActivity.class));
         overridePendingTransition(R.anim.push_up_in, R.anim.push_up_out);
         finish();
         overridePendingTransition(R.anim.push_down_in, R.anim.push_down_out);

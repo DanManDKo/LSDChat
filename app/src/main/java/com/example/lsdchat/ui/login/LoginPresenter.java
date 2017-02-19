@@ -28,7 +28,7 @@ public class LoginPresenter implements LoginContract.Presenter {
     private DataManager mDataManager;
     private SharedPreferencesManager mSharedPreferencesManager;
 
-    public LoginPresenter(LoginContract.View mView, DataManager dataManager,SharedPreferencesManager sharedPreferencesManager) {
+    public LoginPresenter(LoginContract.View mView, DataManager dataManager, SharedPreferencesManager sharedPreferencesManager) {
         this.mView = mView;
         this.mDataManager = dataManager;
         this.mSharedPreferencesManager = sharedPreferencesManager;
@@ -102,7 +102,7 @@ public class LoginPresenter implements LoginContract.Presenter {
                 .subscribe(sessionResponse -> {
                             Log.e("AAA", "TOKEN  - " + sessionResponse.getSession().getToken());
 
-                        mSharedPreferencesManager.saveToken(sessionResponse.getSession().getToken());
+                            mSharedPreferencesManager.saveToken(sessionResponse.getSession().getToken());
                         },
                         throwable -> {
                             Log.e("11111", throwable.getMessage());
@@ -125,15 +125,16 @@ public class LoginPresenter implements LoginContract.Presenter {
         mModel.getLogin(email, password, token)
                 .doOnNext(loginResponse -> mView.navigateToMainScreen())
                 .subscribe(loginUser -> {
-
-                            addUserToDb(email, password, mView.isKeepSignIn());
+                            int id = loginUser.getLoginUser().getId();
+                            addUserToDb(id, email, password, mView.isKeepSignIn());
                         },
                         throwable -> mView.dialogError(throwable));
     }
 
     //    add current user to db
-    private void addUserToDb(String email, String password, boolean isKeepSignIn) {
+    private void addUserToDb(int id, String email, String password, boolean isKeepSignIn) {
         User currentUser = new User();
+        currentUser.setId(id);
         currentUser.setEmail(email);
         currentUser.setPassword(password);
         currentUser.setSignIn(isKeepSignIn);

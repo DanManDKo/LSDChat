@@ -78,7 +78,7 @@ public class SplashScreenPresenter implements SplashContract.Presenter {
     private void getLoginWithToken(String email, String password, String token) {
         mModel.getLogin(email, password, token)
                 .subscribe(loginUser -> {
-                mSharedPreferencesManager.saveToken(token);
+                            mSharedPreferencesManager.saveToken(token);
                         },
                         throwable -> {
 

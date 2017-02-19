@@ -45,4 +45,5 @@ public class SplashModel implements SplashContract.Model {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
+
 }
