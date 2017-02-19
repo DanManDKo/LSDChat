@@ -103,6 +103,10 @@
     <string name="chat_private">Private</string>
     <string name="chat_select_members">Select members</string>
     <string name="chat_button_create">Create</string>
-    <string name="chat_error_name">Error input name</string>
+    <string name="chat_error_name">Enter name chat</string>
+    <string name="chat_error_users">Select users from list</string>
+    <string name="chat_error_type">Select type dialog (public or private)</string>
+
+
 
 </resources>

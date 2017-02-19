@@ -74,15 +74,45 @@ public class CreateChatPresenter implements CreateChatContract.Presenter {
 
     @Override
     public void btnCreateClick(Button btnCreate, EditText etName) {
-        btnCreate.setOnClickListener(view -> {
 
-            if (mUploadFile != null) {
-                getBlobObjectCreateFile(getToken());
-            } else {
-                createDialog(getToken(), getTypeDialog(0));
+        btnCreate.setOnClickListener(view -> {
+            if (isCheckData(etName)) {
+                if (mUploadFile != null) {
+                    getBlobObjectCreateFile(getToken());
+                } else {
+                    createDialog(getToken(), getTypeDialog(0));
+                }
             }
 
         });
+    }
+
+    private boolean isCheckData(EditText etName) {
+        if (mView.isRbPublic()) {
+            if (etName.getText().toString().isEmpty()) {
+                mView.showErrorDialog(mContext.getResources().getString(R.string.chat_error_name));
+                return false;
+            } else {
+                return true;
+            }
+        } else if (mView.isRbPrivate()) {
+            if (idChecked.size() == 0) {
+                mView.showErrorDialog(mContext.getResources().getString(R.string.chat_error_users));
+                return false;
+            } else if (idChecked.size() > 1) {
+                if (etName.getText().toString().isEmpty()) {
+                    mView.showErrorDialog(mContext.getResources().getString(R.string.chat_error_name));
+                    return false;
+                } else {
+                    return true;
+                }
+            } else {
+                return true;
+            }
+        } else {
+            mView.showErrorDialog(mContext.getResources().getString(R.string.chat_error_type));
+            return false;
+        }
     }
 
     @Override
@@ -105,7 +135,6 @@ public class CreateChatPresenter implements CreateChatContract.Presenter {
                         throwable -> {
                             Log.e("DIALOG", throwable.getMessage());
                         });
-
     }
 
     @Override
@@ -123,7 +152,7 @@ public class CreateChatPresenter implements CreateChatContract.Presenter {
         } else if (mView.isRbPrivate()) {
             if (idChecked.size() == 1) {
                 createDialogRequest.setType(ApiConstant.TYPE_DIALOG_PRIVATE);
-                for (Integer i: idChecked){
+                for (Integer i : idChecked) {
                     createDialogRequest.setIdU(String.valueOf(i));
                 }
 
@@ -132,7 +161,7 @@ public class CreateChatPresenter implements CreateChatContract.Presenter {
                 createDialogRequest.setType(ApiConstant.TYPE_DIALOG_GROUP);
                 createDialogRequest.setName(nameDialog);
                 List<String> list = new ArrayList<>();
-                for (Integer i: idChecked){
+                for (Integer i : idChecked) {
                     list.add(String.valueOf(i));
                 }
 
