@@ -3,6 +3,7 @@ package com.example.lsdchat.ui.chat.pager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,6 +28,8 @@ public class DialogFragment extends Fragment implements DialogContract.View {
     private ArrayList<Integer> userIds;
     private int userId;
     private RecyclerView mRecyclerView;
+    private DialogAdapter mDialogAdapter;
+    private List<ItemDialog> mItemDialogs = new ArrayList<>();
 
     public static DialogFragment newInstance(int type, ArrayList<Integer> userIds) {
         Bundle args = new Bundle();
@@ -57,10 +60,14 @@ public class DialogFragment extends Fragment implements DialogContract.View {
     public void initView(View view) {
 //        rootLayout = (LinearLayout) view.findViewById(R.id.viewpager_rootlayout);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.chats_recycler_view);
+        mDialogAdapter = new DialogAdapter(mItemDialogs);
+        mRecyclerView.setAdapter(mDialogAdapter);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
     }
 
     @Override
-    public void receiveDialogs(List<ItemDialog> dialogs) {
-
+    public void onDialoguesLoaded(List<ItemDialog> dialogs) {
+        mItemDialogs = dialogs;
+        mDialogAdapter.notifyDataSetChanged();
     }
 }

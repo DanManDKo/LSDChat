@@ -28,7 +28,7 @@ public class DialogPresenter implements DialogContract.Presenter {
     public List<ItemDialog> getAllDialogs() {
         mModel.getAllDialogs(getToken())
                 .subscribe(dialogsResponse -> {
-                    mItemDialogs = dialogsResponse.getItemDialogList();
+                    mView.onDialoguesLoaded(mItemDialogs = dialogsResponse.getItemDialogList());
                 }, throwable -> {
 
                 });
