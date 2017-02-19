@@ -3,17 +3,13 @@ package com.example.lsdchat.ui.chat;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.ColorMatrix;
-import android.graphics.ColorMatrixColorFilter;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
@@ -41,11 +37,10 @@ import com.example.lsdchat.ui.chat.pager.ViewPagerAdapter;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.List;
 
 
-public class ChatActivity extends AppCompatActivity implements ChatContract.View {
-    private static final int OFFSCREEN_PAGE_LIMIT = 1;
-    private ChatContract.Presenter mPresenter;
+public class ChatActivity extends AppCompatActivity {
     private Toolbar mToolbar;
     private FloatingActionButton mFloatingActionButton;
     private DrawerLayout mDrawerLayout;
@@ -55,27 +50,36 @@ public class ChatActivity extends AppCompatActivity implements ChatContract.View
     private TextView mSpannableText;
     private ImageView mNoChatsImage;
     private LinearLayout mNoChatsMessage;
-    private ArrayList<DialogFragment> fragmentList = new ArrayList<>();
-    private ArrayList<String> titleList = new ArrayList<>();
-    private int mUserId;
+
+    private List<DialogFragment> fragmentList = new ArrayList<>();
+    private List<String> titleList = new ArrayList<>();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mPresenter = new ChatPresenter(this);
-        mUserId = mPresenter.getUserId();
-        ArrayList<Integer> userIdis = new ArrayList<>();
-        userIdis.add(mUserId);
-        fillFragmentList(userIdis);
-        fillTitleList();
+
         initView();
+        fillFragmentList();
+        fillTitleList();
         //search
         handleIntent(getIntent());
 
+        mViewPager.setOffscreenPageLimit(1);
 
+        mViewPager.setAdapter(new ViewPagerAdapter(getSupportFragmentManager(), fragmentList, titleList));
+        mTabLayout.setupWithViewPager(mViewPager);
+
+        setSupportActionBar(mToolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setHomeButtonEnabled(true);
+            getSupportActionBar().setTitle("Chats");
+        }
+        //change back arrow icon here
+        mToolbar.setNavigationIcon(R.drawable.ic_menu_white_24dp);
         //toggle visibility of viewpager tabs...temporary method.
-        toggleTabsVisibility(false);
+        toggleTabsVisibility(true);
 
         mFloatingActionButton.setOnClickListener(view -> {
             //TODO: fab onClicked hadling
@@ -124,40 +128,16 @@ public class ChatActivity extends AppCompatActivity implements ChatContract.View
         mSpannableText.setText(spannableString);
     }
 
-    private void initToolbar() {
-        mToolbar = (Toolbar) findViewById(R.id.chats_toolbar);
-        mToolbar.setNavigationIcon(R.drawable.ic_menu_white_24dp);
-        setSupportActionBar(mToolbar);
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setDisplayHomeAsUpEnabled(true);
-            actionBar.setHomeButtonEnabled(true);
-            actionBar.setTitle(R.string.chats);
-        }
-
-    }
-
-    private void initViewPager() {
-        mViewPager = (NonSwipeableViewPager) findViewById(R.id.chats_viewpager);
-        mViewPager.setOffscreenPageLimit(OFFSCREEN_PAGE_LIMIT);
-        mViewPager.setAdapter(new ViewPagerAdapter(getSupportFragmentManager(), fragmentList, titleList));
-        mTabLayout.setupWithViewPager(mViewPager);
-    }
-
     private void initView() {
-        initToolbar();
-        mTabLayout = (TabLayout) findViewById(R.id.chats_tabs);
-        initViewPager();
-
+        mToolbar = (Toolbar) findViewById(R.id.chats_toolbar);
+        mViewPager = (NonSwipeableViewPager) findViewById(R.id.chats_viewpager);
         mFloatingActionButton = (FloatingActionButton) findViewById(R.id.chats_fab);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.chats_drawer);
         mNavigationView = (NavigationView) findViewById(R.id.chats_nav);
-
+        mTabLayout = (TabLayout) findViewById(R.id.chats_tabs);
         mSpannableText = (TextView) findViewById(R.id.message_nochats_text_view);
         mNoChatsMessage = (LinearLayout) findViewById(R.id.message_nochats_root_layout);
         mNoChatsImage = (ImageView) findViewById(R.id.message_nochats_image_view);
-
-        setGrayScale(mNoChatsImage);
     }
 
     private void toggleTabsVisibility(boolean value) {
@@ -172,21 +152,14 @@ public class ChatActivity extends AppCompatActivity implements ChatContract.View
         }
     }
 
-    private void setGrayScale(ImageView v) {
-        ColorMatrix matrix = new ColorMatrix();
-        matrix.setSaturation(0);
-        ColorMatrixColorFilter cf = new ColorMatrixColorFilter(matrix);
-        v.setColorFilter(cf);
-    }
-
-    private void fillFragmentList(ArrayList<Integer> userIds) {
-        fragmentList.add(DialogFragment.newInstance(DialogFragment.PUBLIC_GROUP, userIds));
-        fragmentList.add(DialogFragment.newInstance(DialogFragment.PRIVATE, userIds));
+    private void fillFragmentList() {
+        fragmentList.add(DialogFragment.newInstance(DialogFragment.GROUP,));
+        fragmentList.add(new DialogFragment());
     }
 
     private void fillTitleList() {
-        titleList.add(getString(R.string.public_chat));
-        titleList.add(getString(R.string.private_chat));
+        titleList.add("Public");
+        titleList.add("Private");
     }
 
     private void handleIntent(Intent intent) {
@@ -249,12 +222,4 @@ public class ChatActivity extends AppCompatActivity implements ChatContract.View
         //in case singleTop flag
         handleIntent(intent);
     }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        mPresenter.onDestroy();
-    }
-
-
 }

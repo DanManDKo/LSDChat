@@ -4,17 +4,21 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-import java.util.ArrayList;
+
+import java.util.List;
 
 public class ViewPagerAdapter extends FragmentPagerAdapter {
-    private ArrayList<DialogFragment> adapterArray;
-    private ArrayList<String> titleList;
+    private List<DialogFragment> adapterArray;
+    private List<String> titleList;
 
-    public ViewPagerAdapter(FragmentManager fm, ArrayList<DialogFragment> adapterArray, ArrayList<String> titleList) {
+    public ViewPagerAdapter(FragmentManager fm, List<DialogFragment> adapterArray, List<String> titleList) {
         super(fm);
         this.adapterArray = adapterArray;
         this.titleList = titleList;
     }
+
+
+
 
     @Override
     public CharSequence getPageTitle(int position) {

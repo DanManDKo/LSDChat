@@ -18,15 +18,15 @@
             android:layout_height="wrap_content"
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
-           <include layout="@layout/toolbar"
-                    android:id="@+id/chats_toolbar"/>
+            <include layout="@layout/toolbar"
+                     android:id="@+id/chats_toolbar"/>
 
             <android.support.design.widget.TabLayout
                 android:id="@+id/chats_tabs"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-                android:visibility="visible"
+                android:visibility="gone"
                 app:tabGravity="fill"
                 app:tabIndicatorColor="#ffffff"
                 app:tabMode="fixed"/>
@@ -34,9 +34,9 @@
 
         <com.example.lsdchat.behavior.NonSwipeableViewPager
             android:id="@+id/chats_viewpager"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="visible"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
         <LinearLayout
