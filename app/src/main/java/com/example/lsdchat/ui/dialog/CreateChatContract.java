@@ -4,7 +4,6 @@ package com.example.lsdchat.ui.dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.support.v7.widget.RecyclerView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -32,6 +31,7 @@ public interface CreateChatContract {
 
     interface View {
 
+        void showErrorDialog(String message);
 
         boolean isRbPublic();
         boolean isRbPrivate();

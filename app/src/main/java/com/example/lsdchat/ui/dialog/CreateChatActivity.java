@@ -19,6 +19,7 @@ import android.widget.RadioGroup;
 import com.example.lsdchat.App;
 import com.example.lsdchat.R;
 import com.example.lsdchat.model.ContactsModel;
+import com.example.lsdchat.util.ErrorsCode;
 import com.facebook.drawee.view.SimpleDraweeView;
 
 import java.util.List;
@@ -172,5 +173,10 @@ public class CreateChatActivity extends AppCompatActivity implements CreateChatC
     @Override
     public Context getContext() {
         return this;
+    }
+
+    @Override
+    public void showErrorDialog(String message) {
+        ErrorsCode.showErrorDialog(this, message);
     }
 }
