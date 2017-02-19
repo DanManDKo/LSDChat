@@ -10,19 +10,19 @@ public class ContactsModel extends RealmObject {
     private String email;
     private boolean checked;
     @PrimaryKey
-    private long userId;
+    private Integer userId;
     private String uri;
 
     public ContactsModel() {
     }
 
-    public ContactsModel(String name, String email, long userId) {
+    public ContactsModel(String name, String email, Integer userId) {
         this.name = name;
         this.email = email;
         this.userId = userId;
     }
 
-    public ContactsModel(String name, String email, String uri, long userId) {
+    public ContactsModel(String name, String email, String uri, Integer userId) {
         this.name = name;
         this.email = email;
         this.uri = uri;
@@ -30,11 +30,11 @@ public class ContactsModel extends RealmObject {
 
     }
 
-    public long getUserId() {
+    public Integer getUserId() {
         return userId;
     }
 
-    public void setUserId(long userId) {
+    public void setUserId(Integer userId) {
         this.userId = userId;
     }
 

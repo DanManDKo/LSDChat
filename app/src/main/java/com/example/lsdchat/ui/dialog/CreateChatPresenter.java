@@ -9,6 +9,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -34,11 +35,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.BooleanSupplier;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -58,7 +55,7 @@ public class CreateChatPresenter implements CreateChatContract.Presenter {
     private CreateChatContract.View mView;
     private CreateChatContract.Model mModel;
     private SharedPreferencesManager mSharedPreferencesManager;
-    private List<Long> idChecked;
+    private List<Integer> idChecked;
 
     public CreateChatPresenter(CreateChatContract.View mView, SharedPreferencesManager sharedPreferencesManager) {
         this.mView = mView;
@@ -98,12 +95,12 @@ public class CreateChatPresenter implements CreateChatContract.Presenter {
     @Override
     public void createDialog(String token, CreateDialogRequest request) {
 
-
         mModel.createDialog(token, request)
                 .subscribe(itemDialog -> {
                             Log.e("DIALOG", itemDialog.getId());
                             Log.e("DIALOG", itemDialog.getName());
                             Log.e("DIALOG", itemDialog.getPhoto());
+                            Log.e("DIALOG", itemDialog.getOccupantsIdsList().toString());
                         },
                         throwable -> {
                             Log.e("DIALOG", throwable.getMessage());
@@ -125,26 +122,32 @@ public class CreateChatPresenter implements CreateChatContract.Presenter {
 
         } else if (mView.isRbPrivate()) {
             if (idChecked.size() == 1) {
-                createDialogRequest.setType(3);
-                for (long id: idChecked){
-                    createDialogRequest.setIdU(String.valueOf(id));
+                createDialogRequest.setType(ApiConstant.TYPE_DIALOG_PRIVATE);
+                for (Integer i: idChecked){
+                    createDialogRequest.setIdU(String.valueOf(i));
                 }
-            }
-            else if(idChecked.size() > 1){
+
+
+            } else if (idChecked.size() > 1) {
                 createDialogRequest.setType(ApiConstant.TYPE_DIALOG_GROUP);
                 createDialogRequest.setName(nameDialog);
-                Log.e("getTypeDialog",idChecked.toString());
-                createDialogRequest.setIdU(idChecked.toString());
+                List<String> list = new ArrayList<>();
+                for (Integer i: idChecked){
+                    list.add(String.valueOf(i));
+                }
+
+                String joined = TextUtils.join(", ", list);
+                createDialogRequest.setIdU(joined);
+
                 if (imageId != 0) {
                     createDialogRequest.setPhotoId(imageId);
                 }
-            }
-            else {
-                Log.e("getTypeDialog","Select item id");
+            } else {
+                Log.e("getTypeDialog", "Select item id");
             }
 
         } else {
-            Log.e("getTypeDialog","Select public or private");
+            Log.e("getTypeDialog", "Select public or private");
         }
 
 
@@ -177,7 +180,6 @@ public class CreateChatPresenter implements CreateChatContract.Presenter {
                     Toast.makeText(mContext, mContext.getString(R.string.photo_added), Toast.LENGTH_SHORT).show();
                 }
                 break;
-
         }
     }
 
@@ -292,7 +294,7 @@ public class CreateChatPresenter implements CreateChatContract.Presenter {
                             Log.e("getUserList", "FILE OK");
                             List<ContactsModel> contactsModelList1 = new ArrayList<>();
                             contactsModelList1.add(new ContactsModel(user.getUser().getFullName(),
-                                    user.getUser().getEmail(), file.getPath(),user.getUser().getId()));
+                                    user.getUser().getEmail(), file.getPath(), user.getUser().getId()));
                             mView.addModel(contactsModelList1);
                         }, throwable -> {
                             Log.e("getFileImage", throwable.getMessage());
@@ -302,7 +304,7 @@ public class CreateChatPresenter implements CreateChatContract.Presenter {
 
             } else {
                 contactsModelList.add(new ContactsModel(user.getUser().getFullName(),
-                        user.getUser().getEmail(),user.getUser().getId()));
+                        user.getUser().getEmail(), user.getUser().getId()));
 
             }
 

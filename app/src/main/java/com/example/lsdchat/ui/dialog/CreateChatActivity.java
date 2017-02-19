@@ -16,14 +16,12 @@ import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
+import com.example.lsdchat.App;
 import com.example.lsdchat.R;
 import com.example.lsdchat.model.ContactsModel;
-import com.example.lsdchat.manager.SharedPreferencesManager;
 import com.facebook.drawee.view.SimpleDraweeView;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class CreateChatActivity extends AppCompatActivity implements CreateChatContract.View {
 
@@ -44,7 +42,7 @@ public class CreateChatActivity extends AppCompatActivity implements CreateChatC
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mCreateChatPresenter = new CreateChatPresenter(this, new SharedPreferencesManager(this));
+        mCreateChatPresenter = new CreateChatPresenter(this, App.getSharedPreferencesManager(this));
 
         setContentView(R.layout.fragment_new_chat);
 
