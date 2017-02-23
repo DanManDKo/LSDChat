@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 import com.example.lsdchat.App;
 import com.example.lsdchat.R;
-import com.example.lsdchat.ui.MainActivity;
+import com.example.lsdchat.ui.main.MainActivity;
 import com.example.lsdchat.ui.login.LoginActivity;
 
 /**

@@ -1,9 +1,6 @@
 package com.example.lsdchat.manager;
 
-import com.example.lsdchat.model.ContactsModel;
 import com.example.lsdchat.model.User;
-
-import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
@@ -34,7 +31,7 @@ public class DataManager {
         return mRealm.where(User.class).findFirst();
     }
 
-    private void clearDb() {
+    public void clearDb() {
         RealmResults<User> realmResults = mRealm.where(User.class).findAll();
         if (!realmResults.isEmpty()) {
             mRealm.executeTransaction(realm -> realm.deleteAll());

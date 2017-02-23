@@ -18,6 +18,11 @@ public class App extends Application {
     private static DataManager sDataManager;
     private static ApiManager sApiManager;
     private static SharedPreferencesManager sSharedPreferencesManager;
+    private static Context context;
+
+    public static Context getContext() {
+        return context;
+    }
 
     public static DataManager getDataManager() {
         return sDataManager;
@@ -40,7 +45,7 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-
+        context = getApplicationContext();
         Fresco.initialize(this);
 
         Fabric.with(this, new Crashlytics());

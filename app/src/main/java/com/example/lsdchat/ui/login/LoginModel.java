@@ -7,6 +7,8 @@ import com.example.lsdchat.api.login.response.LoginResponse;
 import com.example.lsdchat.api.login.response.SessionResponse;
 import com.example.lsdchat.api.login.service.LoginService;
 import com.example.lsdchat.constant.ApiConstant;
+import com.example.lsdchat.manager.DataManager;
+import com.example.lsdchat.model.User;
 import com.example.lsdchat.util.Signature;
 
 import java.util.Random;
@@ -17,9 +19,11 @@ import rx.schedulers.Schedulers;
 
 public class LoginModel implements LoginContract.Model {
     private LoginService mLoginService;
+    private DataManager mDataManager;
 
     public LoginModel() {
         mLoginService = App.getApiManager().getmLoginService();
+        mDataManager = App.getDataManager();
     }
 
     @Override
@@ -42,5 +46,10 @@ public class LoginModel implements LoginContract.Model {
         return mLoginService.getLogin(token, loginRequest)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    @Override
+    public void saveUser(User user) {
+        mDataManager.insertUser(user);
     }
 }

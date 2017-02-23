@@ -18,6 +18,7 @@
     </group>
 
     <group
+
         android:id="@+id/app_options_group"
         android:checkableBehavior="single">
         <item

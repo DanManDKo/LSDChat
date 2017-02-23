@@ -15,11 +15,8 @@ import com.example.lsdchat.api.registration.request.RegistrationDeclaringRequest
 import com.example.lsdchat.api.registration.response.RegistrationCreateFileResponse;
 import com.example.lsdchat.api.registration.service.RegistrationService;
 import com.example.lsdchat.manager.DataManager;
-import com.example.lsdchat.model.ContactsModel;
-import com.example.lsdchat.util.Utils;
 
 import java.io.File;
-import java.util.List;
 import java.util.Map;
 
 import io.realm.internal.IOException;
