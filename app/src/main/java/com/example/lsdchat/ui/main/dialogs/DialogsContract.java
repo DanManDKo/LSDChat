@@ -1,4 +1,4 @@
-package com.example.lsdchat.ui.main;
+package com.example.lsdchat.ui.main.dialogs;
 
 
 import android.support.design.widget.FloatingActionButton;
@@ -11,7 +11,7 @@ import com.facebook.drawee.view.SimpleDraweeView;
 
 import rx.Observable;
 
-public interface MainContract {
+public interface DialogsContract {
 
     interface View {
         void startNewChat();
