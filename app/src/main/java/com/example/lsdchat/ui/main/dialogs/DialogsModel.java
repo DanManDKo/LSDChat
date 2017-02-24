@@ -1,4 +1,4 @@
-package com.example.lsdchat.ui.main;
+package com.example.lsdchat.ui.main.dialogs;
 
 
 import com.example.lsdchat.App;
@@ -10,11 +10,11 @@ import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
-public class MainModel implements MainContract.Model {
+public class DialogsModel implements DialogsContract.Model {
     private DataManager mDataManager;
     private LoginService mLoginService;
 
-    public MainModel() {
+    public DialogsModel() {
         mLoginService = App.getApiManager().getmLoginService();
         mDataManager = App.getDataManager();
     }

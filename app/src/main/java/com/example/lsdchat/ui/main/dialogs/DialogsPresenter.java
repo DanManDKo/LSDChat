@@ -1,4 +1,4 @@
-package com.example.lsdchat.ui.main;
+package com.example.lsdchat.ui.main.dialogs;
 
 
 import android.net.Uri;
@@ -16,16 +16,16 @@ import com.facebook.drawee.view.SimpleDraweeView;
 
 import java.io.File;
 
-public class MainPresenter implements MainContract.Presenter {
-    private MainContract.View mView;
-    private MainContract.Model mModel;
+public class DialogsPresenter implements DialogsContract.Presenter {
+    private DialogsContract.View mView;
+    private DialogsContract.Model mModel;
     private SharedPreferencesManager mSharedPreferencesManager;
     private User mUser;
 
 
-    public MainPresenter(MainContract.View mView, SharedPreferencesManager sharedPreferencesManager) {
+    public DialogsPresenter(DialogsContract.View mView, SharedPreferencesManager sharedPreferencesManager) {
         this.mView = mView;
-        mModel = new MainModel();
+        mModel = new DialogsModel();
         this.mSharedPreferencesManager = sharedPreferencesManager;
         mUser = mModel.getCurrentUser();
 
