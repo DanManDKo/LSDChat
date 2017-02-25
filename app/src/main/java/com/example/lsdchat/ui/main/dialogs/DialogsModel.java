@@ -34,6 +34,6 @@ public class DialogsModel implements DialogsContract.Model {
 
     @Override
     public void deleteUser() {
-        mDataManager.clearDb();
+        mDataManager.deleteAllUserDb();
     }
 }

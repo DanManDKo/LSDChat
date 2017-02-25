@@ -15,7 +15,7 @@ repositories {
     maven { url 'https://maven.fabric.io/public' }
 }
 
-apply plugin: 'realm-android'
+//apply plugin: 'realm-android'
 apply plugin: 'me.tatarka.retrolambda'
 
 def versionMajor = 0
@@ -33,7 +33,6 @@ android {
         targetSdkVersion 25
         versionCode versionMajor * 1000000 + versionMinor * 10000 + versionPatch * 100 + versionBuild
         versionName "${versionMajor}.${versionMinor}.${versionPatch}"
-
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 //        testInstrumentationRunner 'com.whiterabbit.windlocator.EspressoTestRunner'
 //        testInstrumentationRunner "android.test.InstrumentationTestRunner"
@@ -107,6 +106,7 @@ dependencies {
     compile('com.crashlytics.sdk.android:crashlytics:2.6.6@aar') {
         transitive = true;
     }
+    compile 'com.github.thorbenprimke:realm-recyclerview:0.9.5'
 
     compile 'com.android.support:appcompat-v7:25.2.0'
     compile 'com.android.support:design:25.2.0'

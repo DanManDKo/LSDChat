@@ -14,10 +14,15 @@ import com.example.lsdchat.App;
 import com.example.lsdchat.R;
 import com.example.lsdchat.ui.main.fragment.BaseFragment;
 
+import co.moonmonkeylabs.realmrecyclerview.RealmRecyclerView;
+
 
 public class UsersFragment extends BaseFragment implements UsersContract.View {
     private UsersContract.Presenter mPresenter;
     private Toolbar mToolbar;
+    private RealmRecyclerView mRealmRecyclerView;
+    private UsersRvAdapter mUsersRvAdapter;
+
 
     public UsersFragment() {
         // Required empty public constructor
@@ -36,8 +41,14 @@ public class UsersFragment extends BaseFragment implements UsersContract.View {
         View view = inflater.inflate(R.layout.fragment_users, container, false);
         mPresenter = new UsersPresenter(this, App.getSharedPreferencesManager(getActivity()));
         mToolbar =(Toolbar) view.findViewById(R.id.chats_toolbar);
+        mRealmRecyclerView =(RealmRecyclerView) view.findViewById(R.id.realm_recycler_view);
         mToolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
         initToolbar(mToolbar,"Friends");
+
+        mPresenter.getUserList();
+
+        mUsersRvAdapter = new UsersRvAdapter(getActivity(),mPresenter.getUsersQuick(),true,true);
+        mRealmRecyclerView.setAdapter(mUsersRvAdapter);
 
         return view;
     }
