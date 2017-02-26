@@ -42,7 +42,7 @@ public class UsersFragment extends BaseFragment implements UsersContract.View {
         mPresenter = new UsersPresenter(this, App.getSharedPreferencesManager(getActivity()));
         mToolbar =(Toolbar) view.findViewById(R.id.chats_toolbar);
         mRealmRecyclerView =(RealmRecyclerView) view.findViewById(R.id.realm_recycler_view);
-        mToolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
+//        mToolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
         initToolbar(mToolbar,"Friends");
 
         mPresenter.getUserList();

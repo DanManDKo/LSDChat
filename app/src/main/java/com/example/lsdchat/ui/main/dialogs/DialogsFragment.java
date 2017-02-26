@@ -25,6 +25,8 @@ import com.example.lsdchat.ui.main.fragment.BaseFragment;
 import com.example.lsdchat.ui.main.users.UsersFragment;
 import com.facebook.drawee.view.SimpleDraweeView;
 
+import co.moonmonkeylabs.realmrecyclerview.RealmRecyclerView;
+
 
 public class DialogsFragment extends BaseFragment implements DialogsContract.View {
 
@@ -37,6 +39,7 @@ public class DialogsFragment extends BaseFragment implements DialogsContract.Vie
     private SimpleDraweeView mHeaderImage;
     private TextView mHeaderName;
     private TextView mHeaderEmail;
+    private RealmRecyclerView mRealmRecyclerView;
 
     public DialogsFragment() {
     }
@@ -54,10 +57,10 @@ public class DialogsFragment extends BaseFragment implements DialogsContract.Vie
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_dialogs,container,false);
-        mPresenter = new DialogsPresenter(this,App.getSharedPreferencesManager(getActivity()));
+        View view = inflater.inflate(R.layout.fragment_dialogs, container, false);
+        mPresenter = new DialogsPresenter(this, App.getSharedPreferencesManager(getActivity()));
         initView(view);
-        initToolbar(mToolbar,"Chats");
+        initToolbar(mToolbar, getString(R.string.chats));
 
         mPresenter.fabClick(mFloatingActionButton);
 
@@ -69,28 +72,26 @@ public class DialogsFragment extends BaseFragment implements DialogsContract.Vie
     }
 
 
-
     @Override
     public void startNewChat() {
         startActivity(new Intent(getActivity(), CreateChatActivity.class));
     }
 
 
-
     private void initView(View view) {
-        mToolbar =(Toolbar) view.findViewById(R.id.chats_toolbar);
+        mToolbar = (Toolbar) view.findViewById(R.id.chats_toolbar);
         mFloatingActionButton = (FloatingActionButton) view.findViewById(R.id.chats_fab);
         mDrawerLayout = (DrawerLayout) view.findViewById(R.id.chats_drawer);
         mNavigationView = (NavigationView) view.findViewById(R.id.chats_nav);
         mToolbar.setNavigationIcon(R.drawable.ic_menu_white_24dp);
-
+        mRealmRecyclerView = (RealmRecyclerView) view.findViewById(R.id.rv_chats);
 //        mHeaderLayout = mNavigationView.inflateHeaderView(R.layout.navigation_drawer_header);
         mHeaderLayout = mNavigationView.getHeaderView(0);
         mHeaderImage = (SimpleDraweeView) mHeaderLayout.findViewById(R.id.nav_view_avatar);
         mHeaderName = (TextView) mHeaderLayout.findViewById(R.id.nav_view_full_name);
         mHeaderEmail = (TextView) mHeaderLayout.findViewById(R.id.nav_view_email_address);
 
-        mPresenter.setHeaderData(mHeaderImage,mHeaderName,mHeaderEmail);
+        mPresenter.setHeaderData(mHeaderImage, mHeaderName, mHeaderEmail);
     }
 
     @Override
@@ -100,13 +101,12 @@ public class DialogsFragment extends BaseFragment implements DialogsContract.Vie
     }
 
 
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
         switch (item.getItemId()) {
             case android.R.id.home:
-                Log.e("TTT","test");
+                Log.e("TTT", "test");
                 mDrawerLayout.openDrawer(Gravity.LEFT);
                 break;
             default:
