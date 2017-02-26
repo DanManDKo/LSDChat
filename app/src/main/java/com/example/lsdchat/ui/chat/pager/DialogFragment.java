@@ -39,7 +39,14 @@ public class DialogFragment extends Fragment implements DialogContract.View {
         fragment.setArguments(args);
         return fragment;
     }
-
+    public static DialogFragment newInstance(int type, int userId) {
+        Bundle args = new Bundle();
+        args.putInt(TYPE, type);
+        args.putInt(USER_IDS, userId);
+        DialogFragment fragment = new DialogFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.viewpager_pagefragment_rootlayout, container, false);
         initView(view);
@@ -60,14 +67,19 @@ public class DialogFragment extends Fragment implements DialogContract.View {
     public void initView(View view) {
 //        rootLayout = (LinearLayout) view.findViewById(R.id.viewpager_rootlayout);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.chats_recycler_view);
+
+    }
+
+    @Override
+    public void onDialoguesLoaded(List<ItemDialog> dialogs) {
+        mItemDialogs = dialogs;
         mDialogAdapter = new DialogAdapter(mItemDialogs);
         mRecyclerView.setAdapter(mDialogAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
     }
 
     @Override
-    public void onDialoguesLoaded(List<ItemDialog> dialogs) {
-        mItemDialogs = dialogs;
-        mDialogAdapter.notifyDataSetChanged();
+    public int getType() {
+        return mType;
     }
 }

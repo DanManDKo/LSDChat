@@ -16,7 +16,7 @@ import rx.Observable;
 public interface DialogContract {
     interface View {
         void onDialoguesLoaded(List<ItemDialog> dialogs);
-
+        int getType();
         Activity getActivity();
     }
 

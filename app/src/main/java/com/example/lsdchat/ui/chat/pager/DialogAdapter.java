@@ -40,7 +40,7 @@ public class DialogAdapter extends RecyclerView.Adapter<DialogAdapter.ViewHolder
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         ItemDialog itemDialog = mItems.get(position);
-        holder.mNewMessageCounter.setText(itemDialog.getUnreadMessagesCount());
+        holder.mNewMessageCounter.setText(itemDialog.getUnreadMessagesCount().toString());
 //        holder.mDialogImage.setImageURI(itemDialog.get);
         holder.mChatName.setText(itemDialog.getName());
         holder.mChatDate.setText(itemDialog.getCreatedAt());

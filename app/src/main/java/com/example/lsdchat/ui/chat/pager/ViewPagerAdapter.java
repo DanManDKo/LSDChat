@@ -8,10 +8,10 @@ import android.support.v4.app.FragmentPagerAdapter;
 import java.util.List;
 
 public class ViewPagerAdapter extends FragmentPagerAdapter {
-    private List<DialogFragment> adapterArray;
+    private List<Fragment> adapterArray;
     private List<String> titleList;
 
-    public ViewPagerAdapter(FragmentManager fm, List<DialogFragment> adapterArray, List<String> titleList) {
+    public ViewPagerAdapter(FragmentManager fm, List<Fragment> adapterArray, List<String> titleList) {
         super(fm);
         this.adapterArray = adapterArray;
         this.titleList = titleList;

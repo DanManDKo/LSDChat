@@ -36,5 +36,4 @@ public interface DialogService {
     Observable<ItemMessage> createMessages(@Header(ApiConstant.QB_TOKEN) String token, @Body CreateMessageRequest createMessageRequest);
 
 
-
 }
