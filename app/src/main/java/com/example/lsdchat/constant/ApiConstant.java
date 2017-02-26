@@ -17,6 +17,7 @@ public class ApiConstant {
     public static final String LOGIN_REQUEST = "/login.json";
     public static final String BLOB_REQUEST = "/blobs.json";
     public static final String REGISTRATION_REQUEST = "/users.json";
+    public static final String UPDATE_REQUEST = "users/{id}.json";
     public static final String DECLARING_REQUEST = "/blobs/{blob_id}/complete.json";
 
 //    dialog
@@ -49,6 +50,7 @@ public class ApiConstant {
         public static final String SIGNATURE = "x-amz-signature";
 
         public static final String BLOB_ID = "blob_id";
+        public static final String ID = "id";
         public static final String FILE = "file";
     }
 }

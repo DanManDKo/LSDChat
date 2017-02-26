@@ -42,6 +42,7 @@
 
     <!--registration form string-->
     <string name="invalid_email">Invalid email</string>
+    <string name="name_cannot_be_empty">Name cann`t be empty</string>
     <string name="password_is_weak">Password is weak. Please use at least two digits and two capitalized letters</string>
     <string name="passwords_donot_match">Passwords do not match</string>
     <string name="password_length">Password length should be 8-12 symbols</string>

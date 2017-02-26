@@ -22,6 +22,7 @@ import android.widget.Toast;
 
 import com.example.lsdchat.R;
 import com.example.lsdchat.api.dialog.model.ItemMessage;
+import com.example.lsdchat.ui.MainActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -135,8 +136,16 @@ public class ConversationActivity extends AppCompatActivity implements Conversat
                 onBackPressed();
                 break;
             case R.id.toolbar_edit:
-                //call edit method
-                Toast.makeText(this, "edit", Toast.LENGTH_SHORT).show();
+                //check up type of chat
+                if (true) {
+                    //navigate to Edit Chat Screen
+                    Toast.makeText(this, "edit", Toast.LENGTH_SHORT).show();
+
+//                    Intent intent = new Intent(this, EditChatActivity.class);
+//                    startActivity(intent);
+                } else {
+                    Toast.makeText(this, "You can not edit current chat", Toast.LENGTH_SHORT).show();
+                }
                 break;
         }
         return super.onOptionsItemSelected(item);

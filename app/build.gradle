@@ -131,7 +131,6 @@ dependencies {
     }
     compile 'com.jakewharton.rxbinding:rxbinding:1.0.0'
     compile 'com.redmadrobot:inputmask:1.1.0'
-    compile 'com.github.stfalcon:chatkit:0.1.2'
 
     compile 'com.squareup.okhttp3:okhttp:3.3.1'
     compile 'com.squareup.okhttp3:logging-interceptor:3.3.1'

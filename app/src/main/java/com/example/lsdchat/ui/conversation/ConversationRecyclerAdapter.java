@@ -14,6 +14,8 @@ import com.facebook.drawee.view.SimpleDraweeView;
 import java.util.List;
 
 public class ConversationRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    private static final String SENDER_NAME = "Me";
+
     private List<ItemMessage> mList;
     private OnRecyclerItemClickListener mListener;
 
@@ -49,7 +51,7 @@ public class ConversationRecyclerAdapter extends RecyclerView.Adapter<RecyclerVi
                 case ItemMessage.OUTCOMING_MESSAGE:
                     ((OutcomingViewHolder) holder).message.setText(mList.get(position).getMessage());
                     ((OutcomingViewHolder) holder).time.setText(mList.get(position).getDateSent());
-                    ((OutcomingViewHolder) holder).personName.setText("Me");
+                    ((OutcomingViewHolder) holder).personName.setText(SENDER_NAME);
 
                     ((OutcomingViewHolder) holder).messageRoot.setOnClickListener(view -> {
 

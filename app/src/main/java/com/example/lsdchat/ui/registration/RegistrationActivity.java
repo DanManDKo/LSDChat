@@ -68,6 +68,7 @@ public class RegistrationActivity extends AppCompatActivity implements Registrat
         mEmailEdit.addTextChangedListener(mRegistrationPresenter.getTextWatcher());
         mPassEdit.addTextChangedListener(mRegistrationPresenter.getTextWatcher());
         mConfPassEdit.addTextChangedListener(mRegistrationPresenter.getTextWatcher());
+        mNameEdit.addTextChangedListener(mRegistrationPresenter.getTextWatcher());
 
         MaskedTextChangedListener listener = new MaskedTextChangedListener(PHONE_MASK, true, mPhoneEdit, null,
                 new MaskedTextChangedListener.ValueListener() {
@@ -186,6 +187,11 @@ public class RegistrationActivity extends AppCompatActivity implements Registrat
     }
 
     @Override
+    public void setFullNameError() {
+        mName.setError(getString(R.string.name_cannot_be_empty));
+    }
+
+    @Override
     public void setClickableSignupButton(boolean value) {
         mSignUpButton.setClickable(value);
     }
@@ -205,6 +211,7 @@ public class RegistrationActivity extends AppCompatActivity implements Registrat
         mEmail.setError(null);
         mPass.setError(null);
         mConfPass.setError(null);
+        mName.setError(null);
     }
 
     @Override

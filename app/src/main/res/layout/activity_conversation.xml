@@ -65,7 +65,8 @@
                 android:layout_toLeftOf="@+id/conversation_send"
                 android:layout_weight="0.72"
                 android:ems="10"
-                android:maxHeight="80dp"/>
+                android:maxHeight="80dp"
+                android:maxLength="500"/>
 
             <ImageButton
                 android:id="@+id/conversation_send"

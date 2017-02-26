@@ -7,14 +7,10 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.design.widget.TextInputEditText;
-import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.lsdchat.R;
@@ -28,9 +24,6 @@ import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
-import com.redmadrobot.inputmask.MaskedTextChangedListener;
-
-import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -132,7 +125,7 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
         form.setFullName(name);
         form.setWebsite(website);
 
-        boolean validateValue = validateRegForm(email, password, confPassword);
+        boolean validateValue = validateRegForm(email, password, confPassword, name);
 
         if (isOnline(mContext)) {
             requestSessionAndRegistration(validateValue, form);
@@ -188,8 +181,10 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
                 .doOnRequest(request -> mView.showProgressBar())
                 .doOnUnsubscribe(() -> mView.hideProgressBar())
                 .doOnNext(loginResponse -> {
+                    int userId = loginResponse.getLoginUser().getId();
+
                     if (mUploadFile != null) {
-                        getBlobObjectCreateFile(token, getFileMimeType(mUploadFile), mUploadFile.getName());
+                        getBlobObjectCreateFile(token, getFileMimeType(mUploadFile), mUploadFile.getName(), userId);
                     } else {
                         Toast.makeText(mContext, mContext.getString(R.string.registration_complete), Toast.LENGTH_SHORT).show();
                         mView.navigateToMainScreen();
@@ -204,7 +199,7 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
                 });
     }
 
-    private void getBlobObjectCreateFile(String token, String mime, String fileName) {
+    private void getBlobObjectCreateFile(String token, String mime, String fileName, int userId) {
         mModel.createFile(token, mime, fileName)
                 .doOnRequest(request -> mView.showProgressBar())
                 .doOnUnsubscribe(() -> mView.hideProgressBar())
@@ -239,7 +234,7 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
                     map.put(ApiConstant.UploadParametres.DATE, dateR);
                     map.put(ApiConstant.UploadParametres.SIGNATURE, signatureR);
 
-                    uploadFileRetrofit(token, blobId, map, multiPart);
+                    uploadFileRetrofit(token, blobId, map, multiPart, userId);
                 }, throwable -> {
 
                     decodeThrowableAndShowAlert(throwable);
@@ -247,15 +242,14 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
                 });
     }
 
-    private void uploadFileRetrofit(String token, long blobId, HashMap<String, RequestBody> map, MultipartBody.Part file) {
-
+    private void uploadFileRetrofit(String token, long blobId, HashMap<String, RequestBody> map, MultipartBody.Part file, int userId) {
         mModel.uploadFileMap(map, file)
                 .doOnRequest(request -> mView.showProgressBar())
                 .doOnUnsubscribe(() -> mView.hideProgressBar())
                 .subscribe(aVoid -> {
                     long fileSize = mUploadFile.length();
                     if (fileSize != 0 && blobId != 0) {
-                        declareFileUploaded(fileSize, token, blobId);
+                        declareFileUploaded(fileSize, token, blobId, userId);
                     }
                 }, throwable -> {
 
@@ -265,11 +259,26 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
     }
 
 
-    private void declareFileUploaded(long size, String token, long blobId) {
+    private void declareFileUploaded(long size, String token, long blobId, int userId) {
         mModel.declareFileUploaded(size, token, blobId)
                 .doOnRequest(request -> mView.showProgressBar())
                 .doOnUnsubscribe(() -> mView.hideProgressBar())
                 .subscribe(aVoid -> {
+                    updateUserBlobId(token, userId, blobId);
+//                    Toast.makeText(mContext, mContext.getString(R.string.registration_complete), Toast.LENGTH_SHORT).show();
+//                    mView.navigateToMainScreen();
+                }, throwable -> {
+
+                    mView.setClickableSignupButton(true);
+                    decodeThrowableAndShowAlert(throwable);
+                });
+    }
+
+    private void updateUserBlobId(String token, int userId, long blobId) {
+        mModel.updateUserInfo(token, userId, blobId)
+                .doOnRequest(request -> mView.showProgressBar())
+                .doOnUnsubscribe(() -> mView.hideProgressBar())
+                .subscribe(loginResponse -> {
 
                     Toast.makeText(mContext, mContext.getString(R.string.registration_complete), Toast.LENGTH_SHORT).show();
                     mView.navigateToMainScreen();
@@ -287,11 +296,12 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
 
 
     @Override
-    public boolean validateRegForm(String email, String pass, String confPass) {
+    public boolean validateRegForm(String email, String pass, String confPass, String fullName) {
         boolean test = true;
         if (!validateEmail(email)) test = false;
         if (!validatePassword(pass)) test = false;
         if (!validateConfPassword(pass, confPass)) test = false;
+        if (!validateFullName(fullName)) test = false;
         return test;
     }
 
@@ -330,6 +340,15 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
     public boolean validateConfPassword(String pass, String confPass) {
         if (!pass.equals(confPass)) {
             mView.setEquelsPasswordError();
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public boolean validateFullName(String name) {
+        if (name.isEmpty()) {
+            mView.setFullNameError();
             return false;
         }
         return true;
