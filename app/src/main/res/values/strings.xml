@@ -109,6 +109,7 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="seems_like_you_are_the_only_user">Seems like you are the only User :)</string>
+    <string name="chats">Chats</string>
 
 
 </resources>

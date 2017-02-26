@@ -4,8 +4,10 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
+import io.realm.RealmObject;
 
-public class ItemDialog {
+
+public class ItemDialog extends RealmObject {
     @SerializedName("_id")
     private String id;
     @SerializedName("created_at")
