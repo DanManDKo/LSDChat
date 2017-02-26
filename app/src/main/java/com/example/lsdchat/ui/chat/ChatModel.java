@@ -9,11 +9,11 @@ import com.example.lsdchat.manager.DataManager;
 
 public class ChatModel implements ChatContract.Model {
     private ChatContract.Presenter mPresenter;
-    private DataManager mDataManager = App.getDataManager();
+    private DataManager mDataManager;
 
-
-    public ChatModel(ChatContract.Presenter presenter) {
+    public ChatModel(ChatContract.Presenter presenter, DataManager dataManager) {
         mPresenter = presenter;
+        mDataManager = App.getDataManager();
     }
 
     @Override

@@ -1,21 +1,28 @@
 package com.example.lsdchat.ui.chat;
 
-
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import com.example.lsdchat.R;
+import com.example.lsdchat.ui.chat.ChatContract;
+import com.example.lsdchat.ui.chat.ChatPresenter;
 import com.example.lsdchat.ui.chat.pager.DialogFragment;
 import com.example.lsdchat.ui.chat.pager.ViewPagerAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ChatActivity extends AppCompatActivity implements ChatContract.View {
+/**
+ * Created by User on 26.02.2017.
+ */
+
+public class ChatFragment extends Fragment implements ChatContract.View {
     private ChatContract.Presenter mPresenter;
     private ViewPager mViewPager;
     private TabLayout mTabLayout;
@@ -23,19 +30,20 @@ public class ChatActivity extends AppCompatActivity implements ChatContract.View
     private List<Fragment> mFragmentsList;
     private List<String> mTitleList;
 
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.fragment_chat);
-        initView();
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_chat, container, false);
+        initView(view);
         mPresenter = new ChatPresenter(this);
         mUserId = mPresenter.getUserId();
         mFragmentsList = new ArrayList<>();
         mTitleList = new ArrayList<>();
         fillFragmentList(mFragmentsList);
         fillTitles(mTitleList);
-        mViewPager.setAdapter(new ViewPagerAdapter(getSupportFragmentManager(), mFragmentsList, mTitleList));
+        mViewPager.setAdapter(new ViewPagerAdapter(getActivity().getSupportFragmentManager(), mFragmentsList, mTitleList));
         mTabLayout.setupWithViewPager(mViewPager);
-
+        return view;
     }
 
     private void fillTitles(List<String> titleList) {
@@ -48,14 +56,14 @@ public class ChatActivity extends AppCompatActivity implements ChatContract.View
         mFragmentsList.add(DialogFragment.newInstance(DialogFragment.PRIVATE, mUserId));
     }
 
-    private void initView() {
-        mViewPager = (ViewPager) findViewById(R.id.view_pager);
-        mTabLayout = (TabLayout) findViewById(R.id.tab);
+    private void initView(View view) {
+        mViewPager = (ViewPager) view.findViewById(R.id.view_pager);
+        mTabLayout = (TabLayout) view.findViewById(R.id.tab);
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    public void onDestroyView() {
+        super.onDestroyView();
         mPresenter.onDestroy();
         mPresenter = null;
     }
