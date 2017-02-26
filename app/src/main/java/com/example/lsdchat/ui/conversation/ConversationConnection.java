@@ -57,7 +57,7 @@ public class ConversationConnection implements ConnectionListener {
         Log.d(TAG, "RoosterConnection Constructor called.");
         mApplicationContext = context.getApplicationContext();
 
-        /*There we have to retrive user_id AND app_id AND password from DataBase
+        /*There we have to retrieve user_id AND app_id AND password from DataBase
         *concat user_id + "-" + "ApiConstant.APP_ID";*/
         jid = "23163511-52350@chat.quickblox.com";
         //password from DataBase
@@ -74,7 +74,7 @@ public class ConversationConnection implements ConnectionListener {
 
     public void connect() throws IOException, XMPPException, SmackException {
         Log.d(TAG, "Connecting to server " + mServiceName);
-        XMPPTCPConnectionConfiguration builder2 = XMPPTCPConnectionConfiguration.builder()
+        XMPPTCPConnectionConfiguration builder = XMPPTCPConnectionConfiguration.builder()
                 .setServiceName(mServiceName)
                 .setUsernameAndPassword(mUsername, mPassword)
                 .setPort(5222)
@@ -84,7 +84,7 @@ public class ConversationConnection implements ConnectionListener {
         //Set up the ui thread broadcast message receiver.
         setupUiThreadBroadCastMessageReceiver();
 
-        mConnection = new XMPPTCPConnection(builder2);
+        mConnection = new XMPPTCPConnection(builder);
         mConnection.addConnectionListener(this);
         mConnection.connect();
         mConnection.login();
@@ -123,9 +123,7 @@ public class ConversationConnection implements ConnectionListener {
         DefaultExtensionElement extensionElement = new DefaultExtensionElement("extraParams", "jabber:client");
         extensionElement.setValue("save_to_history", "1");
 
-        Log.d(TAG, msg.getBody() + " = getBody");
         msg.setBody(body);
-        Log.d(TAG, body + " - body");
         msg.setStanzaId(String.valueOf(new Random(1000).nextInt()));
         msg.setType(Message.Type.groupchat);
         msg.setTo(toJid);

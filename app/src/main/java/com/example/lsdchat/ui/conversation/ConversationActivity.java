@@ -7,14 +7,17 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.example.lsdchat.R;
@@ -23,6 +26,8 @@ import com.example.lsdchat.api.dialog.model.ItemMessage;
 import java.util.ArrayList;
 import java.util.List;
 
+import static android.support.v7.recyclerview.R.attr.layoutManager;
+
 public class ConversationActivity extends AppCompatActivity implements ConversationContract.View {
     private ConversationPresenter mConversationPresenter;
     private Toolbar mToolbar;
@@ -30,14 +35,14 @@ public class ConversationActivity extends AppCompatActivity implements Conversat
     private EditText mMessage;
     private ImageButton mButtonSend;
     private ImageButton mButtonSmiles;
-    private ArrayList<ItemMessage> mMessageList;
+    private ArrayList<ItemMessage> mMessageList = new ArrayList<>();
 
-    private ConversationAdapter adapter;
-    private ListView mListView;
+    private ConversationRecyclerAdapter mAdapter;
+    private RecyclerView mListView;
 
     private static final String TAG = "ChatActivity";
-    //for who we send message
-    //private String contactJid = "23163511-52350@chat.quickblox.com";
+    //who send message, e.t. who owner of current app
+    private String contactJidOwner = "23163511-52350@chat.quickblox.com";
 
     //there we have to pass app_id + chat_id of chosen dialog
     private String contactJid = "52350_589f6bfda0eb47ea8400026a@muc.chat.quickblox.com";
@@ -54,7 +59,7 @@ public class ConversationActivity extends AppCompatActivity implements Conversat
         Intent intentService = new Intent(this, ConversationService.class);
         startService(intentService);
 
-        /* There we have to get from intent dialog_name AND contactJid, e.t. app_id + "_" + dialog_id +
+        /* There we have to get from intent dialog_name AND dialog_id, calc contactJid app_id + "_" + dialog_id +
         *  "@" + "muc.chat.quickblox.com" to it.
         * dialog_name we use for Toolbar title */
 
@@ -64,11 +69,15 @@ public class ConversationActivity extends AppCompatActivity implements Conversat
 
         mButtonSend.setOnClickListener(view -> sendTextMessage());
 
-        mListView.setTranscriptMode(ListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
-        mListView.setStackFromBottom(true);
-
-        adapter = new ConversationAdapter(this, mMessageList);
-        mListView.setAdapter(adapter);
+        mAdapter = new ConversationRecyclerAdapter(mMessageList);
+        mAdapter.setListener(new ConversationRecyclerAdapter.OnRecyclerItemClickListener() {
+            @Override
+            public void onItemClicked(String id, int position, int type) {
+                Toast.makeText(ConversationActivity.this, "Click", Toast.LENGTH_SHORT).show();
+            }
+        });
+        mListView.setLayoutManager(new LinearLayoutManager(this));
+        mListView.setAdapter(mAdapter);
     }
 
     public void sendTextMessage() {
@@ -76,32 +85,30 @@ public class ConversationActivity extends AppCompatActivity implements Conversat
             String message = mMessage.getEditableText().toString();
 
             if (!message.equalsIgnoreCase("")) {
-                Log.d(TAG, "The client is connected to the server,Sending Message");
+                Log.d(TAG, "The client is connected to the server, sending Message");
 
-                ItemMessage chatMessage = new ItemMessage();
+                ItemMessage chatMessage = new ItemMessage(ItemMessage.OUTCOMING_MESSAGE);
                 chatMessage.setMessage(message);
+
+                mAdapter.add(chatMessage);
+                mListView.scrollToPosition(mMessageList.size() - 1);
+
+                mMessage.setText("");
 
                 //Send the message to the server
                 Intent intent = new Intent(ConversationService.SEND_MESSAGE);
                 intent.putExtra(ConversationService.BUNDLE_MESSAGE_BODY, message);
                 intent.putExtra(ConversationService.BUNDLE_TO, contactJid);
                 sendBroadcast(intent);
-
-                adapter.add(chatMessage);
-                adapter.notifyDataSetChanged();
-
-                mMessage.setText("");
             }
         } else {
             Toast.makeText(getApplicationContext(),
-                    "Client not connected to server ,Message not sent!",
+                    "Client not connected to server, message not sent!",
                     Toast.LENGTH_LONG).show();
         }
     }
 
     private void initView() {
-        mMessageList = new ArrayList<>();
-
         mToolbar = (Toolbar) findViewById(R.id.conversation_toolbar);
         configToolbar();
 
@@ -109,7 +116,7 @@ public class ConversationActivity extends AppCompatActivity implements Conversat
         mButtonSend = (ImageButton) findViewById(R.id.conversation_send);
         mButtonSmiles = (ImageButton) findViewById(R.id.conversation_smiles);
 
-        mListView = (ListView) findViewById(R.id.conversation_list);
+        mListView = (RecyclerView) findViewById(R.id.conversation_list);
     }
 
     private void configToolbar() {
@@ -149,11 +156,10 @@ public class ConversationActivity extends AppCompatActivity implements Conversat
 
     @Override
     public void fillListOfMessages(List<ItemMessage> list) {
-        //mMessageList = (ArrayList<ItemMessage>) list;
         for (ItemMessage im : list) {
-            adapter.add(im);
+//            mAdapter.add(im);
         }
-        adapter.notifyDataSetChanged();
+        mListView.scrollToPosition(mMessageList.size() - 1);
     }
 
     @Override
@@ -174,15 +180,15 @@ public class ConversationActivity extends AppCompatActivity implements Conversat
                         String from = intent.getStringExtra(ConversationService.BUNDLE_FROM_JID);
                         String body = intent.getStringExtra(ConversationService.BUNDLE_MESSAGE_BODY);
 
-                        if (from.equals(contactJid)) {
-                            ItemMessage chatMessage = new ItemMessage();
+                        if (from.equals(contactJidOwner)) {
+                            //do nothing
+                            Log.d(TAG, "Got a message from myself");
+                        } else {
+                            ItemMessage chatMessage = new ItemMessage(ItemMessage.INCOMING_MESSAGE);
                             chatMessage.setMessage(body);
 
-                            adapter.add(chatMessage);
-                            adapter.notifyDataSetChanged();
-
-                        } else {
-                            Log.d(TAG, "Got a message from jid :" + from);
+                            mAdapter.add(chatMessage);
+                            mListView.scrollToPosition(mMessageList.size() - 1);
                         }
                         return;
                 }

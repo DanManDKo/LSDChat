@@ -79,7 +79,7 @@ public class ConversationService extends Service {
     }
 
     public void start() {
-        Log.d(TAG, " Service Start() function called.");
+        Log.d(TAG, "Service Start() function called");
         if (!mActive) {
             mActive = true;
             if (mThread == null || !mThread.isAlive()) {
