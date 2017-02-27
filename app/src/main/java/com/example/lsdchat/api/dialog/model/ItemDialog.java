@@ -7,7 +7,7 @@ import java.util.List;
 import io.realm.RealmObject;
 
 
-public class ItemDialog extends RealmObject {
+public class ItemDialog {
     @SerializedName("_id")
     private String id;
     @SerializedName("created_at")
