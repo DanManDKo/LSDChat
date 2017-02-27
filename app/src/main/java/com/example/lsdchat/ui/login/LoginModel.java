@@ -22,7 +22,7 @@ public class LoginModel implements LoginContract.Model {
     private DataManager mDataManager;
 
     public LoginModel() {
-        mLoginService = App.getApiManager().getmLoginService();
+        mLoginService = App.getApiManager().getLoginService();
         mDataManager = App.getDataManager();
     }
 

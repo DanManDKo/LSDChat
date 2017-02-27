@@ -51,16 +51,17 @@
         tools:text="last person who send a message"/>
 
     <TextView
-        android:id="@+id/recycler_chat_lastmessage"
+        android:id="@+id/recycler_chat_last_message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/recycler_chat_title"
         android:layout_toRightOf="@id/recycler_chat_logo"
         android:lines="1"
+        android:textColor="@color/colorGray"
         tools:text="last sended message"/>
 
     <TextView
-        android:id="@+id/recycler_new_message_counter"
+        android:id="@+id/recycler_chat_new_message_counter"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/oval_shape"

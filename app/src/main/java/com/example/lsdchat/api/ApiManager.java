@@ -34,7 +34,7 @@ public class ApiManager {
         return mDialogService;
     }
 
-    public LoginService getmLoginService() {
+    public LoginService getLoginService() {
         return mLoginService;
     }
 

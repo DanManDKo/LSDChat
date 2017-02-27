@@ -16,7 +16,7 @@ import io.realm.RealmBasedRecyclerViewAdapter;
 import io.realm.RealmResults;
 import io.realm.RealmViewHolder;
 
-
+ 
 public class UsersRvAdapter extends RealmBasedRecyclerViewAdapter<UserQuick,UsersRvAdapter.ViewHolder> {
 
 

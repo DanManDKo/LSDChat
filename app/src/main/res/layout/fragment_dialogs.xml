@@ -19,10 +19,11 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <co.moonmonkeylabs.realmrecyclerview.RealmRecyclerView
-                android:id="@+id/rv_chats"
+            <FrameLayout
+                android:id="@+id/dialog_list_container"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"/>
+
 
             <android.support.design.widget.FloatingActionButton
                 android:id="@+id/chats_fab"
