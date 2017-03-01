@@ -20,10 +20,9 @@ public class ApiConstant {
     public static final String UPDATE_REQUEST = "users/{id}.json";
     public static final String DECLARING_REQUEST = "/blobs/{blob_id}/complete.json";
 
-//    dialog
+    //    dialog
     public static final String DIALOGS_REQUEST = "/chat/Dialog.json";
     public static final String MESSAGES_REQUEST = "/chat/Message.json";
-
 
 
     //headers
@@ -31,7 +30,7 @@ public class ApiConstant {
 
     public static final String HEADER_QB_TOKEN_KEY = "QB-Token:";
 
-    public static final String FORGOT_PASSWORD_REQUEST = "/users/password/reset.json" ;
+    public static final String FORGOT_PASSWORD_REQUEST = "/users/password/reset.json";
 
     public static final String QB_TOKEN = "QB-Token";
     //    60 -  second, 15 - minutes
@@ -52,5 +51,14 @@ public class ApiConstant {
         public static final String BLOB_ID = "blob_id";
         public static final String ID = "id";
         public static final String FILE = "file";
+    }
+
+    public class MessageRequestParams {
+        public static final String CHAT_DIALOG_ID = "chat_dialog_id";
+        public static final String LIMIT = "limit";
+        public static final String SORT_ASC = "sort_asc";
+        public static final String SORT_DESC = "sort_desc";
+        public static final String DATE_SENT = "date_sent";
+        public static final int MESSAGE_LIMIT = 20;
     }
 }

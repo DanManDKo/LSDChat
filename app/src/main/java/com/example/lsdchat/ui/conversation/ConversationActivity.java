@@ -22,7 +22,9 @@ import android.widget.Toast;
 
 import com.example.lsdchat.R;
 import com.example.lsdchat.api.dialog.model.ItemMessage;
+import com.example.lsdchat.model.RealmMessage;
 import com.example.lsdchat.ui.MainActivity;
+import com.example.lsdchat.util.Network;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +38,7 @@ public class ConversationActivity extends AppCompatActivity implements Conversat
     private EditText mMessage;
     private ImageButton mButtonSend;
     private ImageButton mButtonSmiles;
-    private ArrayList<ItemMessage> mMessageList = new ArrayList<>();
+    private ArrayList<RealmMessage> mMessageList = new ArrayList<>();
 
     private ConversationRecyclerAdapter mAdapter;
     private RecyclerView mListView;
@@ -60,25 +62,30 @@ public class ConversationActivity extends AppCompatActivity implements Conversat
         Intent intentService = new Intent(this, ConversationService.class);
         startService(intentService);
 
+        mAdapter = new ConversationRecyclerAdapter(mMessageList);
+        mAdapter.setListener(new ConversationRecyclerAdapter.OnRecyclerItemClickListener() {
+            @Override
+            public void onItemClicked(String id, int position, int type) {
+                Toast.makeText(ConversationActivity.this, "Click " + id, Toast.LENGTH_SHORT).show();
+            }
+        });
+        mListView.setLayoutManager(new LinearLayoutManager(this));
+        mListView.setAdapter(mAdapter);
+
         /* There we have to get from intent dialog_name AND dialog_id, calc contactJid app_id + "_" + dialog_id +
         *  "@" + "muc.chat.quickblox.com" to it.
         * dialog_name we use for Toolbar title */
 
 
         //pass dialog_id
-        //mConversationPresenter.getMessages("589f6bfda0eb47ea8400026a");
+        String dialogIdIntent = "589f6bfda0eb47ea8400026a";
+        if (Network.isOnline(this)) {
+            mConversationPresenter.getMessages(dialogIdIntent);
+        } else {
+            fillListOfMessages(mConversationPresenter.getMessagesFromDataBase(dialogIdIntent));
+        }
 
         mButtonSend.setOnClickListener(view -> sendTextMessage());
-
-        mAdapter = new ConversationRecyclerAdapter(mMessageList);
-        mAdapter.setListener(new ConversationRecyclerAdapter.OnRecyclerItemClickListener() {
-            @Override
-            public void onItemClicked(String id, int position, int type) {
-                Toast.makeText(ConversationActivity.this, "Click", Toast.LENGTH_SHORT).show();
-            }
-        });
-        mListView.setLayoutManager(new LinearLayoutManager(this));
-        mListView.setAdapter(mAdapter);
     }
 
     public void sendTextMessage() {
@@ -88,8 +95,11 @@ public class ConversationActivity extends AppCompatActivity implements Conversat
             if (!message.equalsIgnoreCase("")) {
                 Log.d(TAG, "The client is connected to the server, sending Message");
 
-                ItemMessage chatMessage = new ItemMessage(ItemMessage.OUTCOMING_MESSAGE);
+                RealmMessage chatMessage = new RealmMessage(true);
                 chatMessage.setMessage(message);
+                //get app owner id from db
+                chatMessage.setSenderId(23163511);
+                chatMessage.setDateSent(System.currentTimeMillis());
 
                 mAdapter.add(chatMessage);
                 mListView.scrollToPosition(mMessageList.size() - 1);
@@ -164,9 +174,9 @@ public class ConversationActivity extends AppCompatActivity implements Conversat
     }
 
     @Override
-    public void fillListOfMessages(List<ItemMessage> list) {
-        for (ItemMessage im : list) {
-//            mAdapter.add(im);
+    public void fillListOfMessages(List<RealmMessage> list) {
+        for (RealmMessage rm : list) {
+            mAdapter.add(rm);
         }
         mListView.scrollToPosition(mMessageList.size() - 1);
     }
@@ -193,7 +203,7 @@ public class ConversationActivity extends AppCompatActivity implements Conversat
                             //do nothing
                             Log.d(TAG, "Got a message from myself");
                         } else {
-                            ItemMessage chatMessage = new ItemMessage(ItemMessage.INCOMING_MESSAGE);
+                            RealmMessage chatMessage = new RealmMessage(true);
                             chatMessage.setMessage(body);
 
                             mAdapter.add(chatMessage);

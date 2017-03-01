@@ -31,24 +31,6 @@ public class ItemMessage {
     @SerializedName("read")
     private Integer read;
 
-    public static final int OUTCOMING_MESSAGE = 0;
-    public static final int INCOMING_MESSAGE = 1;
-    public static final int DATE_HEADER = 2;
-
-    private int mType;
-
-    public ItemMessage(int type) {
-        mType = type;
-    }
-
-    public int getType() {
-        return mType;
-    }
-
-    public void setType(int type) {
-        mType = type;
-    }
-
     public String getId() {
         return id;
     }

@@ -128,6 +128,7 @@ public class ConversationConnection implements ConnectionListener {
         msg.setType(Message.Type.groupchat);
         msg.setTo(toJid);
         msg.addExtension(extensionElement);
+
         try {
             muc.sendMessage(msg);
         } catch (SmackException.NotConnectedException e) {

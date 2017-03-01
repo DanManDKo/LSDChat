@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import com.example.lsdchat.R;
 import com.example.lsdchat.api.dialog.model.ItemMessage;
+import com.example.lsdchat.model.RealmMessage;
 import com.facebook.drawee.view.SimpleDraweeView;
 
 import java.util.List;
@@ -16,14 +17,14 @@ import java.util.List;
 public class ConversationRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final String SENDER_NAME = "Me";
 
-    private List<ItemMessage> mList;
+    private List<RealmMessage> mList;
     private OnRecyclerItemClickListener mListener;
 
     public void setListener(OnRecyclerItemClickListener listener) {
         mListener = listener;
     }
 
-    public ConversationRecyclerAdapter(List<ItemMessage> list) {
+    public ConversationRecyclerAdapter(List<RealmMessage> list) {
         mList = list;
     }
 
@@ -33,38 +34,39 @@ public class ConversationRecyclerAdapter extends RecyclerView.Adapter<RecyclerVi
         View view;
 
         switch (viewType) {
-            case ItemMessage.OUTCOMING_MESSAGE:
+            case 23163511:
                 view = inflater.inflate(R.layout.right_item_message_row, parent, false);
                 return new OutcomingViewHolder(view);
-            case ItemMessage.INCOMING_MESSAGE:
+            default:
                 view = inflater.inflate(R.layout.left_item_message_row, parent, false);
                 return new IncomingViewHolder(view);
         }
-        return null;
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        ItemMessage itemMessage = mList.get(position);
+        RealmMessage itemMessage = mList.get(position);
         if (itemMessage != null) {
-            switch (itemMessage.getType()) {
-                case ItemMessage.OUTCOMING_MESSAGE:
+            switch (itemMessage.getSenderId()) {
+                //get app owner id from db
+                case 23163511:
                     ((OutcomingViewHolder) holder).message.setText(mList.get(position).getMessage());
                     ((OutcomingViewHolder) holder).time.setText(mList.get(position).getDateSent());
                     ((OutcomingViewHolder) holder).personName.setText(SENDER_NAME);
 
                     ((OutcomingViewHolder) holder).messageRoot.setOnClickListener(view -> {
 
-                        mListener.onItemClicked(mList.get(position).getId(), position, ItemMessage.OUTCOMING_MESSAGE);
+                        mListener.onItemClicked(mList.get(position).getMessageId(), position, 23163511);
                     });
                     break;
-                case ItemMessage.INCOMING_MESSAGE:
+                default:
                     ((IncomingViewHolder) holder).message.setText(mList.get(position).getMessage());
                     ((IncomingViewHolder) holder).time.setText(mList.get(position).getDateSent());
                     ((IncomingViewHolder) holder).personName.setText("Sender");
 
                     ((IncomingViewHolder) holder).messageRoot.setOnClickListener(view -> {
-                        mListener.onItemClicked(mList.get(position).getId(), position, ItemMessage.INCOMING_MESSAGE);
+
+                        mListener.onItemClicked(mList.get(position).getMessageId(), position, 0);
                     });
                     break;
             }
@@ -79,9 +81,9 @@ public class ConversationRecyclerAdapter extends RecyclerView.Adapter<RecyclerVi
     @Override
     public int getItemViewType(int position) {
         if (mList != null) {
-            ItemMessage itemMessage = mList.get(position);
+            RealmMessage itemMessage = mList.get(position);
             if (itemMessage != null) {
-                return itemMessage.getType();
+                return itemMessage.getSenderId();
             }
         }
         return 0;
@@ -121,7 +123,7 @@ public class ConversationRecyclerAdapter extends RecyclerView.Adapter<RecyclerVi
         }
     }
 
-    public void add(ItemMessage object) {
+    public void add(RealmMessage object) {
         mList.add(object);
     }
 

@@ -3,7 +3,10 @@ package com.example.lsdchat.ui.conversation;
 import android.content.Context;
 import android.util.Log;
 
+import com.example.lsdchat.App;
 import com.example.lsdchat.api.dialog.model.ItemMessage;
+import com.example.lsdchat.model.RealmMessage;
+import com.example.lsdchat.util.Network;
 
 import java.util.List;
 
@@ -21,13 +24,43 @@ public class ConversationPresenter implements ConversationContract.Presenter {
     @Override
     public void getMessages(String dialogId) {
         //Get token from DataBase
-        String token = "e971e2f4acd8f5f2b5f546f7599c803e1c00cc7e";
+        String token = "e40a4e9201f10cb5a64634fc9b398b267100cc7e";
         mModel.getMessagesByDialogId(token, dialogId)
-                .subscribe(messagesResponse -> {
-                    List<ItemMessage> listOfMessages = messagesResponse.getItemMessageList();
-                    mView.fillListOfMessages(listOfMessages);
-                }, throwable -> {
-                    Log.d("++++", throwable.getMessage());
-                });
+                .map(messagesResponse -> messagesResponse.getItemMessageList())
+                .subscribe(itemMessages -> {
+                            saveMessagesToDataBase(itemMessages);
+                            List<RealmMessage> list = getMessagesFromDataBase(dialogId);
+
+
+                            mView.fillListOfMessages(list);
+
+
+                        },
+                        throwable -> {
+                            //handle errors
+                            if (!Network.isOnline(mContext)) {
+                                List<RealmMessage> list = getMessagesFromDataBase(dialogId);
+                                mView.fillListOfMessages(list);
+                            }
+                        });
+    }
+
+    private void saveMessagesToDataBase(List<ItemMessage> items) {
+        for (ItemMessage item : items) {
+            RealmMessage object = new RealmMessage(true);
+
+            object.setChatDialogId(item.getChatDialogId());
+            object.setMessage(item.getMessage());
+            object.setSenderId(item.getSender_id());
+            object.setDateSent(Long.parseLong(item.getDateSent()));
+            object.setMessageId(item.getId());
+            object.setRead(item.getRead());
+
+            App.getDataManager().insertRealmMessage(object);
+        }
+    }
+
+    public List<RealmMessage> getMessagesFromDataBase(String dialogId) {
+        return App.getDataManager().findMessagesByDialogId(dialogId);
     }
 }

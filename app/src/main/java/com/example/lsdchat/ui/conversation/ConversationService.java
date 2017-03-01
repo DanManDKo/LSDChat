@@ -28,8 +28,7 @@ public class ConversationService extends Service {
     public static ConversationConnection.LoggedInState sLoggedInState;
     private boolean mActive;//Stores whether or not the thread is active
     private Thread mThread;
-    private Handler mTHandler;//We use this handler to post messages to
-    //the background thread.
+    private Handler mTHandler;//Handler to post messages to the background thread.
     private ConversationConnection mConnection;
 
 

@@ -5,6 +5,7 @@ import android.content.Context;
 
 import com.example.lsdchat.api.dialog.model.ItemMessage;
 import com.example.lsdchat.api.dialog.response.MessagesResponse;
+import com.example.lsdchat.model.RealmMessage;
 
 import java.util.List;
 
@@ -17,7 +18,7 @@ public interface ConversationContract {
     }
     interface View{
         Context getContext();
-        void fillListOfMessages(List<ItemMessage> list);
+        void fillListOfMessages(List<RealmMessage> list);
     }
     interface Model{
         Observable<MessagesResponse> getMessagesByDialogId(String token, String dialogId);
