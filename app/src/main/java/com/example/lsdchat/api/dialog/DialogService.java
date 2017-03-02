@@ -4,6 +4,7 @@ import com.example.lsdchat.api.dialog.model.ItemDialog;
 import com.example.lsdchat.api.dialog.model.ItemMessage;
 import com.example.lsdchat.api.dialog.request.CreateDialogRequest;
 import com.example.lsdchat.api.dialog.request.CreateMessageRequest;
+import com.example.lsdchat.api.dialog.response.ContentResponse;
 import com.example.lsdchat.api.dialog.response.DialogsResponse;
 import com.example.lsdchat.api.dialog.response.MessagesResponse;
 import com.example.lsdchat.api.dialog.response.UserListResponse;
@@ -42,12 +43,16 @@ public interface DialogService {
 
     @Headers(ApiConstant.HEADER_CONTENT_TYPE)
     @GET(ApiConstant.USER_LIST_REQUEST)
-    Observable<UserListResponse> getUserList(@Header(ApiConstant.QB_TOKEN) String token);
+    Observable<UserListResponse> getUserList(@Header(ApiConstant.QB_TOKEN) String token, @Query("per_page") int perPage);
 
 
     @Headers(ApiConstant.HEADER_CONTENT_TYPE)
     @GET(ApiConstant.GET_FILE_REQUEST)
     Observable<Response<ResponseBody>> downloadImage(@Path(ApiConstant.BLOB_ID) long blobId, @Header(ApiConstant.QB_TOKEN) String token);
+
+    @Headers(ApiConstant.HEADER_CONTENT_TYPE)
+    @POST(ApiConstant.GET_FILEPATH_REQUEST)
+    Observable<ContentResponse> downloadContent(@Path(ApiConstant.BLOB_ID) long blobId, @Header(ApiConstant.QB_TOKEN) String token);
 
 
 }

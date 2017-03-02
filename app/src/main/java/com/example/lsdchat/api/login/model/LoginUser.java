@@ -3,7 +3,11 @@ package com.example.lsdchat.api.login.model;
 
 import com.google.gson.annotations.SerializedName;
 
-public class LoginUser {
+import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
+
+public class LoginUser extends RealmObject {
+    @PrimaryKey
     @SerializedName("id")
     private Integer id;
     @SerializedName("full_name")
@@ -36,6 +40,15 @@ public class LoginUser {
     private String customData;
     @SerializedName("user_tags")
     private String userTags;
+    private String imagePath;
+
+    public String getImagePath() {
+        return imagePath;
+    }
+
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
+    }
 
     public Integer getId() {
         return id;

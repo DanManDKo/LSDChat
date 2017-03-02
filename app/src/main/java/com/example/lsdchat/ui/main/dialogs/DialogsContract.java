@@ -7,8 +7,8 @@ import android.support.v4.widget.DrawerLayout;
 import android.widget.TextView;
 
 import com.example.lsdchat.model.User;
-import com.facebook.drawee.view.SimpleDraweeView;
 
+import de.hdodenhof.circleimageview.CircleImageView;
 import rx.Observable;
 
 public interface DialogsContract {
@@ -31,7 +31,7 @@ public interface DialogsContract {
         void fabClick(FloatingActionButton mFloatingActionButton);
         void setNavigationItemSelectedListener(NavigationView mNavigationView);
 
-        void setHeaderData(SimpleDraweeView imageView, TextView fullName, TextView email);
+        void setHeaderData(CircleImageView imageView, TextView fullName, TextView email);
 
         void destroySession();
     }

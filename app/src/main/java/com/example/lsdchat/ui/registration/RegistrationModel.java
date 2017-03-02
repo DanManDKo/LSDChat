@@ -15,6 +15,8 @@ import com.example.lsdchat.api.registration.request.RegistrationRequestUser;
 import com.example.lsdchat.api.registration.response.RegistrationCreateFileResponse;
 import com.example.lsdchat.api.registration.response.RegistrationResponse;
 import com.example.lsdchat.constant.ApiConstant;
+import com.example.lsdchat.manager.DataManager;
+import com.example.lsdchat.model.User;
 import com.example.lsdchat.util.Signature;
 
 import java.util.Map;
@@ -28,9 +30,11 @@ import rx.schedulers.Schedulers;
 
 public class RegistrationModel implements RegistrationContract.Model {
     private RegistrationService mRegistrationService;
+    private DataManager mDataManager;
 
     public RegistrationModel() {
         mRegistrationService = App.getApiManager().getRegistrationService();
+        mDataManager = App.getDataManager();
     }
 
 
@@ -94,4 +98,11 @@ public class RegistrationModel implements RegistrationContract.Model {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
+
+    @Override
+    public void saveUser(User user) {
+        mDataManager.insertUser(user);
+    }
+
+
 }

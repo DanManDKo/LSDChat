@@ -26,6 +26,12 @@ public class ApiConstant {
     public static final String GET_FILE_REQUEST = "/blobs/{blob_id}/download.json";
     public static final String BLOB_ID = "blob_id";
 
+    public static final String GET_FILEPATH_REQUEST = "/blobs/{blob_id}/getblobobjectbyid.json";
+
+    public static final String SORT_CREATE_AT="sort_create_at";
+    public static final String SORT_NAME_ACS="sort_name_asc";
+    public static final String SORT_NAME_DESC="sort_name_desc";
+
     public static final int TYPE_DIALOG_PUBLIC = 1;
     public static final int TYPE_DIALOG_GROUP = 2;
     public static final int TYPE_DIALOG_PRIVATE = 3;

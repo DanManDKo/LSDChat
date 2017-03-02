@@ -81,7 +81,7 @@ public class CreateChatModel implements CreateChatContract.Model {
 
     @Override
     public Observable<UserListResponse> getUserList(String token) {
-        return mDialogService.getUserList(token)
+        return mDialogService.getUserList(token,100)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
 

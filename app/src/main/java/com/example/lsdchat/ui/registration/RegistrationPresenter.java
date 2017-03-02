@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import com.example.lsdchat.R;
 import com.example.lsdchat.constant.ApiConstant;
+import com.example.lsdchat.model.User;
 import com.example.lsdchat.util.CreateMapRequestBody;
 import com.example.lsdchat.util.Email;
 import com.example.lsdchat.util.ErrorsCode;
@@ -182,9 +183,14 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
                 .doOnRequest(request -> mView.showProgressBar())
                 .doOnUnsubscribe(() -> mView.hideProgressBar())
                 .doOnNext(loginResponse -> {
+
+                    User user = new User(email, password, loginResponse.getLoginUser().getFullName(), true);
+
                     if (mUploadFile != null) {
-                        getBlobObjectCreateFile(token, getFileMimeType(mUploadFile), mUploadFile.getName());
+                        getBlobObjectCreateFile(token, getFileMimeType(mUploadFile), mUploadFile.getName(),user);
                     } else {
+//                        save user to db
+                        mModel.saveUser(user);
                         Toast.makeText(mContext, mContext.getString(R.string.registration_complete), Toast.LENGTH_SHORT).show();
                         mView.navigateToMainScreen();
                     }
@@ -198,7 +204,7 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
                 });
     }
 
-    private void getBlobObjectCreateFile(String token, String mime, String fileName) {
+    private void getBlobObjectCreateFile(String token, String mime, String fileName,User user) {
         mModel.createFile(token, mime, fileName)
                 .doOnRequest(request -> mView.showProgressBar())
                 .doOnUnsubscribe(() -> mView.hideProgressBar())
@@ -207,11 +213,14 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
                     String params = registrationCreateFileResponse.getBlob().getBlobObjestAccess().getParams();
                     Uri uri = Uri.parse(params);
 
+                    user.setBlobId(blobId);
+                    mModel.saveUser(user);
+
                     RequestBody file = RequestBody.create(MediaType.parse(getFileMimeType(mUploadFile)), mUploadFile);
                     MultipartBody.Part multiPart = MultipartBody.Part.createFormData(ApiConstant.UploadParametres.FILE, mUploadFile.getName(), file);
 
                     uploadFileRetrofit(token, blobId, CreateMapRequestBody.createMapRequestBody(uri), multiPart);
-
+                    Log.e("TEST", "step 1");
                 }, throwable -> {
 
                     decodeThrowableAndShowAlert(throwable);
@@ -228,6 +237,8 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
                     long fileSize = mUploadFile.length();
                     if (fileSize != 0 && blobId != 0) {
                         declareFileUploaded(fileSize, token, blobId);
+                        Log.e("TEST", "step 2");
+                        Log.e("TEST", String.valueOf(blobId));
                     }
                 }, throwable -> {
 
@@ -242,6 +253,7 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
                 .doOnRequest(request -> mView.showProgressBar())
                 .doOnUnsubscribe(() -> mView.hideProgressBar())
                 .subscribe(aVoid -> {
+                    Log.e("TEST", "step 3 - finish");
 
                     Toast.makeText(mContext, mContext.getString(R.string.registration_complete), Toast.LENGTH_SHORT).show();
                     mView.navigateToMainScreen();

@@ -3,15 +3,12 @@ package com.example.lsdchat.ui.registration;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.support.design.widget.TextInputEditText;
-import android.widget.Button;
-import android.widget.ImageView;
 
 import com.example.lsdchat.api.login.response.LoginResponse;
 import com.example.lsdchat.api.login.response.SessionResponse;
 import com.example.lsdchat.api.registration.response.RegistrationCreateFileResponse;
 import com.example.lsdchat.api.registration.response.RegistrationResponse;
-import com.redmadrobot.inputmask.MaskedTextChangedListener;
+import com.example.lsdchat.model.User;
 
 import java.util.Map;
 
@@ -98,5 +95,7 @@ public interface RegistrationContract {
         Observable<Void> declareFileUploaded(long size, String token, long blobId);
 
         Observable<Void> uploadFileMap(Map<String, RequestBody> map,MultipartBody.Part part);
+
+        void saveUser(User user);
     }
 }
