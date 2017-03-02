@@ -13,9 +13,9 @@ import com.example.lsdchat.manager.SharedPreferencesManager;
 import com.example.lsdchat.model.User;
 import com.example.lsdchat.util.Utils;
 import com.facebook.common.util.UriUtil;
-import com.facebook.drawee.view.SimpleDraweeView;
 
-import java.io.File;
+import de.hdodenhof.circleimageview.CircleImageView;
+import rx.Observable;
 
 public class DialogsPresenter implements DialogsContract.Presenter {
     private DialogsContract.View mView;
@@ -75,10 +75,10 @@ public class DialogsPresenter implements DialogsContract.Presenter {
     }
 
     @Override
-    public void setHeaderData(SimpleDraweeView imageView, TextView fullName, TextView email) {
+    public void setHeaderData(CircleImageView imageView, TextView fullName, TextView email) {
 
 
-        if (mUser.getBlobId() != 0) {
+        if ((mUser.getBlobId()) != 0) {
             downLoadImage(mSharedPreferencesManager.getToken(), mUser.getBlobId(), imageView);
 //
         } else {
@@ -94,14 +94,23 @@ public class DialogsPresenter implements DialogsContract.Presenter {
 
     }
 
-    private void downLoadImage(String token, long blobId, SimpleDraweeView imageView) {
-        Utils.downloadImage(blobId, token)
+    private void downLoadImage(String token, long blobId, CircleImageView imageView) {
+        Utils.downloadContent(blobId, token)
+                .flatMap(contentResponse -> Observable.just(contentResponse.getItemContent().getImageUrl()))
+                .subscribe(imageUrl -> {
+//                    imageView.setImageURI(Uri.parse(imageUrl));
+                    Utils.downloadImageToView(imageUrl,imageView);
+                }, throwable -> {
+                    Log.e("IMAGE-error", throwable.getMessage());
+                });
+
+       /* Utils.downloadImage(blobId, token)
                 .subscribe(file -> {
                     imageView.setImageURI(Uri.fromFile(new File(file.getPath())));
                     Log.e("TETS", file.getPath());
                 }, throwable -> {
                     mView.showMessageError(throwable);
-                });
+                });*/
     }
 
     @Override

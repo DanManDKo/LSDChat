@@ -20,18 +20,29 @@ public class ApiConstant {
     public static final String UPDATE_REQUEST = "users/{id}.json";
     public static final String DECLARING_REQUEST = "/blobs/{blob_id}/complete.json";
 
-//    dialog
+    //    dialog
     public static final String DIALOGS_REQUEST = "/chat/Dialog.json";
     public static final String MESSAGES_REQUEST = "/chat/Message.json";
+    public static final String USER_LIST_REQUEST = "/users.json";
+    public static final String GET_FILE_REQUEST = "/blobs/{blob_id}/download.json";
+    public static final String BLOB_ID = "blob_id";
 
+    public static final String GET_FILEPATH_REQUEST = "/blobs/{blob_id}/getblobobjectbyid.json";
 
+    public static final String SORT_CREATE_AT="sort_create_at";
+    public static final String SORT_NAME_ACS="sort_name_asc";
+    public static final String SORT_NAME_DESC="sort_name_desc";
+
+    public static final int TYPE_DIALOG_PUBLIC = 1;
+    public static final int TYPE_DIALOG_GROUP = 2;
+    public static final int TYPE_DIALOG_PRIVATE = 3;
 
     //headers
     public static final String HEADER_CONTENT_TYPE = "Content-Type: application/json";
 
     public static final String HEADER_QB_TOKEN_KEY = "QB-Token:";
 
-    public static final String FORGOT_PASSWORD_REQUEST = "/users/password/reset.json" ;
+    public static final String FORGOT_PASSWORD_REQUEST = "/users/password/reset.json";
 
     public static final String QB_TOKEN = "QB-Token";
     //    60 -  second, 15 - minutes

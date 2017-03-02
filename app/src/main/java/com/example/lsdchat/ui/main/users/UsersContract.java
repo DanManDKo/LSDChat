@@ -1,10 +1,12 @@
 package com.example.lsdchat.ui.main.users;
 
 
-import com.example.lsdchat.api.dialog.model.ItemUser;
 import com.example.lsdchat.api.dialog.response.UserListResponse;
-import com.example.lsdchat.model.UserQuick;
+import com.example.lsdchat.api.login.model.LoginUser;
 
+import java.util.List;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 import io.realm.RealmResults;
 import rx.Observable;
 
@@ -12,9 +14,14 @@ public interface UsersContract {
 
     interface Model {
         Observable<UserListResponse> getUserList(String token);
-        void insertUsersQuick(UserQuick user);
 
-        RealmResults<UserQuick> getUsersQuick();
+        RealmResults<LoginUser> getUsersQuick();
+        void insetUsersQuick(LoginUser userQuick);
+
+
+        void deleteAllUSerQiuck();
+
+        List<LoginUser> getUsersQuickList(String sort);
     }
 
     interface View {
@@ -24,11 +31,11 @@ public interface UsersContract {
     interface Presenter {
 
         String getToken();
-        void downloadImage(long blobId, String token, ItemUser user);
 
+        List<LoginUser> getUsersQuickList(String sort);
         void getUserList();
 
-        RealmResults<UserQuick> getUsersQuick();
+        void setImageView(CircleImageView imageView, long blobId);
     }
 
 }

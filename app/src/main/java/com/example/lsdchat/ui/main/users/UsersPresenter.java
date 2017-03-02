@@ -4,13 +4,14 @@ package com.example.lsdchat.ui.main.users;
 import android.util.Log;
 
 import com.example.lsdchat.api.dialog.model.ItemUser;
+import com.example.lsdchat.api.login.model.LoginUser;
 import com.example.lsdchat.manager.SharedPreferencesManager;
-import com.example.lsdchat.model.UserQuick;
 import com.example.lsdchat.util.Utils;
 
 import java.util.List;
 
-import io.realm.RealmResults;
+import de.hdodenhof.circleimageview.CircleImageView;
+import rx.Observable;
 
 public class UsersPresenter implements UsersContract.Presenter {
     private UsersContract.View mView;
@@ -27,16 +28,6 @@ public class UsersPresenter implements UsersContract.Presenter {
 
 
     @Override
-    public void downloadImage(long blobId, String token, ItemUser user) {
-        Utils.downloadImage(blobId, token)
-                .subscribe(file -> {
-                    mModel.insertUsersQuick(new UserQuick(user, file.getPath()));
-                }, throwable -> {
-                    Log.e("TETS", throwable.getMessage());
-                });
-    }
-
-    @Override
     public String getToken() {
         return mSharedPreferencesManager.getToken();
     }
@@ -45,27 +36,53 @@ public class UsersPresenter implements UsersContract.Presenter {
     public void getUserList() {
         mModel.getUserList(getToken())
                 .subscribe(userListResponse -> {
-                    Log.e("TETS", String.valueOf(userListResponse.getTotalEntries()));
-                    List<ItemUser> itemUserList = userListResponse.getItemUserList();
-                    for (ItemUser user : itemUserList) {
-                        int blobId = user.getUser().getBlobId();
-                        if (blobId != 0) {
-                            downloadImage(blobId, getToken(), user);
-                        } else {
-                            mModel.insertUsersQuick(new UserQuick(user));
-                        }
+                    List<ItemUser> itemUsers = userListResponse.getItemUserList();
 
+                    if (userListResponse.getTotalEntries() < (mModel.getUsersQuick().size() + 2)) {
+                        mModel.deleteAllUSerQiuck();
+                        getU(itemUsers);
+                    } else
+                        getU(itemUsers);
 
-                    }
-                    Log.e("TETS", itemUserList.toString());
                 }, throwable -> {
-                    Log.e("TETS", throwable.getMessage());
+                    Log.e("getUserList-error", throwable.getMessage());
+                });
+
+    }
+
+
+    private void getU(List<ItemUser> itemUsers) {
+        Observable.from(itemUsers)
+                .flatMap(user -> Observable.just(user.getUser()))
+                .subscribe(loginUser -> {
+
+                    mModel.insetUsersQuick(loginUser);
+
+                }, throwable -> {
+                    Log.e("getUserList-error", throwable.getMessage());
                 });
     }
 
 
     @Override
-    public RealmResults<UserQuick> getUsersQuick() {
-        return mModel.getUsersQuick();
+    public void setImageView(CircleImageView imageView, long blobId) {
+        if (blobId != 0) {
+            Utils.downloadContent(blobId, getToken())
+                    .flatMap(contentResponse -> Observable.just(contentResponse.getItemContent().getImageUrl()))
+                    .subscribe(imageUrl -> {
+                        Utils.downloadImageToView(imageUrl,imageView);
+                    }, throwable -> {
+                        Log.e("IMAGE-error", throwable.getMessage());
+                    });
+
+        }
+
+
+    }
+
+
+    @Override
+    public List<LoginUser> getUsersQuickList(String sort) {
+        return mModel.getUsersQuickList(sort);
     }
 }

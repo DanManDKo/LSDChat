@@ -27,7 +27,8 @@ import com.example.lsdchat.ui.dialog.CreateChatActivity;
 import com.example.lsdchat.ui.login.LoginActivity;
 import com.example.lsdchat.ui.main.fragment.BaseFragment;
 import com.example.lsdchat.ui.main.users.UsersFragment;
-import com.facebook.drawee.view.SimpleDraweeView;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +42,7 @@ public class DialogsFragment extends BaseFragment implements DialogsContract.Vie
     private DialogsContract.Presenter mPresenter;
     private Toolbar mToolbar;
     private View mHeaderLayout;
-    private SimpleDraweeView mHeaderImage;
+    private CircleImageView mHeaderImage;
     private TextView mHeaderName;
     private TextView mHeaderEmail;
     private RecyclerView mRecyclerView;
@@ -100,7 +101,7 @@ public class DialogsFragment extends BaseFragment implements DialogsContract.Vie
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 //        mHeaderLayout = mNavigationView.inflateHeaderView(R.layout.navigation_drawer_header);
         mHeaderLayout = mNavigationView.getHeaderView(0);
-        mHeaderImage = (SimpleDraweeView) mHeaderLayout.findViewById(R.id.nav_view_avatar);
+        mHeaderImage = (CircleImageView) mHeaderLayout.findViewById(R.id.nav_view_avatar);
         mHeaderName = (TextView) mHeaderLayout.findViewById(R.id.nav_view_full_name);
         mHeaderEmail = (TextView) mHeaderLayout.findViewById(R.id.nav_view_email_address);
 

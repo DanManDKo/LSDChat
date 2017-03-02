@@ -1,57 +1,60 @@
 package com.example.lsdchat.ui.main.users;
 
-import android.content.Context;
-import android.net.Uri;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.lsdchat.R;
-import com.example.lsdchat.model.UserQuick;
-import com.facebook.drawee.view.SimpleDraweeView;
+import com.example.lsdchat.api.login.model.LoginUser;
 
-import java.io.File;
+import java.util.List;
 
-import io.realm.RealmBasedRecyclerViewAdapter;
-import io.realm.RealmResults;
-import io.realm.RealmViewHolder;
-
- 
-public class UsersRvAdapter extends RealmBasedRecyclerViewAdapter<UserQuick,UsersRvAdapter.ViewHolder> {
+import de.hdodenhof.circleimageview.CircleImageView;
 
 
-    public UsersRvAdapter(Context context, RealmResults<UserQuick> realmResults, boolean automaticUpdate, boolean animateResults) {
-        super(context, realmResults, automaticUpdate, animateResults);
+public class UsersRvAdapter extends RecyclerView.Adapter<UsersRvAdapter.ViewHolder> {
+    private List<LoginUser> data;
+    private UsersContract.Presenter presenter;
+
+    public UsersRvAdapter(List<LoginUser> data, UsersContract.Presenter presenter) {
+
+        this.data = data;
+        this.presenter = presenter;
+
     }
 
     @Override
-    public ViewHolder onCreateRealmViewHolder(ViewGroup viewGroup, int i) {
-        View view = inflater.inflate(R.layout.item_recycler_users, viewGroup, false);
+    public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
+        View view = LayoutInflater.from(viewGroup.getContext())
+                .inflate(R.layout.item_recycler_users, viewGroup, false);
         return new ViewHolder(view);
     }
 
     @Override
-    public void onBindRealmViewHolder(ViewHolder viewHolder, int i) {
-        UserQuick userQuick = realmResults.get(i);
-        if (userQuick.getImagePath()!=null) {
-            viewHolder.mImageView.setImageURI(Uri.fromFile(new File(userQuick.getImagePath())));
-        }
+    public void onBindViewHolder(ViewHolder viewHolder, int i) {
+        LoginUser userQuick = data.get(i);
+
+        presenter.setImageView(viewHolder.mImageView,userQuick.getBlobId());
 
         viewHolder.mName.setText(userQuick.getFullName());
     }
 
+    @Override
+    public int getItemCount() {
+        return data.size();
+    }
 
 
+    public class ViewHolder extends RecyclerView.ViewHolder {
 
-
-    public class ViewHolder extends RealmViewHolder {
-
-        SimpleDraweeView mImageView;
+        CircleImageView mImageView;
         TextView mName;
 
         public ViewHolder(View itemView) {
             super(itemView);
-            mImageView = (SimpleDraweeView) itemView.findViewById(R.id.users_image);
+            mImageView = (CircleImageView) itemView.findViewById(R.id.users_image);
             mName = (TextView) itemView.findViewById(R.id.users_name);
 
         }

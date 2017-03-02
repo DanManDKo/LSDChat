@@ -110,6 +110,11 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="seems_like_you_are_the_only_user">Seems like you are the only User :)</string>
+    <string name="menu_search">Search</string>
+    <string name="clear_sort_created_at">Clear Sort (created_at)</string>
+    <string name="by_name_asc">By Name (ASC)</string>
+    <string name="by_name_desc">By Name (DESC)</string>
+    <string name="sorter">Sorter</string>
     <string name="chats">Chats</string>
 
 

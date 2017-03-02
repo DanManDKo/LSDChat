@@ -9,7 +9,7 @@
     android:padding="16dp"
     tools:ignore="Overdraw">
 
-    <com.facebook.drawee.view.SimpleDraweeView
+    <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/nav_view_avatar"
         android:layout_width="68dp"
         android:layout_height="68dp"

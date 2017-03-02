@@ -2,7 +2,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     tools:context="com.example.lsdchat.ui.main.users.UsersFragment">
 
@@ -10,15 +9,10 @@
     <include layout="@layout/toolbar" />
 
 
-    <co.moonmonkeylabs.realmrecyclerview.RealmRecyclerView
+    <android.support.v7.widget.RecyclerView
         android:id="@+id/realm_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_margin="5dp"
-        android:layout_weight="1"
-        app:rrvGridLayoutSpanCount="1"
-        app:rrvIsRefreshable="false"
-        app:rrvEmptyLayoutId="@layout/to_do_empty_view"
-
-        app:rrvLayoutType="LinearLayout" />
+        android:layout_weight="1" />
 </LinearLayout>
