@@ -8,6 +8,7 @@ import com.example.lsdchat.api.login.model.LoginUser;
 import com.example.lsdchat.manager.SharedPreferencesManager;
 import com.example.lsdchat.util.Utils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -80,6 +81,19 @@ public class UsersPresenter implements UsersContract.Presenter {
 
     }
 
+
+
+    private List<LoginUser> filter(List<LoginUser> models, String query) {
+        query = query.toLowerCase();
+        List<LoginUser> filteredModelList = new ArrayList<>();
+        for (LoginUser model : models) {
+            String text = model.getFullName().toLowerCase();
+            if (text.contains(query)) {
+                filteredModelList.add(model);
+            }
+        }
+        return filteredModelList;
+    }
 
     @Override
     public List<LoginUser> getUsersQuickList(String sort) {

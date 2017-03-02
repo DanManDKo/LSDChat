@@ -21,7 +21,8 @@
     </item>
 
     <item
-        android:id="@+id/search"
+        yourapp:actionViewClass="android.support.v7.widget.SearchView"
+        android:id="@+id/action_search"
         android:icon="@drawable/search"
         android:orderInCategory="20"
         android:title="@string/menu_search"

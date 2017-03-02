@@ -9,6 +9,7 @@ import android.widget.TextView;
 import com.example.lsdchat.R;
 import com.example.lsdchat.api.login.model.LoginUser;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -46,6 +47,11 @@ public class UsersRvAdapter extends RecyclerView.Adapter<UsersRvAdapter.ViewHold
         return data.size();
     }
 
+    public void setFilter(List<LoginUser> countryModels) {
+        data = new ArrayList<>();
+        data.addAll(countryModels);
+        notifyDataSetChanged();
+    }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 

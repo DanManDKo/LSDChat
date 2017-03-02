@@ -1,14 +1,11 @@
 package com.example.lsdchat.ui.main.dialogs;
 
-import android.app.DialogFragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
@@ -22,16 +19,12 @@ import android.widget.TextView;
 
 import com.example.lsdchat.App;
 import com.example.lsdchat.R;
-import com.example.lsdchat.api.dialog.model.ItemDialog;
 import com.example.lsdchat.ui.dialog.CreateChatActivity;
 import com.example.lsdchat.ui.login.LoginActivity;
 import com.example.lsdchat.ui.main.fragment.BaseFragment;
 import com.example.lsdchat.ui.main.users.UsersFragment;
 
 import de.hdodenhof.circleimageview.CircleImageView;
-
-import java.util.ArrayList;
-import java.util.List;
 
 
 public class DialogsFragment extends BaseFragment implements DialogsContract.View {
@@ -45,20 +38,13 @@ public class DialogsFragment extends BaseFragment implements DialogsContract.Vie
     private CircleImageView mHeaderImage;
     private TextView mHeaderName;
     private TextView mHeaderEmail;
-    private RecyclerView mRecyclerView;
-    private DialogAdapter mAdapter;
-    private List<ItemDialog> mDialogs = new ArrayList<>();
 
+    public DialogsFragment() {
+    }
 
     @Override
     public DrawerLayout getDrawerLayout() {
         return mDrawerLayout;
-    }
-
-    @Override
-    public void onDialogsLoaded(List<ItemDialog> dialogs) {
-        mDialogs.addAll(dialogs);
-        mAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -69,17 +55,20 @@ public class DialogsFragment extends BaseFragment implements DialogsContract.Vie
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_dialogs, container, false);
-        Bundle bundle = getArguments();
-
-        mPresenter = new DialogsPresenter(this, App.getSharedPreferencesManager(getActivity()));
+        View view = inflater.inflate(R.layout.fragment_dialogs,container,false);
+        mPresenter = new DialogsPresenter(this,App.getSharedPreferencesManager(getActivity()));
         initView(view);
+        initToolbar(mToolbar,"Chats");
+
         mPresenter.fabClick(mFloatingActionButton);
+
+
         mPresenter.setNavigationItemSelectedListener(mNavigationView);
-        mPresenter.loadDialogs();
+
 
         return view;
     }
+
 
 
     @Override
@@ -88,24 +77,21 @@ public class DialogsFragment extends BaseFragment implements DialogsContract.Vie
     }
 
 
+
     private void initView(View view) {
-        initToolbar(mToolbar, getString(R.string.chats));
-        mToolbar = (Toolbar) view.findViewById(R.id.chats_toolbar);
+        mToolbar =(Toolbar) view.findViewById(R.id.chats_toolbar);
         mFloatingActionButton = (FloatingActionButton) view.findViewById(R.id.chats_fab);
         mDrawerLayout = (DrawerLayout) view.findViewById(R.id.chats_drawer);
         mNavigationView = (NavigationView) view.findViewById(R.id.chats_nav);
         mToolbar.setNavigationIcon(R.drawable.ic_menu_white_24dp);
-        mRecyclerView = (RecyclerView) view.findViewById(R.id.rv_chats);
-        mAdapter = new DialogAdapter(mDialogs);
-        mRecyclerView.setAdapter(mAdapter);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
 //        mHeaderLayout = mNavigationView.inflateHeaderView(R.layout.navigation_drawer_header);
         mHeaderLayout = mNavigationView.getHeaderView(0);
         mHeaderImage = (CircleImageView) mHeaderLayout.findViewById(R.id.nav_view_avatar);
         mHeaderName = (TextView) mHeaderLayout.findViewById(R.id.nav_view_full_name);
         mHeaderEmail = (TextView) mHeaderLayout.findViewById(R.id.nav_view_email_address);
 
-        mPresenter.setHeaderData(mHeaderImage, mHeaderName, mHeaderEmail);
+        mPresenter.setHeaderData(mHeaderImage,mHeaderName,mHeaderEmail);
     }
 
     @Override
@@ -115,12 +101,13 @@ public class DialogsFragment extends BaseFragment implements DialogsContract.Vie
     }
 
 
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
         switch (item.getItemId()) {
             case android.R.id.home:
-                Log.e("TTT", "test");
+                Log.e("TTT","test");
                 mDrawerLayout.openDrawer(Gravity.LEFT);
                 break;
             default:
@@ -130,12 +117,10 @@ public class DialogsFragment extends BaseFragment implements DialogsContract.Vie
     }
 
 /*
-
     if (mDrawerLayout.isDrawerOpen(Gravity.LEFT)) {
         mDrawerLayout.closeDrawers();
     } else {
         super.onDestroyView();
-
     }
 */
 

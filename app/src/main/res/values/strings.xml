@@ -114,6 +114,7 @@
     <string name="by_name_asc">By Name (ASC)</string>
     <string name="by_name_desc">By Name (DESC)</string>
     <string name="sorter">Sorter</string>
+    <string name="chats">Chats</string>
 
 
 </resources>

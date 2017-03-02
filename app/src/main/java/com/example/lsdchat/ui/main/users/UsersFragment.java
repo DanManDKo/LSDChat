@@ -18,6 +18,7 @@ import com.example.lsdchat.api.login.model.LoginUser;
 import com.example.lsdchat.constant.ApiConstant;
 import com.example.lsdchat.ui.main.fragment.BaseFragment;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -58,15 +59,30 @@ public class UsersFragment extends BaseFragment implements UsersContract.View {
 
     private void initAdapter(List<LoginUser> list) {
         mUsersRvAdapter = new UsersRvAdapter(list, mPresenter);
+
         mRealmRecyclerView.setAdapter(mUsersRvAdapter);
         mUsersRvAdapter.notifyDataSetChanged();
     }
 
+    private List<LoginUser> filter(List<LoginUser> models, String query) {
+        query = query.toLowerCase();
+        final List<LoginUser> filteredModelList = new ArrayList<>();
+        for (LoginUser model : models) {
+            final String text = model.getFullName().toLowerCase();
+            if (text.contains(query)) {
+                filteredModelList.add(model);
+            }
+        }
+        return filteredModelList;
+    }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.friends_option_menu, menu);
         super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.friends_option_menu, menu);
+
+
+
     }
 
     @Override
@@ -84,7 +100,8 @@ public class UsersFragment extends BaseFragment implements UsersContract.View {
             case R.id.sort_name_desc:
                 initAdapter(mPresenter.getUsersQuickList(ApiConstant.SORT_NAME_DESC));
                 break;
-            case R.id.search:
+            case R.id.action_search:
+
 
                 break;
             default:

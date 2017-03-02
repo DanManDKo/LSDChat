@@ -7,7 +7,6 @@ import android.support.design.widget.NavigationView;
 import android.util.Log;
 import android.widget.TextView;
 
-import com.example.lsdchat.App;
 import com.example.lsdchat.R;
 import com.example.lsdchat.manager.SharedPreferencesManager;
 import com.example.lsdchat.model.User;
@@ -26,21 +25,12 @@ public class DialogsPresenter implements DialogsContract.Presenter {
 
     public DialogsPresenter(DialogsContract.View mView, SharedPreferencesManager sharedPreferencesManager) {
         this.mView = mView;
-        mModel = new DialogsModel(App.getDataManager(),App.getApiManager().getLoginService(),App.getApiManager().getDialogService());
+        mModel = new DialogsModel();
         this.mSharedPreferencesManager = sharedPreferencesManager;
         mUser = mModel.getCurrentUser();
 
     }
 
-
-    @Override
-    public void loadDialogs() {
-        mModel.getDialogs(mSharedPreferencesManager.getToken()).subscribe(dialogsResponse -> {
-            mView.onDialogsLoaded(dialogsResponse.getItemDialogList());
-        }, throwable -> {
-            Log.e("TETS", throwable.getMessage());
-        });
-    }
 
     @Override
     public void fabClick(FloatingActionButton mFloatingActionButton) {

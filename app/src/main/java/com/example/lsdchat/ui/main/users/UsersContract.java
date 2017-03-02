@@ -30,6 +30,7 @@ public interface UsersContract {
 
     interface Presenter {
 
+
         String getToken();
 
         List<LoginUser> getUsersQuickList(String sort);
