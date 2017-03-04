@@ -123,6 +123,8 @@
     <string name="user_email">EMAIL</string>
     <string name="user_phone">PHONE</string>
     <string name="user_website">WEBSITE</string>
+    <string name="user_info_error_email">Please install email client app first</string>
+    <string name="user_info_error_phone">You cannot make calls from your device right now.</string>
 
 
 </resources>

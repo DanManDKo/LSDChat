@@ -97,9 +97,6 @@ public class UsersFragment extends BaseFragment implements UsersContract.View {
             case R.id.sort_name_desc:
                 initAdapter(mPresenter.getUsersQuickList(ApiConstant.SORT_NAME_DESC));
                 break;
-
-            default:
-                break;
         }
 
         return false;
@@ -107,6 +104,7 @@ public class UsersFragment extends BaseFragment implements UsersContract.View {
 
     @Override
     public void navigateToInfoUser(Fragment fragment) {
+//        TODO: add animation
         getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragment, fragment).addToBackStack(null).commit();
     }
 }
