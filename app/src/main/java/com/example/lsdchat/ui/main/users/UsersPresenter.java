@@ -1,10 +1,12 @@
 package com.example.lsdchat.ui.main.users;
 
 
+import android.support.v7.widget.SearchView;
 import android.util.Log;
 
 import com.example.lsdchat.api.dialog.model.ItemUser;
 import com.example.lsdchat.api.login.model.LoginUser;
+import com.example.lsdchat.constant.ApiConstant;
 import com.example.lsdchat.manager.SharedPreferencesManager;
 import com.example.lsdchat.util.Utils;
 
@@ -82,18 +84,46 @@ public class UsersPresenter implements UsersContract.Presenter {
     }
 
 
+    @Override
+    public void setOnQueryTextListener(SearchView searchView, UsersRvAdapter adapter) {
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
 
-    private List<LoginUser> filter(List<LoginUser> models, String query) {
+
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String query) {
+
+                List<LoginUser> loginUserList = filter(getUsersQuickList(ApiConstant.SORT_CREATE_AT), query);
+                if (loginUserList.size() > 0) {
+                    adapter.setFilter(loginUserList);
+                    return true;
+                } else {
+                    mView.showToast("Not Found");
+                    return false;
+                }
+            }
+        });
+    }
+
+    private List<LoginUser> filter(List<LoginUser> list, String query) {
         query = query.toLowerCase();
-        List<LoginUser> filteredModelList = new ArrayList<>();
-        for (LoginUser model : models) {
-            String text = model.getFullName().toLowerCase();
-            if (text.contains(query)) {
-                filteredModelList.add(model);
+        List<LoginUser> filterList = new ArrayList<>();
+        for (LoginUser user : list) {
+            String name = user.getFullName().toLowerCase();
+            if (name.contains(query)) {
+                filterList.add(user);
             }
         }
-        return filteredModelList;
+
+        mView.initAdapter(filterList);
+
+        return filterList;
     }
+
 
     @Override
     public List<LoginUser> getUsersQuickList(String sort) {

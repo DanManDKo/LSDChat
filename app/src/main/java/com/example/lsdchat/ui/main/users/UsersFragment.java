@@ -2,8 +2,10 @@ package com.example.lsdchat.ui.main.users;
 
 
 import android.os.Bundle;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -11,6 +13,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.example.lsdchat.App;
 import com.example.lsdchat.R;
@@ -18,7 +21,6 @@ import com.example.lsdchat.api.login.model.LoginUser;
 import com.example.lsdchat.constant.ApiConstant;
 import com.example.lsdchat.ui.main.fragment.BaseFragment;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -57,32 +59,29 @@ public class UsersFragment extends BaseFragment implements UsersContract.View {
         return view;
     }
 
-    private void initAdapter(List<LoginUser> list) {
+    @Override
+    public void initAdapter(List<LoginUser> list) {
         mUsersRvAdapter = new UsersRvAdapter(list, mPresenter);
 
         mRealmRecyclerView.setAdapter(mUsersRvAdapter);
         mUsersRvAdapter.notifyDataSetChanged();
     }
 
-    private List<LoginUser> filter(List<LoginUser> models, String query) {
-        query = query.toLowerCase();
-        final List<LoginUser> filteredModelList = new ArrayList<>();
-        for (LoginUser model : models) {
-            final String text = model.getFullName().toLowerCase();
-            if (text.contains(query)) {
-                filteredModelList.add(model);
-            }
-        }
-        return filteredModelList;
-    }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.friends_option_menu, menu);
 
+        MenuItem items = menu.findItem(R.id.action_search);
+        SearchView searchView = (SearchView) MenuItemCompat.getActionView(items);
+        mPresenter.setOnQueryTextListener(searchView,mUsersRvAdapter);
 
+    }
 
+    @Override
+    public void showToast(String text) {
+        Toast.makeText(getActivity(), text, Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -100,15 +99,14 @@ public class UsersFragment extends BaseFragment implements UsersContract.View {
             case R.id.sort_name_desc:
                 initAdapter(mPresenter.getUsersQuickList(ApiConstant.SORT_NAME_DESC));
                 break;
-            case R.id.action_search:
 
-
-                break;
             default:
                 break;
         }
 
         return false;
     }
+
+
 
 }

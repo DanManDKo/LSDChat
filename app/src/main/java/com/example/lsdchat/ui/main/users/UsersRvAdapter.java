@@ -17,6 +17,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class UsersRvAdapter extends RecyclerView.Adapter<UsersRvAdapter.ViewHolder> {
     private List<LoginUser> data;
+    private List<LoginUser> filterData;
     private UsersContract.Presenter presenter;
 
     public UsersRvAdapter(List<LoginUser> data, UsersContract.Presenter presenter) {
@@ -47,9 +48,10 @@ public class UsersRvAdapter extends RecyclerView.Adapter<UsersRvAdapter.ViewHold
         return data.size();
     }
 
-    public void setFilter(List<LoginUser> countryModels) {
-        data = new ArrayList<>();
-        data.addAll(countryModels);
+
+    public void setFilter(List<LoginUser> loginUsers) {
+        filterData = new ArrayList<>();
+        filterData.addAll(loginUsers);
         notifyDataSetChanged();
     }
 

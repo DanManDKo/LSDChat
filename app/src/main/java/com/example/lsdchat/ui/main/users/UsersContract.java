@@ -1,6 +1,8 @@
 package com.example.lsdchat.ui.main.users;
 
 
+import android.support.v7.widget.SearchView;
+
 import com.example.lsdchat.api.dialog.response.UserListResponse;
 import com.example.lsdchat.api.login.model.LoginUser;
 
@@ -26,10 +28,13 @@ public interface UsersContract {
 
     interface View {
 
+        void showToast(String text);
+        void initAdapter(List<LoginUser> list);
     }
 
     interface Presenter {
 
+        void setOnQueryTextListener(SearchView searchView,UsersRvAdapter adapter);
 
         String getToken();
 
