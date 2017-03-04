@@ -57,4 +57,9 @@
     <dimen name="design_navigation_padding_top_default" tools:override="true">0dp</dimen>
     <dimen name="design_navigation_separator_vertical_padding" tools:override="true">32dp</dimen>
     <dimen name="design_navigation_padding_bottom" tools:override="true">0dp</dimen>
+
+
+    <dimen name="line_height">1dp</dimen>
+    <dimen name="user_info_icon_size">24dp</dimen>
+
 </resources>

@@ -2,6 +2,7 @@ package com.example.lsdchat.util;
 
 import android.content.Context;
 import android.os.Environment;
+import android.widget.ImageView;
 
 import com.example.lsdchat.App;
 import com.example.lsdchat.api.dialog.DialogService;
@@ -68,7 +69,9 @@ public class Utils {
         imageLoader.displayImage(url, imageView);
     }
 
-
+    public static void downloadImageToView(String url, ImageView imageView){
+        imageLoader.displayImage(url, imageView);
+    }
 
     public static Observable<File> downloadImage(long blobId, String token) {
         DialogService mDialogService = App.getApiManager().getDialogService();

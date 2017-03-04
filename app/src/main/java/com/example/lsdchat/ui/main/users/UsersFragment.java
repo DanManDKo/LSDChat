@@ -2,6 +2,7 @@ package com.example.lsdchat.ui.main.users;
 
 
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -51,7 +52,7 @@ public class UsersFragment extends BaseFragment implements UsersContract.View {
         mRealmRecyclerView = (RecyclerView) view.findViewById(R.id.realm_recycler_view);
         mToolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
         initToolbar(mToolbar, "Friends");
-
+        mToolbar.setNavigationOnClickListener(v -> getActivity().onBackPressed());
         mPresenter.getUserList();
 
         mRealmRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -87,9 +88,6 @@ public class UsersFragment extends BaseFragment implements UsersContract.View {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case android.R.id.home:
-                onBackPressed();
-                break;
             case R.id.sort_clear:
                 initAdapter(mPresenter.getUsersQuickList(ApiConstant.SORT_CREATE_AT));
                 break;
@@ -107,6 +105,8 @@ public class UsersFragment extends BaseFragment implements UsersContract.View {
         return false;
     }
 
-
-
+    @Override
+    public void navigateToInfoUser(Fragment fragment) {
+        getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragment, fragment).addToBackStack(null).commit();
+    }
 }
