@@ -3,10 +3,12 @@ package com.example.lsdchat.api.login.model;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
+
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
-public class LoginUser extends RealmObject {
+public class LoginUser extends RealmObject implements Serializable{
     @PrimaryKey
     @SerializedName("id")
     private Integer id;

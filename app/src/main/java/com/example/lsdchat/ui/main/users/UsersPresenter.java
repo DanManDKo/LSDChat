@@ -3,11 +3,13 @@ package com.example.lsdchat.ui.main.users;
 
 import android.support.v7.widget.SearchView;
 import android.util.Log;
+import android.widget.RelativeLayout;
 
 import com.example.lsdchat.api.dialog.model.ItemUser;
 import com.example.lsdchat.api.login.model.LoginUser;
 import com.example.lsdchat.constant.ApiConstant;
 import com.example.lsdchat.manager.SharedPreferencesManager;
+import com.example.lsdchat.ui.main.usersinfo.UserInfoFragment;
 import com.example.lsdchat.util.Utils;
 
 import java.util.ArrayList;
@@ -124,6 +126,12 @@ public class UsersPresenter implements UsersContract.Presenter {
         return filterList;
     }
 
+    @Override
+    public void setOnClickListenerRl(RelativeLayout relativeLayout,LoginUser loginUser) {
+        relativeLayout.setOnClickListener(v -> {
+            mView.navigateToInfoUser(new UserInfoFragment().newInstance(loginUser));
+        });
+    }
 
     @Override
     public List<LoginUser> getUsersQuickList(String sort) {
