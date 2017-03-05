@@ -66,6 +66,10 @@ public class DataManager {
         }
 
     }
+    public List<LoginUser> getUsersQuickList() {
+        return mRealm.where(LoginUser.class).findAll();
+    }
+
 
     public RealmResults<LoginUser> getUsersQuick() {
         return mRealm.where(LoginUser.class).findAll();

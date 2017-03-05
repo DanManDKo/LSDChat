@@ -1,6 +1,7 @@
 package com.example.lsdchat.ui.main.users;
 
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
@@ -40,7 +41,6 @@ public class UsersFragment extends BaseFragment implements UsersContract.View {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-
     }
 
     @Override
@@ -57,6 +57,7 @@ public class UsersFragment extends BaseFragment implements UsersContract.View {
 
         mRealmRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         initAdapter(mPresenter.getUsersQuickList(ApiConstant.SORT_CREATE_AT));
+
         return view;
     }
 
@@ -68,6 +69,15 @@ public class UsersFragment extends BaseFragment implements UsersContract.View {
         mUsersRvAdapter.notifyDataSetChanged();
     }
 
+    @Override
+    public void updateAdapter() {
+        mUsersRvAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public Context getContext() {
+        return getActivity();
+    }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {

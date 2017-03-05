@@ -75,7 +75,7 @@
         - a user tries to authorise with wrong login and password\n
         - a user uses invalid session token</string>
     <string name="error.code.403">Access has been refused. Possible causes:\n
-        - a user tries to retrieve chat messages for chat dialog he is not in occupants list.</string>
+        - a user tries to retrieve chat messages for chat dialog he is not in occupants mList.</string>
     <string name="error.code.404">The requested resource could not be found. Possible causes:\n
         - a user tries to retrieve chat messages for invalid chat dialog id.\n
         - a user tries to retrieve a custom object record with invalid id.</string>
@@ -103,7 +103,7 @@
     <string name="chat_select_members">Select members</string>
     <string name="chat_button_create">Create</string>
     <string name="chat_error_name">Enter name chat</string>
-    <string name="chat_error_users">Select users from list</string>
+    <string name="chat_error_users">Select users from mList</string>
     <string name="chat_error_type">Select type dialog (public or private)</string>
 
     <!-- TODO: Remove or change this placeholder text -->

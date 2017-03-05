@@ -60,6 +60,7 @@ public class SplashScreenPresenter implements SplashContract.Presenter {
 
         if (isLogged()) {
             requestSessionAndLogin(mUser.getEmail(), mUser.getPassword());
+
             mNavigateToMain = true;
         }
     }

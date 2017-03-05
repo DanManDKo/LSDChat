@@ -39,7 +39,7 @@ public class UsersRvAdapter extends RecyclerView.Adapter<UsersRvAdapter.ViewHold
     public void onBindViewHolder(ViewHolder viewHolder, int i) {
         LoginUser userQuick = data.get(i);
 
-        presenter.setImageView(viewHolder.mImageView,userQuick.getBlobId());
+        presenter.setImageView(viewHolder.mImageView,userQuick);
 
         viewHolder.mName.setText(userQuick.getFullName());
         presenter.setOnClickListenerRl(viewHolder.mRlUser,userQuick);

@@ -53,9 +53,9 @@ public class CreateChatFragment extends BaseFragment implements CreateChatContra
         View view = inflater.inflate(R.layout.fragment_new_chat,container,false);
         mCreateChatPresenter = new CreateChatPresenter(this, App.getSharedPreferencesManager(getActivity()));
 
-
         initView(view);
-        initAdapter();
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
+        mRvSelectMembers.setLayoutManager(mLayoutManager);
 
         mCreateChatPresenter.getContactsModel();
         mCreateChatPresenter.setOnCheckedChangeListener(mRbPrivacy);
@@ -68,11 +68,11 @@ public class CreateChatFragment extends BaseFragment implements CreateChatContra
     }
 
     @Override
-    public void initAdapter() {
-        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
-        mRvSelectMembers.setLayoutManager(mLayoutManager);
-        mCreateChatRvAdapter = new CreateChatRvAdapter(mCreateChatPresenter);
+    public void initAdapter(List<ContactsModel> list) {
+
+        mCreateChatRvAdapter = new CreateChatRvAdapter(list,mCreateChatPresenter);
         mRvSelectMembers.setAdapter(mCreateChatRvAdapter);
+        mCreateChatRvAdapter.notifyDataSetChanged();
 
     }
 

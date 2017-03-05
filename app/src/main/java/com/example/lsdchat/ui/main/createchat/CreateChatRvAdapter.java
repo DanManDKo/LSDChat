@@ -1,9 +1,7 @@
 package com.example.lsdchat.ui.main.createchat;
 
 
-import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,28 +10,25 @@ import android.widget.TextView;
 
 import com.example.lsdchat.R;
 import com.example.lsdchat.model.ContactsModel;
-import com.facebook.drawee.view.SimpleDraweeView;
 
-import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 
 public class CreateChatRvAdapter extends RecyclerView.Adapter<CreateChatRvAdapter.ViewHolder> {
 
-    private List<ContactsModel> list;
-    private Map<String, Boolean> mapChecked;
+    private List<ContactsModel> mList;
     private CreateChatContract.Presenter mPresenter;
 
-    public CreateChatRvAdapter(CreateChatContract.Presenter presenter) {
-        list = new ArrayList<>();
+    public CreateChatRvAdapter(List<ContactsModel> mList, CreateChatContract.Presenter presenter) {
+        this.mList = mList;
         this.mPresenter = presenter;
 
     }
 
     public void add(ContactsModel contactsModel) {
-        list.add(contactsModel);
+        mList.add(contactsModel);
     }
 
     @Override
@@ -46,14 +41,11 @@ public class CreateChatRvAdapter extends RecyclerView.Adapter<CreateChatRvAdapte
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        ContactsModel user = list.get(position);
-        holder.mName.setText(user.getName() + "/" + user.getEmail());
+        ContactsModel user = mList.get(position);
+        holder.mName.setText(user.getName());
 
-        if (user.getUri() != null) {
-            Log.e("URI", user.getUri());
-            holder.mImageView.setImageURI(Uri.fromFile(new File(user.getUri())));
-        }
 
+        mPresenter.setImageViewUser(holder.mImageView,user);
         mPresenter.setOnCheckedChangeListener(holder.mCheckBox,holder.mName,user);
 
 
@@ -62,20 +54,20 @@ public class CreateChatRvAdapter extends RecyclerView.Adapter<CreateChatRvAdapte
 
     @Override
     public int getItemCount() {
-        return list.size();
+        return mList.size();
     }
 
 
     class ViewHolder extends RecyclerView.ViewHolder {
 
-        SimpleDraweeView mImageView;
+        CircleImageView mImageView;
         TextView mName;
         CheckBox mCheckBox;
 
 
         ViewHolder(View itemView) {
             super(itemView);
-            mImageView = (SimpleDraweeView) itemView.findViewById(R.id.new_chat_member_image);
+            mImageView = (CircleImageView) itemView.findViewById(R.id.new_chat_member_image);
             mName = (TextView) itemView.findViewById(R.id.new_chat_member_name);
             mCheckBox = (CheckBox) itemView.findViewById(R.id.new_chat_member_checkbox);
 
