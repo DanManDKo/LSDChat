@@ -1,31 +1,38 @@
-package com.example.lsdchat.ui.main.dialogs;
+package com.example.lsdchat.ui.main.chats;
 
 
 import android.net.Uri;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.widget.TextView;
 
 import com.example.lsdchat.R;
+import com.example.lsdchat.constant.ApiConstant;
 import com.example.lsdchat.manager.SharedPreferencesManager;
+import com.example.lsdchat.model.DialogModel;
 import com.example.lsdchat.model.User;
+import com.example.lsdchat.ui.main.chats.dialogs.DialogsFragment;
 import com.example.lsdchat.util.Utils;
 import com.facebook.common.util.UriUtil;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import rx.Observable;
 
-public class DialogsPresenter implements DialogsContract.Presenter {
-    private DialogsContract.View mView;
-    private DialogsContract.Model mModel;
+public class ChatsPresenter implements ChatsContract.Presenter {
+    private ChatsContract.View mView;
+    private ChatsContract.Model mModel;
     private SharedPreferencesManager mSharedPreferencesManager;
     private User mUser;
 
 
-    public DialogsPresenter(DialogsContract.View mView, SharedPreferencesManager sharedPreferencesManager) {
+    public ChatsPresenter(ChatsContract.View mView, SharedPreferencesManager sharedPreferencesManager) {
         this.mView = mView;
-        mModel = new DialogsModel();
+        mModel = new ChatsModel();
         this.mSharedPreferencesManager = sharedPreferencesManager;
         mUser = mModel.getCurrentUser();
 
@@ -89,7 +96,7 @@ public class DialogsPresenter implements DialogsContract.Presenter {
                 .flatMap(contentResponse -> Observable.just(contentResponse.getItemContent().getImageUrl()))
                 .subscribe(imageUrl -> {
 //                    imageView.setImageURI(Uri.parse(imageUrl));
-                    Utils.downloadImageToView(imageUrl,imageView);
+                    Utils.downloadImageToView(imageUrl, imageView);
                 }, throwable -> {
                     Log.e("IMAGE-error", throwable.getMessage());
                 });
@@ -104,6 +111,15 @@ public class DialogsPresenter implements DialogsContract.Presenter {
     }
 
     @Override
+    public List<Fragment> setFragmentList() {
+        List<Fragment> list = new ArrayList<>();
+        list.add(new DialogsFragment().newInstance(ApiConstant.TYPE_DIALOG_PUBLIC));
+        list.add(new DialogsFragment().newInstance(ApiConstant.TYPE_DIALOG_GROUP));
+
+        return list;
+    }
+
+    @Override
     public void destroySession() {
 
         mModel.destroySession(mSharedPreferencesManager.getToken())
@@ -112,6 +128,24 @@ public class DialogsPresenter implements DialogsContract.Presenter {
                     mView.logOut();
                 }, throwable -> {
                     mView.showMessageError(throwable);
+                });
+
+    }
+
+    @Override
+    public void getAllDialogAndSave() {
+        List<DialogModel> list = new ArrayList<>();
+        mModel.getAllDialogs(mSharedPreferencesManager.getToken())
+                .flatMap(dialogsResponse -> Observable.just(dialogsResponse.getItemDialogList()))
+                .subscribe(dialogList -> {
+
+                    Observable.from(dialogList)
+                            .subscribe(dialog -> list.add(new DialogModel(dialog)));
+
+                    mModel.saveDialog(list);
+
+                }, throwable -> {
+                    Log.e("getAllDialogAndSave", throwable.getMessage());
                 });
 
     }

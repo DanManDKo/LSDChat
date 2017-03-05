@@ -7,7 +7,7 @@ import android.widget.FrameLayout;
 
 import com.example.lsdchat.R;
 import com.example.lsdchat.manager.SharedPreferencesManager;
-import com.example.lsdchat.ui.main.dialogs.DialogsFragment;
+import com.example.lsdchat.ui.main.chats.ChatsFragment;
 import com.example.lsdchat.ui.main.fragment.BaseFragment;
 import com.example.lsdchat.util.UsersUtil;
 
@@ -24,9 +24,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         mFrameLayout = (FrameLayout) findViewById(R.id.fragment);
 
+//        get user list and save to db
         UsersUtil.getUserListAndSave(new SharedPreferencesManager(this).getToken());
 
-        replaceFragment(new DialogsFragment());
+        replaceFragment(new ChatsFragment());
     }
 
 
