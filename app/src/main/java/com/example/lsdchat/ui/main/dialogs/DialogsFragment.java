@@ -19,7 +19,7 @@ import android.widget.TextView;
 
 import com.example.lsdchat.App;
 import com.example.lsdchat.R;
-import com.example.lsdchat.ui.dialog.CreateChatActivity;
+import com.example.lsdchat.ui.main.createchat.CreateChatFragment;
 import com.example.lsdchat.ui.login.LoginActivity;
 import com.example.lsdchat.ui.main.fragment.BaseFragment;
 import com.example.lsdchat.ui.main.users.UsersFragment;
@@ -73,7 +73,7 @@ public class DialogsFragment extends BaseFragment implements DialogsContract.Vie
 
     @Override
     public void startNewChat() {
-        startActivity(new Intent(getActivity(), CreateChatActivity.class));
+        replaceFragment(new CreateChatFragment());
     }
 
 

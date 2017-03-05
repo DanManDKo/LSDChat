@@ -1,4 +1,4 @@
-package com.example.lsdchat.ui.dialog;
+package com.example.lsdchat.ui.main.createchat;
 
 import android.content.Context;
 import android.content.Intent;
@@ -6,10 +6,12 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -19,12 +21,13 @@ import android.widget.RadioGroup;
 import com.example.lsdchat.App;
 import com.example.lsdchat.R;
 import com.example.lsdchat.model.ContactsModel;
+import com.example.lsdchat.ui.main.fragment.BaseFragment;
 import com.example.lsdchat.util.ErrorsCode;
 import com.facebook.drawee.view.SimpleDraweeView;
 
 import java.util.List;
 
-public class CreateChatActivity extends AppCompatActivity implements CreateChatContract.View {
+public class CreateChatFragment extends BaseFragment implements CreateChatContract.View {
 
     private EditText mNameChat;
     private TextInputLayout mIlName;
@@ -37,17 +40,21 @@ public class CreateChatActivity extends AppCompatActivity implements CreateChatC
     private RadioGroup mRbPrivacy;
     private CreateChatRvAdapter mCreateChatRvAdapter;
     private LinearLayout mLlSelectMembers;
-
+    private Toolbar mToolbar;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
 
-        mCreateChatPresenter = new CreateChatPresenter(this, App.getSharedPreferencesManager(this));
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_new_chat,container,false);
+        mCreateChatPresenter = new CreateChatPresenter(this, App.getSharedPreferencesManager(getActivity()));
 
-        setContentView(R.layout.fragment_new_chat);
 
-        initView();
+        initView(view);
         initAdapter();
 
         mCreateChatPresenter.getContactsModel();
@@ -56,11 +63,13 @@ public class CreateChatActivity extends AppCompatActivity implements CreateChatC
 
         mCreateChatPresenter.btnCreateClick(mBtnCreate, mNameChat);
         mCreateChatPresenter.btnImageClick(mImageView);
+
+        return view;
     }
 
     @Override
     public void initAdapter() {
-        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this);
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
         mRvSelectMembers.setLayoutManager(mLayoutManager);
         mCreateChatRvAdapter = new CreateChatRvAdapter(mCreateChatPresenter);
         mRvSelectMembers.setAdapter(mCreateChatRvAdapter);
@@ -85,16 +94,20 @@ public class CreateChatActivity extends AppCompatActivity implements CreateChatC
         }
     }
 
-    private void initView() {
-        mNameChat = (EditText) findViewById(R.id.input_chat_name);
-        mIlName = (TextInputLayout) findViewById(R.id.input_layout_chat_name);
-        mRbPublic = (RadioButton) findViewById(R.id.radio_public);
-        mRbPrivate = (RadioButton) findViewById(R.id.radio_private);
-        mRbPrivacy = (RadioGroup) findViewById(R.id.new_chat_privacy_container);
-        mRvSelectMembers = (RecyclerView) findViewById(R.id.new_chat_members_container);
-        mBtnCreate = (Button) findViewById(R.id.new_chat_button_create);
-        mImageView = (SimpleDraweeView) findViewById(R.id.iv_user_reg);
-        mLlSelectMembers = (LinearLayout) findViewById(R.id.ll_select_members);
+    private void initView(View view) {
+        mToolbar = (Toolbar) view.findViewById(R.id.chats_toolbar);
+        mNameChat = (EditText) view.findViewById(R.id.input_chat_name);
+        mIlName = (TextInputLayout) view.findViewById(R.id.input_layout_chat_name);
+        mRbPublic = (RadioButton) view.findViewById(R.id.radio_public);
+        mRbPrivate = (RadioButton) view.findViewById(R.id.radio_private);
+        mRbPrivacy = (RadioGroup) view.findViewById(R.id.new_chat_privacy_container);
+        mRvSelectMembers = (RecyclerView) view.findViewById(R.id.new_chat_members_container);
+        mBtnCreate = (Button) view.findViewById(R.id.new_chat_button_create);
+        mImageView = (SimpleDraweeView) view.findViewById(R.id.iv_user_reg);
+        mLlSelectMembers = (LinearLayout) view.findViewById(R.id.ll_select_members);
+
+        initToolbar(mToolbar,"New Chat");
+        mToolbar.setNavigationOnClickListener(v -> getActivity().onBackPressed());
     }
 
     @Override
@@ -146,20 +159,22 @@ public class CreateChatActivity extends AppCompatActivity implements CreateChatC
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         mCreateChatPresenter.onActivityResult(requestCode, resultCode, data);
     }
 
+
+
     @Override
-    protected void onDestroy() {
+    public void onDestroy() {
         super.onDestroy();
         mCreateChatPresenter.onDestroy();
     }
 
     @Override
     public void showDialogImageSourceChooser() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this)
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity())
                 .setTitle(getString(R.string.add_photo))
                 .setPositiveButton(getString(R.string.photo_gallery), (dialogInterface, i) -> {
                     mCreateChatPresenter.getPhotoFromGallery();
@@ -172,11 +187,11 @@ public class CreateChatActivity extends AppCompatActivity implements CreateChatC
 
     @Override
     public Context getContext() {
-        return this;
+        return getActivity();
     }
 
     @Override
     public void showErrorDialog(String message) {
-        ErrorsCode.showErrorDialog(this, message);
+        ErrorsCode.showErrorDialog(getActivity(), message);
     }
 }

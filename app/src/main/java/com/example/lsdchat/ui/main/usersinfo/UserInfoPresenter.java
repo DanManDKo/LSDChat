@@ -59,7 +59,7 @@ public class UserInfoPresenter implements UserInfoContract.Presenter {
     public void setOnClickListenerRlWeb(RelativeLayout rlWeb, String web) {
         rlWeb.setOnClickListener(v -> {
             if (web != null && !web.isEmpty()) {
-                mView.navigateDial(web);
+                mView.navigateWeb(web);
             }
         });
     }
