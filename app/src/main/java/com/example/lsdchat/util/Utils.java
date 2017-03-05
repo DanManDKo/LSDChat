@@ -90,7 +90,6 @@ public class Utils {
                 String fileName = String.valueOf(blobId) + ".jpg";
                 File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getAbsoluteFile(), fileName);
                 BufferedSink sink = Okio.buffer(Okio.sink(file));
-
                 sink.writeAll(response.body().source());
                 sink.close();
                 subscriber.onNext(file);

@@ -19,13 +19,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.lsdchat.R;
-import com.example.lsdchat.api.dialog.model.ItemUser;
 import com.example.lsdchat.api.dialog.request.CreateDialogRequest;
 import com.example.lsdchat.constant.ApiConstant;
 import com.example.lsdchat.manager.SharedPreferencesManager;
 import com.example.lsdchat.model.ContactsModel;
 import com.example.lsdchat.util.CreateMapRequestBody;
 import com.example.lsdchat.util.StorageHelper;
+import com.example.lsdchat.util.UsersUtil;
+import com.example.lsdchat.util.Utils;
 import com.facebook.drawee.view.SimpleDraweeView;
 
 import java.io.File;
@@ -37,9 +38,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import de.hdodenhof.circleimageview.CircleImageView;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
+import rx.Observable;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -294,56 +297,16 @@ public class CreateChatPresenter implements CreateChatContract.Presenter {
 
     @Override
     public void getContactsModel() {
-
-        mModel.getUserList(getToken())
-                .subscribe(userListResponse -> {
-                    List<ItemUser> loginResponses = userListResponse.getItemUserList();
-
-
-                    getFileImage(loginResponses);
-
-                }, throwable -> {
-                    Log.e("getUserList", throwable.getMessage());
-                });
-
-
-    }
-
-
-    private void getFileImage(List<ItemUser> loginResponses) {
-
         List<ContactsModel> contactsModelList = new ArrayList<>();
-
-        for (ItemUser user : loginResponses) {
-
-            if (user.getUser().getBlobId() != 0) {
-                long id = user.getUser().getBlobId();
-                mModel.downloadImage(id, getToken())
-                        .subscribe(file -> {
-                            Log.e("getUserList", "FILE OK");
-                            List<ContactsModel> contactsModelList1 = new ArrayList<>();
-                            contactsModelList1.add(new ContactsModel(user.getUser().getFullName(),
-                                    user.getUser().getEmail(), file.getPath(), user.getUser().getId()));
-                            mView.addModel(contactsModelList1);
-                        }, throwable -> {
-                            Log.e("getFileImage", throwable.getMessage());
-
-                        });
+        Observable.from(UsersUtil.getAllUser())
+                .subscribe(loginUser -> contactsModelList.add(new ContactsModel(loginUser.getFullName(),
+                        loginUser.getEmail(), loginUser.getId(), loginUser.getBlobId())));
 
 
-            } else {
-                contactsModelList.add(new ContactsModel(user.getUser().getFullName(),
-                        user.getUser().getEmail(), user.getUser().getId()));
-
-            }
-
-
-        }
-
-        mView.addModel(contactsModelList);
-
-
+        mView.initAdapter(contactsModelList);
     }
+
+
 
     @Override
     public void setOnCheckedChangeListener(RadioGroup radioGroup) {
@@ -396,5 +359,18 @@ public class CreateChatPresenter implements CreateChatContract.Presenter {
         );
 
 
+    }
+
+
+    @Override
+    public void setImageViewUser(CircleImageView imageView, ContactsModel user) {
+        if (user.getBlobId() != 0) {
+            Utils.downloadContent(user.getBlobId(), getToken())
+                    .flatMap(contentResponse -> Observable.just(contentResponse.getItemContent().getImageUrl()))
+                    .subscribe(imageUrl -> Utils.downloadImageToView(imageUrl, imageView), throwable -> {
+                        Log.e("IMAGE-error", throwable.getMessage());
+                    });
+
+        }
     }
 }

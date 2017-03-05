@@ -42,12 +42,12 @@ public class UsersPresenter implements UsersContract.Presenter {
         mModel.getUserList(getToken())
                 .subscribe(userListResponse -> {
                     List<ItemUser> itemUsers = userListResponse.getItemUserList();
-
                     if (userListResponse.getTotalEntries() < (mModel.getUsersQuick().size() + 2)) {
                         mModel.deleteAllUSerQiuck();
-                        getU(itemUsers);
-                    } else
-                        getU(itemUsers);
+                        saveUserToDb(itemUsers);
+                    } else {
+                        saveUserToDb(itemUsers);
+                    }
 
                 }, throwable -> {
 
@@ -57,27 +57,19 @@ public class UsersPresenter implements UsersContract.Presenter {
     }
 
 
-    private void getU(List<ItemUser> itemUsers) {
+    private void saveUserToDb(List<ItemUser> itemUsers) {
         Observable.from(itemUsers)
                 .flatMap(user -> Observable.just(user.getUser()))
-                .subscribe(loginUser -> {
-
-                    mModel.insetUsersQuick(loginUser);
-
-                }, throwable -> {
-                    Log.e("getUserList-error", throwable.getMessage());
-                });
+                .subscribe(loginUser -> mModel.insetUsersQuick(loginUser));
     }
 
 
     @Override
-    public void setImageView(CircleImageView imageView, long blobId) {
-        if (blobId != 0) {
-            Utils.downloadContent(blobId, getToken())
+    public void setImageView(CircleImageView imageView, LoginUser loginUser) {
+        if (loginUser.getBlobId() != 0) {
+            Utils.downloadContent(loginUser.getBlobId(), getToken())
                     .flatMap(contentResponse -> Observable.just(contentResponse.getItemContent().getImageUrl()))
-                    .subscribe(imageUrl -> {
-                        Utils.downloadImageToView(imageUrl,imageView);
-                    }, throwable -> {
+                    .subscribe(imageUrl -> Utils.downloadImageToView(imageUrl, imageView), throwable -> {
                         Log.e("IMAGE-error", throwable.getMessage());
                     });
 
@@ -128,7 +120,7 @@ public class UsersPresenter implements UsersContract.Presenter {
     }
 
     @Override
-    public void setOnClickListenerRl(RelativeLayout relativeLayout,LoginUser loginUser) {
+    public void setOnClickListenerRl(RelativeLayout relativeLayout, LoginUser loginUser) {
         relativeLayout.setOnClickListener(v -> {
             mView.navigateToInfoUser(new UserInfoFragment().newInstance(loginUser));
         });

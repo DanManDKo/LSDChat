@@ -5,13 +5,15 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="4dp">
-    <com.facebook.drawee.view.SimpleDraweeView
+
+    <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/new_chat_member_image"
         android:layout_width="@dimen/usericon_size"
         android:layout_height="@dimen/usericon_size"
         android:scaleType="centerCrop"
-        fresco:placeholderImage="@drawable/userpic_group"
-        fresco:roundAsCircle="true"/>
+        android:src="@drawable/userpic"
+        />
+
     <TextView
         android:id="@+id/new_chat_member_name"
         android:layout_width="wrap_content"

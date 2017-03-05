@@ -72,7 +72,7 @@ public class UserInfoFragment extends BaseFragment implements UserInfoContract.V
         mWebsite.setText(mLoginUser.getWebsite());
         mPresenter.setImageView(mImageUser, mLoginUser.getBlobId());
 
-        onClick();
+            onClick();
 
 
         return view;

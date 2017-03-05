@@ -21,6 +21,7 @@ import java.io.File;
 import java.util.List;
 import java.util.Map;
 
+import de.hdodenhof.circleimageview.CircleImageView;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
@@ -51,7 +52,7 @@ public interface CreateChatContract {
 
         String getChatName();
 
-        void initAdapter();
+        void initAdapter(List<ContactsModel> list);
 
         void addModel(List<ContactsModel> list);
     }
@@ -79,6 +80,8 @@ public interface CreateChatContract {
 
         void setOnCheckedChangeListener(CheckBox checkBox, TextView textView,ContactsModel model);
 
+
+        void setImageViewUser(CircleImageView imageView,ContactsModel user);
     }
 
     interface Model {

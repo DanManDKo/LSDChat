@@ -8,6 +8,7 @@
     android:id="@+id/rl_user"
     >
 
+
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/users_image"
         android:layout_width="@dimen/usericon_size"
@@ -23,7 +24,6 @@
         android:layout_centerVertical="true"
         android:layout_marginStart="12dp"
         android:layout_toEndOf="@id/users_image"
-        android:text="Name"
         android:textColor="@color/colorNewChatText" />
 
 </RelativeLayout>
