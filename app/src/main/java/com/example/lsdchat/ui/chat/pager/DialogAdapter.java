@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import com.example.lsdchat.R;
 import com.example.lsdchat.api.dialog.model.ItemDialog;
+import com.example.lsdchat.manager.model.RealmItemDialog;
 import com.facebook.drawee.view.SimpleDraweeView;
 
 import java.util.List;
@@ -18,15 +19,15 @@ import java.util.List;
  */
 
 public class DialogAdapter extends RecyclerView.Adapter<DialogAdapter.ViewHolder> {
-    private List<ItemDialog> mItems;
+    private List<RealmItemDialog> mItems;
 
-    public DialogAdapter(@NonNull List<ItemDialog> items) {
+    public DialogAdapter(@NonNull List<RealmItemDialog> items) {
         mItems = items;
     }
 
 
 
-    public void addItems(List<ItemDialog> items) {
+    public void addItems(List<RealmItemDialog> items) {
         if (mItems != null)
             mItems.addAll(items);
     }
@@ -39,7 +40,7 @@ public class DialogAdapter extends RecyclerView.Adapter<DialogAdapter.ViewHolder
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        ItemDialog itemDialog = mItems.get(position);
+        RealmItemDialog itemDialog = mItems.get(position);
         holder.mNewMessageCounter.setText(itemDialog.getUnreadMessagesCount().toString());
 //        holder.mDialogImage.setImageURI(itemDialog.get);
         holder.mChatName.setText(itemDialog.getName());

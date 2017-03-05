@@ -8,7 +8,6 @@ import android.support.test.espresso.intent.Intents;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 
-import com.example.lsdchat.ui.chat.ChatActivity;
 import com.example.lsdchat.ui.login.LoginActivity;
 
 import org.junit.BeforeClass;

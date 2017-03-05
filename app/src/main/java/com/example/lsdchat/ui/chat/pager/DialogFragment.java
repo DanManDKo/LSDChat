@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 
 import com.example.lsdchat.App;
 import com.example.lsdchat.R;
-import com.example.lsdchat.api.dialog.model.ItemDialog;
+import com.example.lsdchat.manager.model.RealmItemDialog;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +29,7 @@ public class DialogFragment extends Fragment implements DialogContract.View {
     private int userId;
     private RecyclerView mRecyclerView;
     private DialogAdapter mDialogAdapter;
-    private List<ItemDialog> mItemDialogs = new ArrayList<>();
+    private List<RealmItemDialog> mItemDialogs = new ArrayList<>();
 
     public static DialogFragment newInstance(int type, ArrayList<Integer> userIds) {
         Bundle args = new Bundle();
@@ -39,6 +39,7 @@ public class DialogFragment extends Fragment implements DialogContract.View {
         fragment.setArguments(args);
         return fragment;
     }
+
     public static DialogFragment newInstance(int type, int userId) {
         Bundle args = new Bundle();
         args.putInt(TYPE, type);
@@ -47,13 +48,15 @@ public class DialogFragment extends Fragment implements DialogContract.View {
         fragment.setArguments(args);
         return fragment;
     }
+
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.viewpager_pagefragment_rootlayout, container, false);
         initView(view);
         mType = getArguments().getInt(TYPE);
         userIds = getArguments().getIntegerArrayList(USER_IDS);
         mPresenter = new DialogPresenter(this, userIds, App.getSharedPreferencesManager());
-        mPresenter.getAllDialogs();
+        mPresenter.getAllDialogsAndSave();
+//        mPresenter.getDialogs(mType);
 
         return view;
     }
@@ -71,12 +74,13 @@ public class DialogFragment extends Fragment implements DialogContract.View {
     }
 
     @Override
-    public void onDialoguesLoaded(List<ItemDialog> dialogs) {
+    public void onDialoguesLoaded(List<RealmItemDialog> dialogs) {
         mItemDialogs = dialogs;
         mDialogAdapter = new DialogAdapter(mItemDialogs);
         mRecyclerView.setAdapter(mDialogAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
     }
+
 
     @Override
     public int getType() {

@@ -1,8 +1,12 @@
 package com.example.lsdchat.ui.chat.pager;
 
 
+import android.util.Log;
+
+import com.example.lsdchat.App;
 import com.example.lsdchat.api.dialog.model.ItemDialog;
 import com.example.lsdchat.manager.SharedPreferencesManager;
+import com.example.lsdchat.manager.model.RealmItemDialog;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,28 +17,39 @@ import java.util.List;
  */
 
 public class DialogPresenter implements DialogContract.Presenter {
-    private List<ItemDialog> mItemDialogs;
+    private List<RealmItemDialog> mItemDialogs;
     private DialogContract.View mView;
     private DialogContract.Model mModel;
     private SharedPreferencesManager mSharedPreferencesManager;
 
     public DialogPresenter(DialogContract.View view, ArrayList<Integer> userIds, SharedPreferencesManager sharedPreferencesManager) {
         mView = view;
-        mModel = new DialogModel(this, userIds);
+        mModel = new DialogModel(this, userIds, App.getDataManager(), App.getApiManager());
         mSharedPreferencesManager = sharedPreferencesManager;
     }
 
+
     @Override
-    public List<ItemDialog> getAllDialogs() {
+    public void getAllDialogsAndSave() {
         mModel.getAllDialogs(getToken())
                 .subscribe(dialogsResponse -> {
-                    mView.onDialoguesLoaded(mItemDialogs = dialogsResponse.getItemDialogList());
+                    List<ItemDialog> itemDialogs = dialogsResponse.getItemDialogList();
+                    mItemDialogs = copyToRealmItemDialog(itemDialogs);
+                    if (mModel.saveDialogsToDb(mItemDialogs)) ;
+                    mView.onDialoguesLoaded(mModel.getDialogByType(mView.getType()));
                 }, throwable -> {
-
+                    Log.d("tag", throwable.getMessage());
                 });
 
 
-        return mItemDialogs;
+    }
+
+    private List<RealmItemDialog> copyToRealmItemDialog(List<ItemDialog> dialogs) {
+        List<RealmItemDialog> realmDialogs = new ArrayList<>();
+        for (ItemDialog d : dialogs) {
+            realmDialogs.add(new RealmItemDialog(d));
+        }
+        return realmDialogs;
     }
 
     @Override

@@ -1,37 +1,51 @@
-package com.example.lsdchat.api.dialog.model;
+package com.example.lsdchat.manager.model;
 
-import com.google.gson.annotations.SerializedName;
+import com.example.lsdchat.api.dialog.model.ItemDialog;
 
-import java.util.List;
-
+import io.realm.RealmList;
 import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 
+/**
+ * Created by User on 05.03.2017.
+ */
 
-public class ItemDialog {
-    @SerializedName("_id")
+public class RealmItemDialog extends RealmObject {
+    @PrimaryKey
     private String id;
-    @SerializedName("created_at")
     private String createdAt;
-    @SerializedName("updated_at")
     private String updatedAt;
-    @SerializedName("last_message")
     private String lastMessage;
-    @SerializedName("last_message_date_sent")
     private String lastMessageDateSent;
-    @SerializedName("last_message_user_id")
     private Integer lastMessageUserId;
-    @SerializedName("name")
     private String name;
-    @SerializedName("photo")
     private String photo;
-    @SerializedName("occupants_ids")
-    private List<Integer> occupantsIdsList;
-    @SerializedName("type")
+    private RealmList<RealmInteger> occupantsIdsList;
     private Integer type;
-    @SerializedName("unread_messages_count")
     private Integer unreadMessagesCount;
-    @SerializedName("xmpp_room_jid")
     private String xmppRoomJid;
+
+    public RealmItemDialog() {
+    }
+
+    public RealmItemDialog(ItemDialog itemDialog) {
+        id = itemDialog.getId();
+        createdAt = itemDialog.getCreatedAt();
+        updatedAt = itemDialog.getUpdatedAt();
+        lastMessage = itemDialog.getLastMessage();
+        lastMessageDateSent = itemDialog.getLastMessageDateSent();
+        lastMessageUserId = itemDialog.getLastMessageUserId();
+        name = itemDialog.getName();
+        photo = itemDialog.getPhoto();
+        occupantsIdsList = new RealmList<>();
+        for (Integer i : itemDialog.getOccupantsIdsList()) {
+            occupantsIdsList.add(new RealmInteger(i));
+        }
+        type = itemDialog.getType();
+        unreadMessagesCount = itemDialog.getUnreadMessagesCount();
+        xmppRoomJid = itemDialog.getXmppRoomJid();
+
+    }
 
     public String getId() {
         return id;
@@ -97,11 +111,11 @@ public class ItemDialog {
         this.photo = photo;
     }
 
-    public List<Integer> getOccupantsIdsList() {
+    public RealmList<RealmInteger> getOccupantsIdsList() {
         return occupantsIdsList;
     }
 
-    public void setOccupantsIdsList(List<Integer> occupantsIdsList) {
+    public void setOccupantsIdsList(RealmList<RealmInteger> occupantsIdsList) {
         this.occupantsIdsList = occupantsIdsList;
     }
 
