@@ -2,6 +2,7 @@ package com.example.lsdchat.manager;
 
 import com.example.lsdchat.api.login.model.LoginUser;
 import com.example.lsdchat.constant.ApiConstant;
+import com.example.lsdchat.model.DialogModel;
 import com.example.lsdchat.model.User;
 import com.example.lsdchat.model.UserQuick;
 
@@ -66,6 +67,7 @@ public class DataManager {
         }
 
     }
+
     public List<LoginUser> getUsersQuickList() {
         return mRealm.where(LoginUser.class).findAll();
     }
@@ -82,6 +84,15 @@ public class DataManager {
         if (!realmResults.isEmpty()) {
             mRealm.executeTransaction(realm -> realm.deleteAll());
         }
+    }
+
+
+    public void insertDialogToDB(DialogModel dialog) {
+        mRealm.executeTransaction(realm -> realm.copyToRealmOrUpdate(dialog));
+    }
+
+    public List<DialogModel> getDialogsByType(int type) {
+        return mRealm.where(DialogModel.class).equalTo("type", type).findAll();
     }
 
 
