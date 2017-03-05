@@ -50,6 +50,7 @@ public class UsersPresenter implements UsersContract.Presenter {
                         getU(itemUsers);
 
                 }, throwable -> {
+
                     Log.e("getUserList-error", throwable.getMessage());
                 });
 

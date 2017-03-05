@@ -1,4 +1,4 @@
-package com.example.lsdchat.ui.dialog;
+package com.example.lsdchat.ui.main.createchat;
 
 
 import android.os.Environment;

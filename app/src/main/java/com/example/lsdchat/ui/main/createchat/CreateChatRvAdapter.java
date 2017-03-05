@@ -1,8 +1,6 @@
-package com.example.lsdchat.ui.dialog;
+package com.example.lsdchat.ui.main.createchat;
 
 
-import android.content.Context;
-import android.graphics.Color;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -15,11 +13,9 @@ import android.widget.TextView;
 import com.example.lsdchat.R;
 import com.example.lsdchat.model.ContactsModel;
 import com.facebook.drawee.view.SimpleDraweeView;
-import com.facebook.imagepipeline.producers.LocalExifThumbnailProducer;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
