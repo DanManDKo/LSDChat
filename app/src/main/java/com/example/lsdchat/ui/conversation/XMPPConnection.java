@@ -8,28 +8,31 @@ import android.util.Log;
 
 import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.ConnectionListener;
+import org.jivesoftware.smack.MessageListener;
 import org.jivesoftware.smack.ReconnectionManager;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPConnection;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.DefaultExtensionElement;
+import org.jivesoftware.smack.packet.ExtensionElement;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
+import org.jivesoftware.smack.util.PacketParserUtils;
 import org.jivesoftware.smackx.muc.MultiUserChat;
 import org.jivesoftware.smackx.muc.MultiUserChatManager;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
 import java.util.Random;
 
-public class ConversationConnection implements ConnectionListener {
+public class XMPPConnection implements ConnectionListener {
     //back up with alpha dependence
     //http://pastebin.com/uewjWzYA
 
     //back up with multyChat
     //http://pastebin.com/fBEdcT3j
-
-    private static final String TAG = "ConversationConnection";
 
     private final Context mApplicationContext;
     private final String mUsername;
@@ -53,8 +56,8 @@ public class ConversationConnection implements ConnectionListener {
         LOGGED_IN, LOGGED_OUT;
     }
 
-    public ConversationConnection(Context context) {
-        Log.d(TAG, "RoosterConnection Constructor called.");
+    public XMPPConnection(Context context) {
+        Log.e("AAA", "RoosterConnection Constructor called.");
         mApplicationContext = context.getApplicationContext();
 
         /*There we have to retrieve user_id AND app_id AND password from DataBase
@@ -73,11 +76,10 @@ public class ConversationConnection implements ConnectionListener {
     }
 
     public void connect() throws IOException, XMPPException, SmackException {
-        Log.d(TAG, "Connecting to server " + mServiceName);
+        Log.e("AAA", "Connecting to server " + mServiceName);
         XMPPTCPConnectionConfiguration builder = XMPPTCPConnectionConfiguration.builder()
                 .setServiceName(mServiceName)
                 .setUsernameAndPassword(mUsername, mPassword)
-                .setPort(5222)
                 .setSecurityMode(ConnectionConfiguration.SecurityMode.disabled)
                 .build();
 
@@ -92,11 +94,55 @@ public class ConversationConnection implements ConnectionListener {
         manager = MultiUserChatManager.getInstanceFor(mConnection);
         muc = manager.getMultiUserChat(mucChat);
         muc.join(mConnection.getUser());
+        muc.addMessageListener(new MessageListener() {
+            @Override
+            public void processMessage(Message message) {
+                String contactJid = null;
+
+                String from = message.getFrom();
+                String messageID = getMessageID(message);
+
+                if (from.contains("/")) {
+                    contactJid = from.split("/")[1];
+                } else {
+                    contactJid = from;
+                }
+                Log.e("AAA", "The real jid is :" + contactJid);
+
+                //Bundle up the intent and send the broadcast.
+                Intent intent = new Intent(XMPPService.NEW_MESSAGE);
+                intent.putExtra(XMPPService.BUNDLE_FROM_JID, contactJid);
+                intent.putExtra(XMPPService.MESSAGE_ID, messageID);
+                intent.putExtra(XMPPService.BUNDLE_MESSAGE_BODY, message.getBody());
+                mApplicationContext.sendBroadcast(intent);
+            }
+        });
 
         ReconnectionManager reconnectionManager = ReconnectionManager.getInstanceFor(mConnection);
         reconnectionManager.setEnabledPerDefault(true);
         reconnectionManager.enableAutomaticReconnection();
     }
+
+    private String getMessageID(Message message) {
+        ExtensionElement extensionElement = message.getExtension("extraParams", "jabber:client");
+        String temp = extensionElement.toXML().toString();
+        String messageID = null;
+
+        try {
+            XmlPullParser parser = PacketParserUtils.getParserFor(temp);
+            CharSequence name = PacketParserUtils.parseContent(parser);
+            XmlPullParser parser2 = PacketParserUtils.getParserFor(String.valueOf(name));
+            messageID = PacketParserUtils.parseElementText(parser2);
+
+            Log.e("AAA", messageID);
+        } catch (XmlPullParserException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return messageID;
+    }
+
 
     private void setupUiThreadBroadCastMessageReceiver() {
         uiThreadMessageReceiver = new BroadcastReceiver() {
@@ -104,15 +150,15 @@ public class ConversationConnection implements ConnectionListener {
             public void onReceive(Context context, Intent intent) {
                 //Check if the Intents purpose is to send the message.
                 String action = intent.getAction();
-                if (action.equals(ConversationService.SEND_MESSAGE)) {
+                if (action.equals(XMPPService.SEND_MESSAGE)) {
                     //Send the message.
-                    sendMessage(intent.getStringExtra(ConversationService.BUNDLE_MESSAGE_BODY),
-                            intent.getStringExtra(ConversationService.BUNDLE_TO));
+                    sendMessage(intent.getStringExtra(XMPPService.BUNDLE_MESSAGE_BODY),
+                            intent.getStringExtra(XMPPService.BUNDLE_TO));
                 }
             }
         };
         IntentFilter filter = new IntentFilter();
-        filter.addAction(ConversationService.SEND_MESSAGE);
+        filter.addAction(XMPPService.SEND_MESSAGE);
         mApplicationContext.registerReceiver(uiThreadMessageReceiver, filter);
     }
 
@@ -134,16 +180,10 @@ public class ConversationConnection implements ConnectionListener {
         } catch (SmackException.NotConnectedException e) {
             e.printStackTrace();
         }
-        //Bundle up the intent and send the broadcast.
-        Intent intent = new Intent(ConversationService.NEW_MESSAGE);
-        intent.setPackage(mApplicationContext.getPackageName());
-        intent.putExtra(ConversationService.BUNDLE_FROM_JID, jid);
-        intent.putExtra(ConversationService.BUNDLE_MESSAGE_BODY, msg.getBody());
-        mApplicationContext.sendBroadcast(intent);
     }
 
     public void disconnect() {
-        Log.d(TAG, "Disconnecting from server " + mServiceName);
+        Log.e("AAA", "Disconnecting from server " + mServiceName);
         if (mConnection != null) {
             mConnection.disconnect();
         }
@@ -156,44 +196,44 @@ public class ConversationConnection implements ConnectionListener {
     }
 
     @Override
-    public void connected(XMPPConnection connection) {
-        ConversationService.sConnectionState = ConnectionState.CONNECTED;
-        Log.d(TAG, "Connected Successfully");
+    public void connected(org.jivesoftware.smack.XMPPConnection connection) {
+        XMPPService.sConnectionState = ConnectionState.CONNECTED;
+        Log.e("AAA", "Connected Successfully");
     }
 
     @Override
-    public void authenticated(XMPPConnection connection, boolean resumed) {
-        ConversationService.sConnectionState = ConnectionState.CONNECTED;
-        Log.d(TAG, "Authenticated Successfully");
+    public void authenticated(org.jivesoftware.smack.XMPPConnection connection, boolean resumed) {
+        XMPPService.sConnectionState = ConnectionState.CONNECTED;
+        Log.e("AAA", "Authenticated Successfully");
     }
 
     @Override
     public void connectionClosed() {
-        ConversationService.sConnectionState = ConnectionState.DISCONNECTED;
-        Log.d(TAG, "Connection closed");
+        XMPPService.sConnectionState = ConnectionState.DISCONNECTED;
+        Log.e("AAA", "Connection closed");
     }
 
     @Override
     public void connectionClosedOnError(Exception e) {
-        ConversationService.sConnectionState = ConnectionState.DISCONNECTED;
-        Log.d(TAG, "ConnectionClosedOnError, error " + e.toString());
+        XMPPService.sConnectionState = ConnectionState.DISCONNECTED;
+        Log.e("AAA", "ConnectionClosedOnError, error " + e.toString());
     }
 
     @Override
     public void reconnectionSuccessful() {
-        ConversationService.sConnectionState = ConnectionState.CONNECTING;
-        Log.d(TAG, "Reconnecting In");
+        XMPPService.sConnectionState = ConnectionState.CONNECTING;
+        Log.e("AAA", "Reconnecting In");
     }
 
     @Override
     public void reconnectingIn(int seconds) {
-        ConversationService.sConnectionState = ConnectionState.CONNECTED;
-        Log.d(TAG, "Reconnection Successful");
+        XMPPService.sConnectionState = ConnectionState.CONNECTED;
+        Log.e("AAA", "Reconnection Successful");
     }
 
     @Override
     public void reconnectionFailed(Exception e) {
-        ConversationService.sConnectionState = ConnectionState.DISCONNECTED;
-        Log.d(TAG, "Reconnection Failed");
+        XMPPService.sConnectionState = ConnectionState.DISCONNECTED;
+        Log.e("AAA", "Reconnection Failed");
     }
 }

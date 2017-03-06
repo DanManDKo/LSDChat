@@ -1,7 +1,9 @@
 package com.example.lsdchat.ui.conversation;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -19,7 +21,10 @@ public class ConversationPresenter implements ConversationContract.Presenter {
     private ConversationContract.Model mModel;
     private Context mContext;
     private SharedPreferencesManager mPreferencesManager;
-    private String token = "ace15ab9286353da23ca6a8103ce4fd8ee00cc7e";
+    private BroadcastReceiver mBroadcastReceiver;
+    private String token = "1e23ad8362d5468728dc7778af6ddd8fbb00cc7e";
+    private String ownerJID = "23163511-52350@chat.quickblox.com";
+//    private String dialogID = "589f6bfda0eb47ea8400026a";
 
     public ConversationPresenter(ConversationContract.View view, SharedPreferencesManager manager) {
         mView = view;
@@ -32,6 +37,57 @@ public class ConversationPresenter implements ConversationContract.Presenter {
     public void onDestroy() {
         mView = null;
         mModel = null;
+    }
+
+    @Override
+    public void onUnregisterBroadcastReceiver() {
+        mContext.unregisterReceiver(mBroadcastReceiver);
+        Log.e("AAA", "unregister receiver");
+    }
+
+    @Override
+    public void onRegisterBroadcastReceiver() {
+        Log.e("AAA", "register receiver");
+        mBroadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                String action = intent.getAction();
+                switch (action) {
+                    case XMPPService.NEW_MESSAGE:
+                        String fromJID = intent.getStringExtra(XMPPService.BUNDLE_FROM_JID);
+                        String body = intent.getStringExtra(XMPPService.BUNDLE_MESSAGE_BODY);
+                        String messageID = intent.getStringExtra(XMPPService.MESSAGE_ID);
+//                        String from = fromJID.split("-")[0];
+
+                        retrieveNewMessage(mView.getCurrentDialogID(), messageID);
+
+                        if (fromJID.equals(ownerJID)) {
+                            Log.e("AAA", "Got a message from myself");
+//                            mAdapter.addFirst(item);
+//                            mRecyclerView.scrollToPosition(0);
+                        } else {
+                            Log.e("AAA", "Got a message from friend");
+
+//                            mAdapter.addFirst(item);
+//                            mRecyclerView.scrollToPosition(0);
+                        }
+                        return;
+                }
+            }
+        };
+        IntentFilter filter = new IntentFilter(XMPPService.NEW_MESSAGE);
+        mContext.registerReceiver(mBroadcastReceiver, filter);
+    }
+
+    private void retrieveNewMessage(String dialogID, String messageID) {
+        mModel.getMessageByMessageID(token, dialogID, messageID)
+                .subscribe(itemMessage -> {
+                    saveMessagesToDataBase(itemMessage);
+                    addNewMessageToAdapterList(messageID);
+                    Log.e("AAA", itemMessage.getMessage());
+                }, throwable -> {
+
+                });
     }
 
     @Override
@@ -62,24 +118,24 @@ public class ConversationPresenter implements ConversationContract.Presenter {
 
     @Override
     public void sendMessage(String dialogId, String message, String sendTo) {
-        if (ConversationService.getState().equals(ConversationConnection.ConnectionState.CONNECTED)) {
+        if (XMPPService.getState().equals(XMPPConnection.ConnectionState.CONNECTED)) {
 
             if (!message.equalsIgnoreCase("")) {
-                Log.d("AAA", "The client is connected to the server, sending Message");
+                Log.e("AAA", "The client is connected to the server, sending Message");
 
                 //mPreferencesManager.getToken();
-                mModel.createDialogMessage(token, dialogId, message)
-                        .subscribe(itemMessage -> {
-                            saveMessagesToDataBase(itemMessage);
-                            addNewMessageToAdapterList(itemMessage.getId());
-                        }, throwable -> {
-
-                        });
+//                mModel.createDialogMessage(token, dialogId, message)
+//                        .subscribe(itemMessage -> {
+//                            saveMessagesToDataBase(itemMessage);
+//                            addNewMessageToAdapterList(itemMessage.getId());
+//                        }, throwable -> {
+//
+//                        });
 
                 //Send the message to the server
-                Intent intent = new Intent(ConversationService.SEND_MESSAGE);
-                intent.putExtra(ConversationService.BUNDLE_MESSAGE_BODY, message);
-                intent.putExtra(ConversationService.BUNDLE_TO, sendTo);
+                Intent intent = new Intent(XMPPService.SEND_MESSAGE);
+                intent.putExtra(XMPPService.BUNDLE_MESSAGE_BODY, message);
+                intent.putExtra(XMPPService.BUNDLE_TO, sendTo);
                 getApplicationContext().sendBroadcast(intent);
             }
         } else {

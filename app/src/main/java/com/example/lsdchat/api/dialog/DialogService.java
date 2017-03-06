@@ -32,6 +32,10 @@ public interface DialogService {
     Observable<MessagesResponse> getMessages(@Header(ApiConstant.QB_TOKEN) String token, @Query(ApiConstant.MessageRequestParams.CHAT_DIALOG_ID) String chatDialogId, @Query(ApiConstant.MessageRequestParams.LIMIT) int page, @Query(ApiConstant.MessageRequestParams.SORT_DESC) String sort);
 
     @Headers(ApiConstant.HEADER_CONTENT_TYPE)
+    @GET(ApiConstant.MESSAGES_REQUEST)
+    Observable<ItemMessage> getMessageById(@Header(ApiConstant.QB_TOKEN) String token, @Query(ApiConstant.MessageRequestParams.CHAT_DIALOG_ID) String chatDialogId, @Query(ApiConstant.MessageRequestParams.MESSAGE_ID) String messageID);
+
+    @Headers(ApiConstant.HEADER_CONTENT_TYPE)
     @POST(ApiConstant.MESSAGES_REQUEST)
     Observable<ItemMessage> createMessages(@Header(ApiConstant.QB_TOKEN) String token, @Body CreateMessageRequest createMessageRequest);
 

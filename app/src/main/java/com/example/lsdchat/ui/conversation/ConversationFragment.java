@@ -1,9 +1,6 @@
 package com.example.lsdchat.ui.conversation;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -56,8 +53,6 @@ public class ConversationFragment extends Fragment implements ConversationContra
     private String mucToJID = "52350_589f6bfda0eb47ea8400026a@muc.chat.quickblox.com";
     private String dialogID = "589f6bfda0eb47ea8400026a";
 
-    private BroadcastReceiver mBroadcastReceiver;
-
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,7 +69,7 @@ public class ConversationFragment extends Fragment implements ConversationContra
 
         configurateToolbar();
 
-        Intent intentService = new Intent(getActivity(), ConversationService.class);
+        Intent intentService = new Intent(getActivity(), XMPPService.class);
         getActivity().startService(intentService);
 
         mAdapter = new ConversationRecyclerAdapter(mMessageList, mConversationPresenter);
@@ -87,7 +82,6 @@ public class ConversationFragment extends Fragment implements ConversationContra
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
         linearLayoutManager.setReverseLayout(true);
-//        linearLayoutManager.setStackFromEnd(true);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(linearLayoutManager);
         mRecyclerView.setAdapter(mAdapter);
@@ -99,7 +93,8 @@ public class ConversationFragment extends Fragment implements ConversationContra
         });
 
         mButtonSend.setOnClickListener(v -> mConversationPresenter.sendMessage(dialogID, mMessage.getEditableText().toString(), mucToJID));
-        mButtonSmiles.setOnClickListener(v -> {});
+        mButtonSmiles.setOnClickListener(v -> {
+        });
 
         return view;
     }
@@ -107,40 +102,13 @@ public class ConversationFragment extends Fragment implements ConversationContra
     @Override
     public void onPause() {
         super.onPause();
-        getActivity().unregisterReceiver(mBroadcastReceiver);
+        mConversationPresenter.onUnregisterBroadcastReceiver();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        mBroadcastReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                String action = intent.getAction();
-                switch (action) {
-                    case ConversationService.NEW_MESSAGE:
-                        String from = intent.getStringExtra(ConversationService.BUNDLE_FROM_JID);
-                        String body = intent.getStringExtra(ConversationService.BUNDLE_MESSAGE_BODY);
-
-                        if (from.equals(ownerJID)) {
-                            //do nothing
-                            Log.d("AAA", "Got a message from myself");
-                        } else {
-                            //just for test
-                            ItemMessage item = new ItemMessage();
-                            item.setMessage(body);
-                            item.setSender_id(111111);
-                            item.setCreatedAt("11:11T11:11");
-
-                            mAdapter.addFirst(item);
-                            mRecyclerView.scrollToPosition(0);
-                        }
-                        return;
-                }
-            }
-        };
-        IntentFilter filter = new IntentFilter(ConversationService.NEW_MESSAGE);
-        getActivity().registerReceiver(mBroadcastReceiver, filter);
+        mConversationPresenter.onRegisterBroadcastReceiver();
     }
 
     @Override
@@ -198,10 +166,13 @@ public class ConversationFragment extends Fragment implements ConversationContra
 
     @Override
     public void fillConversationAdapter(List<ItemMessage> list) {
-//        mMessageList.addAll(list);
         Log.e("AAA", String.valueOf(mMessageList.size()));
         mAdapter.addAll(list, 0, 10);
-//        mRecyclerView.scrollToPosition(mMessageList.size() - 1);
+    }
+
+    @Override
+    public String getCurrentDialogID() {
+        return dialogID;
     }
 
     @Override

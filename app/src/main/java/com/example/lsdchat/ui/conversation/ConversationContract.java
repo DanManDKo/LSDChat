@@ -14,6 +14,10 @@ public interface ConversationContract {
     interface Presenter {
         void onDestroy();
 
+        void onUnregisterBroadcastReceiver();
+
+        void onRegisterBroadcastReceiver();
+
         void getMessages(String dialogId);
 
         void fillAdapterListWithMessages(String dialogId);
@@ -27,10 +31,14 @@ public interface ConversationContract {
         boolean isOnline();
 
         void loadMoreFromDataBase(String dialogId, int page);
+
+//        void onNewMessageReceive();
     }
 
     interface View {
         Context getContext();
+
+        String getCurrentDialogID();
 
         void clearEditableField();
 
@@ -47,5 +55,7 @@ public interface ConversationContract {
         Observable<MessagesResponse> getMessagesByDialogId(String token, String dialogId);
 
         Observable<ItemMessage> createDialogMessage(String token, String dialogId, String message);
+
+        Observable<ItemMessage> getMessageByMessageID(String token, String dialogID, String messageID);
     }
 }

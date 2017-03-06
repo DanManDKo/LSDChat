@@ -26,6 +26,13 @@ public class ConversationModel implements ConversationContract.Model {
     }
 
     @Override
+    public Observable<ItemMessage> getMessageByMessageID(String token, String dialogID, String messageID) {
+        return mDialogService.getMessageById(token, dialogID, messageID)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    @Override
     public Observable<ItemMessage> createDialogMessage(String token, String dialogId, String message) {
         CreateMessageRequest body = new CreateMessageRequest(dialogId, message);
 

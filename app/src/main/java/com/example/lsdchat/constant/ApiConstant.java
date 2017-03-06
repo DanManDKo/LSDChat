@@ -60,6 +60,7 @@ public class ApiConstant {
         public static final String SORT_ASC = "sort_asc";
         public static final String SORT_DESC = "sort_desc";
         public static final String DATE_SENT = "date_sent";
-        public static final int MESSAGE_LIMIT = 1000;
+        public static final String MESSAGE_ID = "_id";
+        public static final int MESSAGE_LIMIT = 100;
     }
 }

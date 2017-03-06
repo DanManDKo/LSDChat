@@ -13,7 +13,7 @@ import org.jivesoftware.smack.XMPPException;
 
 import java.io.IOException;
 
-public class ConversationService extends Service {
+public class XMPPService extends Service {
     private static final String TAG = "RoosterService";
 
     public static final String UI_AUTHENTICATED = "com.example.lsdchat.uiauthenticated";
@@ -23,28 +23,29 @@ public class ConversationService extends Service {
 
     public static final String NEW_MESSAGE = "com.example.lsdchat.newmessage";
     public static final String BUNDLE_FROM_JID = "b_from";
+    public static final String MESSAGE_ID = "message_id";
 
-    public static ConversationConnection.ConnectionState sConnectionState;
-    public static ConversationConnection.LoggedInState sLoggedInState;
+    public static XMPPConnection.ConnectionState sConnectionState;
+    public static XMPPConnection.LoggedInState sLoggedInState;
     private boolean mActive;//Stores whether or not the thread is active
     private Thread mThread;
     private Handler mTHandler;//Handler to post messages to the background thread.
-    private ConversationConnection mConnection;
+    private XMPPConnection mConnection;
 
 
-    public ConversationService() {
+    public XMPPService() {
     }
 
-    public static ConversationConnection.ConnectionState getState() {
+    public static XMPPConnection.ConnectionState getState() {
         if (sConnectionState == null) {
-            return ConversationConnection.ConnectionState.DISCONNECTED;
+            return XMPPConnection.ConnectionState.DISCONNECTED;
         }
         return sConnectionState;
     }
 
-    public static ConversationConnection.LoggedInState getLoggedInState() {
+    public static XMPPConnection.LoggedInState getLoggedInState() {
         if (sLoggedInState == null) {
-            return ConversationConnection.LoggedInState.LOGGED_OUT;
+            return XMPPConnection.LoggedInState.LOGGED_OUT;
         }
         return sLoggedInState;
     }
@@ -52,7 +53,7 @@ public class ConversationService extends Service {
     private void initConnection() {
         Log.d(TAG, "initConnection()");
         if (mConnection == null) {
-            mConnection = new ConversationConnection(this);
+            mConnection = new XMPPConnection(this);
         }
         try {
             mConnection.connect();
