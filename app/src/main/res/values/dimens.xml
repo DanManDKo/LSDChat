@@ -62,4 +62,7 @@
     <dimen name="line_height">1dp</dimen>
     <dimen name="user_info_icon_size">24dp</dimen>
 
+    <dimen name="ic_clear_margin">16dp</dimen>
+
+
 </resources>
