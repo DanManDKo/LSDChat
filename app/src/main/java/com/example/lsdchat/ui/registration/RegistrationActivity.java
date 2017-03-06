@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
 
+import com.example.lsdchat.App;
 import com.example.lsdchat.R;
 import com.example.lsdchat.ui.MainActivity;
 import com.facebook.FacebookSdk;
@@ -57,7 +58,7 @@ public class RegistrationActivity extends AppCompatActivity implements Registrat
 
         setContentView(R.layout.activity_registration);
 
-        mRegistrationPresenter = new RegistrationPresenter(this);
+        mRegistrationPresenter = new RegistrationPresenter(this, App.getSharedPreferencesManager(this));
         initView();
 
         setRegFormHint();

@@ -5,22 +5,47 @@ import android.content.Context;
 
 import com.example.lsdchat.api.dialog.model.ItemMessage;
 import com.example.lsdchat.api.dialog.response.MessagesResponse;
-import com.example.lsdchat.model.RealmMessage;
 
 import java.util.List;
 
 import rx.Observable;
 
 public interface ConversationContract {
-    interface Presenter{
-        //void onDestroy();
+    interface Presenter {
+        void onDestroy();
+
         void getMessages(String dialogId);
+
+        void fillAdapterListWithMessages(String dialogId);
+
+        void addNewMessageToAdapterList(String messageId);
+
+        void onAdapterItemClicked(String id, int position);
+
+        void sendMessage(String dialogId, String message, String sendTo);
+
+        boolean isOnline();
+
+        void loadMoreFromDataBase(String dialogId, int page);
     }
-    interface View{
+
+    interface View {
         Context getContext();
-        void fillListOfMessages(List<RealmMessage> list);
+
+        void clearEditableField();
+
+        void showLoadProgressBar(boolean visible);
+
+        void fillConversationAdapter(List<ItemMessage> list);
+
+        void fillConversationAdapter(ItemMessage item);
+
+        void loadMoreData(List<ItemMessage> list);
     }
-    interface Model{
+
+    interface Model {
         Observable<MessagesResponse> getMessagesByDialogId(String token, String dialogId);
+
+        Observable<ItemMessage> createDialogMessage(String token, String dialogId, String message);
     }
 }

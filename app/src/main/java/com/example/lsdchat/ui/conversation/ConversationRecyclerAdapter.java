@@ -1,6 +1,8 @@
 package com.example.lsdchat.ui.conversation;
 
+import android.content.ClipData;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,23 +11,19 @@ import android.widget.TextView;
 
 import com.example.lsdchat.R;
 import com.example.lsdchat.api.dialog.model.ItemMessage;
-import com.example.lsdchat.model.RealmMessage;
 import com.facebook.drawee.view.SimpleDraweeView;
 
 import java.util.List;
 
 public class ConversationRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    private ConversationPresenter mConversationPresenter;
     private static final String SENDER_NAME = "Me";
 
-    private List<RealmMessage> mList;
-    private OnRecyclerItemClickListener mListener;
+    private List<ItemMessage> mList;
 
-    public void setListener(OnRecyclerItemClickListener listener) {
-        mListener = listener;
-    }
-
-    public ConversationRecyclerAdapter(List<RealmMessage> list) {
+    public ConversationRecyclerAdapter(List<ItemMessage> list, ConversationPresenter mConversationPresenter) {
         mList = list;
+        this.mConversationPresenter = mConversationPresenter;
     }
 
     @Override
@@ -45,28 +43,30 @@ public class ConversationRecyclerAdapter extends RecyclerView.Adapter<RecyclerVi
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        RealmMessage itemMessage = mList.get(position);
+        ItemMessage itemMessage = mList.get(position);
         if (itemMessage != null) {
-            switch (itemMessage.getSenderId()) {
+            switch (itemMessage.getSender_id()) {
                 //get app owner id from db
                 case 23163511:
                     ((OutcomingViewHolder) holder).message.setText(mList.get(position).getMessage());
-                    ((OutcomingViewHolder) holder).time.setText(mList.get(position).getDateSent());
+                    String timeOut = mList.get(position).getCreatedAt().split("T")[1];
+                    ((OutcomingViewHolder) holder).time.setText(timeOut);
                     ((OutcomingViewHolder) holder).personName.setText(SENDER_NAME);
 
                     ((OutcomingViewHolder) holder).messageRoot.setOnClickListener(view -> {
 
-                        mListener.onItemClicked(mList.get(position).getMessageId(), position, 23163511);
+                        mConversationPresenter.onAdapterItemClicked(mList.get(position).getId(), position);
                     });
                     break;
                 default:
                     ((IncomingViewHolder) holder).message.setText(mList.get(position).getMessage());
-                    ((IncomingViewHolder) holder).time.setText(mList.get(position).getDateSent());
+                    String timeIn = mList.get(position).getCreatedAt().split("T")[1];
+                    ((IncomingViewHolder) holder).time.setText(timeIn);
                     ((IncomingViewHolder) holder).personName.setText("Sender");
 
                     ((IncomingViewHolder) holder).messageRoot.setOnClickListener(view -> {
 
-                        mListener.onItemClicked(mList.get(position).getMessageId(), position, 0);
+                        mConversationPresenter.onAdapterItemClicked(mList.get(position).getId(), position);
                     });
                     break;
             }
@@ -81,9 +81,9 @@ public class ConversationRecyclerAdapter extends RecyclerView.Adapter<RecyclerVi
     @Override
     public int getItemViewType(int position) {
         if (mList != null) {
-            RealmMessage itemMessage = mList.get(position);
+            ItemMessage itemMessage = mList.get(position);
             if (itemMessage != null) {
-                return itemMessage.getSenderId();
+                return itemMessage.getSender_id();
             }
         }
         return 0;
@@ -123,11 +123,21 @@ public class ConversationRecyclerAdapter extends RecyclerView.Adapter<RecyclerVi
         }
     }
 
-    public void add(RealmMessage object) {
-        mList.add(object);
+    public void addFirst(ItemMessage object) {
+        mList.add(0, object);
+//        mList.add(object);
+        notifyDataSetChanged();
     }
 
-    public interface OnRecyclerItemClickListener {
-        void onItemClicked(String id, int position, int type);
+    public void addAll(List<ItemMessage> list, int startIndex, int lastIndex) {
+        List<ItemMessage> temp = list.subList(startIndex, lastIndex);
+        Log.e("AAA", String.valueOf(temp.size()));
+        mList.addAll(temp);
+        notifyDataSetChanged();
+    }
+
+    public void addMore(List<ItemMessage> list) {
+        mList.addAll(list);
+        notifyDataSetChanged();
     }
 }

@@ -21,12 +21,31 @@
                     android:background="#e1e1e1"
                     android:orientation="vertical">
 
+        <LinearLayout android:id="@+id/conversation_error_wrapper"
+                      android:layout_width="match_parent"
+                      android:layout_height="wrap_content"
+                      android:layout_marginTop="?attr/actionBarSize"
+                      android:orientation="vertical">
+
+            <TextView android:id="@+id/conversation_error"
+                      android:layout_width="match_parent"
+                      android:layout_height="wrap_content"
+                      android:gravity="center"
+                      android:paddingBottom="16dp"
+                      android:paddingTop="16dp"
+                      android:text="Connection problem"
+                      android:textColor="@color/colorRed"
+
+                      android:textSize="12dp"
+                      android:visibility="gone"/>
+        </LinearLayout>
+
         <android.support.v7.widget.RecyclerView
             android:id="@+id/conversation_list"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_above="@+id/conversation_sendform"
-            android:layout_marginTop="?attr/actionBarSize"
+            android:layout_below="@id/conversation_error_wrapper"
             android:divider="@null"
             android:dividerHeight="0dp"
             android:paddingLeft="16dp"
@@ -52,8 +71,7 @@
                 android:layout_alignParentRight="true"
                 android:layout_marginLeft="8dp"
                 android:layout_marginRight="8dp"
-                android:background="@drawable/smiles"
-                android:text="d"/>
+                android:background="@drawable/smiles"/>
 
             <EditText
                 android:id="@+id/conversation_edittext"
@@ -76,8 +94,12 @@
                 android:layout_alignParentRight="true"
                 android:layout_marginLeft="8dp"
                 android:layout_marginRight="8dp"
-                android:background="@drawable/send"
-                android:text="d"/>
+                android:background="@drawable/send"/>
         </LinearLayout>
+        <ProgressBar android:id="@+id/conversation_progress_bar"
+                     android:layout_width="64dp"
+                     android:layout_height="64dp"
+                     android:layout_centerInParent="true"
+                     android:visibility="gone"/>
     </RelativeLayout>
 </android.support.design.widget.CoordinatorLayout>

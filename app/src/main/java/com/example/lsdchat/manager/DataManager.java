@@ -1,6 +1,6 @@
 package com.example.lsdchat.manager;
 
-import com.example.lsdchat.model.RealmMessage;
+import com.example.lsdchat.api.dialog.model.ItemMessage;
 import com.example.lsdchat.model.User;
 
 import java.util.List;
@@ -29,7 +29,6 @@ public class DataManager {
         return true;
     }
 
-
     public User getUser() {
         return mRealm.where(User.class).findFirst();
     }
@@ -42,12 +41,16 @@ public class DataManager {
     }
 
     //handle messages
-    public void insertRealmMessage(RealmMessage message) {
-        mRealm.executeTransactionAsync(realm -> realm.copyToRealmOrUpdate(message));
+    public void insertRealmMessage(ItemMessage message) {
+        mRealm.executeTransaction(realm -> realm.copyToRealmOrUpdate(message));
     }
 
-    public List<RealmMessage> findMessagesByDialogId(String chatDialogId) {
-        return mRealm.where(RealmMessage.class).equalTo(RealmMessage.CHAT_DIALOG_ID, chatDialogId).findAllSorted("dateSent", Sort.ASCENDING);
+    public List<ItemMessage> retrieveMessagesByDialogId(String chatDialogId) {
+        return mRealm.where(ItemMessage.class).equalTo(ItemMessage.CHAT_DIALOG_ID, chatDialogId).findAllSorted(ItemMessage.DATE_SENT, Sort.DESCENDING);
+    }
+
+    public ItemMessage retrieveMessageById(String messageId) {
+        return mRealm.where(ItemMessage.class).equalTo(ItemMessage.MESSAGE_ID, messageId).findFirst();
     }
 
 }

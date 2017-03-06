@@ -56,9 +56,10 @@ public class ApiConstant {
     public class MessageRequestParams {
         public static final String CHAT_DIALOG_ID = "chat_dialog_id";
         public static final String LIMIT = "limit";
+        public static final String SKIP = "skip";
         public static final String SORT_ASC = "sort_asc";
         public static final String SORT_DESC = "sort_desc";
         public static final String DATE_SENT = "date_sent";
-        public static final int MESSAGE_LIMIT = 20;
+        public static final int MESSAGE_LIMIT = 1000;
     }
 }

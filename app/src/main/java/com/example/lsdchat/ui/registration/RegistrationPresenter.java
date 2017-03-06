@@ -13,8 +13,11 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.example.lsdchat.App;
 import com.example.lsdchat.R;
 import com.example.lsdchat.constant.ApiConstant;
+import com.example.lsdchat.manager.SharedPreferencesManager;
+import com.example.lsdchat.model.User;
 import com.example.lsdchat.util.Email;
 import com.example.lsdchat.util.ErrorsCode;
 import com.example.lsdchat.util.Network;
@@ -51,6 +54,7 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
 
     private RegistrationContract.View mView;
     private RegistrationContract.Model mModel;
+    private SharedPreferencesManager mPreferencesManager;
 
     private Context mContext;
     private CallbackManager mCallbackManager;
@@ -76,11 +80,12 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
         }
     };
 
-    public RegistrationPresenter(RegistrationContract.View view) {
+    public RegistrationPresenter(RegistrationContract.View view, SharedPreferencesManager preferencesManager) {
         mView = view;
         mModel = new RegistrationModel();
         mContext = view.getContext();
         mCallbackManager = CallbackManager.Factory.create();
+        mPreferencesManager = preferencesManager;
     }
 
     @Override
@@ -140,6 +145,9 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
             mModel.getSessionNoAuth()
                     .doOnRequest(request -> mView.showProgressBar())
                     .doOnUnsubscribe(() -> mView.hideProgressBar())
+                    .doOnNext(sessionResponse -> {
+                        mPreferencesManager.saveToken(sessionResponse.getSession().getToken());
+                    })
                     .subscribe(sessionResponse -> {
 
                         String token = sessionResponse.getSession().getToken();
@@ -182,6 +190,7 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
                 .doOnUnsubscribe(() -> mView.hideProgressBar())
                 .doOnNext(loginResponse -> {
                     int userId = loginResponse.getLoginUser().getId();
+                    saveUserToDataBase(email, password, true);
 
                     if (mUploadFile != null) {
                         getBlobObjectCreateFile(token, getFileMimeType(mUploadFile), mUploadFile.getName(), userId);
@@ -197,6 +206,15 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
                     mView.setClickableSignupButton(true);
                     decodeThrowableAndShowAlert(throwable);
                 });
+    }
+
+    private void saveUserToDataBase(String email, String password, boolean isKeepSignIn) {
+        User user = new User();
+        user.setEmail(email);
+        user.setPassword(password);
+        user.setSignIn(isKeepSignIn);
+
+        App.getDataManager().insertUser(user);
     }
 
     private void getBlobObjectCreateFile(String token, String mime, String fileName, int userId) {
