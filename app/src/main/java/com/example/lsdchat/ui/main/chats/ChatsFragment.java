@@ -204,14 +204,6 @@ public class ChatsFragment extends BaseFragment implements ChatsContract.View {
         return false;
     }
 
-/*
-    if (mDrawerLayout.isDrawerOpen(Gravity.LEFT)) {
-        mDrawerLayout.closeDrawers();
-    } else {
-        super.onDestroyView();
-    }
-*/
-
     @Override
     public void startUsers() {
         replaceFragment(new UsersFragment());
