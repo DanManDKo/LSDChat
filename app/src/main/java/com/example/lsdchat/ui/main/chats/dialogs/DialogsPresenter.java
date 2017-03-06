@@ -3,8 +3,6 @@ package com.example.lsdchat.ui.main.chats.dialogs;
 
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
-import android.view.View;
-import android.widget.TextView;
 
 import com.example.lsdchat.constant.ApiConstant;
 import com.example.lsdchat.manager.SharedPreferencesManager;
@@ -62,15 +60,6 @@ public class DialogsPresenter implements DialogsContract.Presenter {
     }
 
 
-    @Override
-    public void setNewMessageCounter(TextView textView, DialogModel dialogModel) {
-        if (dialogModel.getUnreadMessagesCount() != 0) {
-            textView.setVisibility(View.VISIBLE);
-            textView.setText(String.valueOf(dialogModel.getUnreadMessagesCount()));
-        } else {
-            textView.setVisibility(View.GONE);
-        }
-    }
 
     @Override
     public void setImageDialog(CircleImageView imageView, DialogModel dialogModel) {

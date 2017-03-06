@@ -1,9 +1,17 @@
 package com.example.lsdchat.ui.main.chats.dialogs;
 
+import android.app.AlertDialog;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,7 +34,6 @@ public class DialogsFragment extends BaseFragment implements DialogsContract.Vie
     private DialogsAdapter mDialogsAdapter;
     private List<DialogModel> mList;
     private SwipeRefreshLayout mSwipeRefreshLayout;
-
 
 
     public DialogsFragment() {
@@ -62,13 +69,90 @@ public class DialogsFragment extends BaseFragment implements DialogsContract.Vie
         mType = getArguments().getInt(TYPE);
         initView(view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
 
         mList = mPresenter.showDialogs(mType);
         initAdapter(mList);
         mPresenter.setOnRefreshListener(mSwipeRefreshLayout);
 
+
+        initSwipeDelete();
+
+
         return view;
+    }
+
+    private void initSwipeDelete() {
+        ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+
+            int xMarkMargin;
+            Drawable xMark;
+            boolean initiated;
+
+            private void init() {
+                xMark = ContextCompat.getDrawable(getActivity(), R.drawable.delete);
+                xMarkMargin = (int) getActivity().getResources().getDimension(R.dimen.ic_clear_margin);
+                initiated = true;
+            }
+
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setMessage("Are you sure you want to delete this chat?");
+
+                builder.setPositiveButton("Delete", (dialog, which) -> {
+//                    TODO: add delete dialog logic
+                    initAdapter(mList);
+                    mDialogsAdapter.notifyItemRemoved(viewHolder.getLayoutPosition());
+
+                }).setNegativeButton("Cancel", (dialog, which) -> {
+                    initAdapter(mList);
+                    dialog.dismiss();
+
+                }).setCancelable(false).show();
+            }
+
+            @Override
+            public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+                View itemView = viewHolder.itemView;
+
+
+                if (!initiated) {
+                    init();
+                }
+                // draw x mark
+                int itemHeight = itemView.getBottom() - itemView.getTop();
+                int intrinsicWidth = xMark.getIntrinsicWidth();
+                int intrinsicHeight = xMark.getIntrinsicWidth();
+
+                int xMarkLeft = itemView.getRight() - xMarkMargin - intrinsicWidth;
+                int xMarkRight = itemView.getRight() - xMarkMargin;
+                int xMarkTop = itemView.getTop() + (itemHeight - intrinsicHeight) / 2;
+                int xMarkBottom = xMarkTop + intrinsicHeight;
+                xMark.setBounds(xMarkLeft, xMarkTop, xMarkRight, xMarkBottom);
+
+                xMark.draw(c);
+
+
+                //Setting Swipe Text
+                Paint paint = new Paint();
+                paint.setColor(Color.parseColor("#327780"));
+                paint.setTextSize(40);
+                paint.setTextAlign(Paint.Align.CENTER);
+                c.drawText("Delete", xMarkLeft + 20, xMarkTop + 80, paint);
+
+
+                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+            }
+        };
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleItemTouchCallback);
+        itemTouchHelper.attachToRecyclerView(mRecyclerView);
     }
 
     private void initView(View view) {
@@ -79,7 +163,7 @@ public class DialogsFragment extends BaseFragment implements DialogsContract.Vie
 
     @Override
     public void initAdapter(List<DialogModel> list) {
-        mDialogsAdapter = new DialogsAdapter(list,mPresenter);
+        mDialogsAdapter = new DialogsAdapter(list, mPresenter);
         mRecyclerView.setAdapter(mDialogsAdapter);
         mDialogsAdapter.notifyDataSetChanged();
     }

@@ -1,6 +1,7 @@
 package com.example.lsdchat.ui.main.chats.dialogs;
 
 
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,7 +17,7 @@ import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class DialogsAdapter extends RecyclerView.Adapter<DialogsAdapter.ViewHolder>{
+public class DialogsAdapter extends RecyclerView.Adapter<DialogsAdapter.ViewHolder> {
 
     private List<DialogModel> mData;
     private DialogsContract.Presenter mPresenter;
@@ -38,13 +39,23 @@ public class DialogsAdapter extends RecyclerView.Adapter<DialogsAdapter.ViewHold
 
         holder.mChatName.setText(dialogModel.getName());
         holder.mChatDate.setText(DateUtils.millisecondsToDate(dialogModel.getLastMessageDateSent()));
-        if (dialogModel.getLastMessageUserId()!=null) {
+        if (dialogModel.getLastMessageUserId() != null) {
             holder.mChatTitle.setText(UsersUtil.getUserById(dialogModel.getLastMessageUserId()).getFullName());
+
         }
         holder.mChatLastMessage.setText(dialogModel.getLastMessage());
 
-        mPresenter.setNewMessageCounter(holder.mNewMessageCounter,dialogModel);
-        mPresenter.setImageDialog(holder.mDialogImage,dialogModel);
+        if (dialogModel.getUnreadMessagesCount() != 0) {
+            holder.mNewMessageCounter.setVisibility(View.VISIBLE);
+            holder.mChatName.setTextColor(Color.parseColor("#327780"));
+            holder.mChatDate.setTextColor(Color.BLACK);
+            holder.mNewMessageCounter.setText(String.valueOf(dialogModel.getUnreadMessagesCount()));
+        }
+        else {
+            holder.mNewMessageCounter.setVisibility(View.GONE);
+        }
+
+        mPresenter.setImageDialog(holder.mDialogImage, dialogModel);
 
 
     }

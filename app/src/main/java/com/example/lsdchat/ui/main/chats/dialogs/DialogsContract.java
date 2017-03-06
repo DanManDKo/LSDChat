@@ -2,7 +2,6 @@ package com.example.lsdchat.ui.main.chats.dialogs;
 
 
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.widget.TextView;
 
 import com.example.lsdchat.api.dialog.response.DialogsResponse;
 import com.example.lsdchat.model.DialogModel;
@@ -32,7 +31,7 @@ public interface DialogsContract {
     interface Presenter {
         List<DialogModel> showDialogs(int type);
         void getAllDialogAndSave();
-        void setNewMessageCounter(TextView textView, DialogModel dialogModel);
+
         void setImageDialog(CircleImageView imageView, DialogModel dialogModel);
 
         void setOnRefreshListener(SwipeRefreshLayout swipeRefreshLayout);
