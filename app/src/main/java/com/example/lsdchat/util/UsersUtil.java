@@ -48,4 +48,9 @@ public class UsersUtil {
         UsersContract.Model mModel = new UsersModel();
         return mModel.getUsersQuickList();
     }
+
+    public static LoginUser getUserById(int id) {
+        UsersContract.Model mModel = new UsersModel();
+        return mModel.getUserById(id);
+    }
 }

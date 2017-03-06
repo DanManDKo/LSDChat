@@ -25,6 +25,7 @@ public interface UsersContract {
 
         void insetUsersQuick(LoginUser userQuick);
 
+        LoginUser getUserById(int id);
 
         void deleteAllUSerQiuck();
 

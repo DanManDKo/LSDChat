@@ -43,7 +43,8 @@ public class UsersModel implements UsersContract.Model {
 
     @Override
     public void insetUsersQuick(LoginUser userQuick) {
-        if (!Objects.equals(userQuick.getLogin(), "eroy") && !Objects.equals(userQuick.getEmail(), mDataManager.getUser().getEmail()))
+//         && !Objects.equals(userQuick.getEmail(), mDataManager.getUser().getEmail())
+        if (!Objects.equals(userQuick.getLogin(), "eroy"))
             mDataManager.insertUserQuickToDB(userQuick);
     }
 
@@ -51,6 +52,11 @@ public class UsersModel implements UsersContract.Model {
     @Override
     public RealmResults<LoginUser> getUsersQuick() {
         return mDataManager.getUsersQuick();
+    }
+
+    @Override
+    public LoginUser getUserById(int id) {
+        return mDataManager.getUserById(id);
     }
 
 

@@ -72,6 +72,9 @@ public class DataManager {
         return mRealm.where(LoginUser.class).findAll();
     }
 
+    public LoginUser getUserById(int id) {
+        return mRealm.where(LoginUser.class).equalTo("id", id).findFirst();
+    }
 
     public RealmResults<LoginUser> getUsersQuick() {
         return mRealm.where(LoginUser.class).findAll();
@@ -92,7 +95,7 @@ public class DataManager {
     }
 
     public List<DialogModel> getDialogsByType(int type) {
-        return mRealm.where(DialogModel.class).equalTo("type", type).findAll();
+        return mRealm.where(DialogModel.class).equalTo("type", type).findAllSorted("updatedAt",Sort.DESCENDING);
     }
 
 
