@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -171,5 +172,11 @@ public class DialogsFragment extends BaseFragment implements DialogsContract.Vie
     @Override
     public void updateAdapter() {
         mDialogsAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void navigateToChat(Fragment fragment) {
+//        TODO: add animation
+        getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragment, fragment).addToBackStack(null).commit();
     }
 }
