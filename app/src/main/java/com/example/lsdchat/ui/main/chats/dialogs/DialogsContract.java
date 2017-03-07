@@ -1,7 +1,9 @@
 package com.example.lsdchat.ui.main.chats.dialogs;
 
 
+import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.widget.RelativeLayout;
 
 import com.example.lsdchat.api.dialog.response.DialogsResponse;
 import com.example.lsdchat.model.DialogModel;
@@ -26,6 +28,7 @@ public interface DialogsContract {
         void updateAdapter();
         int getType();
 
+        void navigateToChat(Fragment fragment);
     }
 
     interface Presenter {
@@ -35,6 +38,8 @@ public interface DialogsContract {
         void setImageDialog(CircleImageView imageView, DialogModel dialogModel);
 
         void setOnRefreshListener(SwipeRefreshLayout swipeRefreshLayout);
+
+        void setOnClickListener(RelativeLayout relativeLayout, DialogModel dialogModel);
     }
 
 }

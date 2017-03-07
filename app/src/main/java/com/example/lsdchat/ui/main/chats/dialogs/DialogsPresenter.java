@@ -3,6 +3,7 @@ package com.example.lsdchat.ui.main.chats.dialogs;
 
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
+import android.widget.RelativeLayout;
 
 import com.example.lsdchat.constant.ApiConstant;
 import com.example.lsdchat.manager.SharedPreferencesManager;
@@ -79,6 +80,15 @@ public class DialogsPresenter implements DialogsContract.Presenter {
         swipeRefreshLayout.setOnRefreshListener(() -> {
             getAllDialogAndSave();
             swipeRefreshLayout.setRefreshing(false);
+        });
+    }
+
+
+    @Override
+    public void setOnClickListener(RelativeLayout relativeLayout, DialogModel dialogModel) {
+        relativeLayout.setOnClickListener(v -> {
+//            mView.navigateToChat();
+
         });
     }
 }
