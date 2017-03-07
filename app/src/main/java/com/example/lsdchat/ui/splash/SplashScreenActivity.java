@@ -8,9 +8,10 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.TextView;
 
+import com.example.lsdchat.App;
 import com.example.lsdchat.R;
-import com.example.lsdchat.ui.MainActivity;
 import com.example.lsdchat.ui.login.LoginActivity;
+import com.example.lsdchat.ui.main.MainActivity;
 
 /**
  * Created by User on 18.01.2017.
@@ -25,7 +26,7 @@ public class SplashScreenActivity extends AppCompatActivity implements SplashCon
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_spalsh);
         initView();
-        mPresenter = new SplashScreenPresenter(this);
+        mPresenter = new SplashScreenPresenter(this, App.getSharedPreferencesManager(this));
         mPresenter.leaveSplashScreen();
     }
 

@@ -8,6 +8,7 @@ import android.widget.TextView;
 
 import com.example.lsdchat.api.login.response.LoginResponse;
 import com.example.lsdchat.api.login.response.SessionResponse;
+import com.example.lsdchat.model.User;
 
 import rx.Observable;
 
@@ -18,6 +19,7 @@ public interface LoginContract {
 
         Observable<LoginResponse> getLogin(String email, String password, String token);
 
+        void saveUser(User user);
     }
 
     interface Presenter {

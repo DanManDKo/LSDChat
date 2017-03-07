@@ -1,17 +1,12 @@
 package com.example.lsdchat.unit.registration;
 
-import android.widget.ImageView;
-
 import com.example.lsdchat.ui.registration.RegistrationActivity;
 import com.example.lsdchat.ui.registration.RegistrationContract;
-import com.example.lsdchat.ui.registration.RegistrationPresenter;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
-
-import java.io.File;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -28,7 +23,7 @@ public class RegistrationPresenterTest {
     @Before
     public void init() throws Exception {
         view = mock(RegistrationActivity.class);
-        presenter = new RegistrationPresenter(view);
+//        presenter = new RegistrationPresenter(view);
     }
 
     @Test
@@ -63,12 +58,6 @@ public class RegistrationPresenterTest {
     @Test
     public void chooserDialogShouldBeShownOnUserAvatarClicked() {
         presenter.onAvatarClickListener();
-        verify(view, times(1)).showDialogImageSourceChooser();
-    }
-
-    @Test
-    public void chooserDialogShouldBeShownOnUserAvaarClicked() {
-        presenter.getPhotoFromCamera();
         verify(view, times(1)).showDialogImageSourceChooser();
     }
 

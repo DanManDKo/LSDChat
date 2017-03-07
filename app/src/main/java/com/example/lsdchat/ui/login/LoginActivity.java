@@ -18,8 +18,8 @@ import android.widget.TextView;
 import com.example.lsdchat.App;
 import com.example.lsdchat.R;
 import com.example.lsdchat.ui.forgot_password.ForgotPasswordFragment;
+import com.example.lsdchat.ui.main.MainActivity;
 import com.example.lsdchat.ui.registration.RegistrationActivity;
-import com.example.lsdchat.ui.MainActivity;
 import com.example.lsdchat.util.ErrorsCode;
 
 import retrofit2.adapter.rxjava.HttpException;
@@ -47,7 +47,7 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        mPresenter = new LoginPresenter(this, App.getDataManager());
+        mPresenter = new LoginPresenter(this, App.getDataManager(),App.getSharedPreferencesManager(this));
         initView();
 
 //        set button disable

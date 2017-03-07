@@ -1,10 +1,14 @@
 package com.example.lsdchat;
 
 import android.app.Instrumentation;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.support.test.espresso.intent.Intents;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 
+import com.example.lsdchat.ui.main.chats.ChatsFragment;
 import com.example.lsdchat.ui.login.LoginActivity;
 
 import org.junit.BeforeClass;
@@ -17,10 +21,7 @@ import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static android.support.test.espresso.action.ViewActions.typeText;
-import static android.support.test.espresso.assertion.ViewAssertions.matches;
-import static android.support.test.espresso.matcher.ViewMatchers.isEnabled;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
-import static org.hamcrest.core.IsNot.not;
 
 
 @RunWith(AndroidJUnit4.class)
@@ -40,8 +41,9 @@ public class LoginUiTest {
         monitor = instr.addMonitor(LoginActivity.class.getName(), null, false);
     }
 
+/*
 
-//    UI Test FR20
+    //    UI Test FR20
     @Test
     public void isButtonSignInDisable() {
         onView(withId(R.id.input_email)).perform(typeText("dddd@ddd.c"), closeSoftKeyboard());
@@ -57,6 +59,41 @@ public class LoginUiTest {
             onView(withId(R.id.btn_sign_in)).check(matches(not(isEnabled())));
         }).start();
     }
+*/
+
+
+    @Test
+    public void isSuccessfulGoToMainActivity() {
+        Intent intent = new Intent();
+        ComponentName componentName = new ComponentName("com.example.lsdchat.ui",
+                ChatsFragment.class.getName());
+        intent.setComponent(componentName);
+        Intents.init();
+        onView(withId(R.id.input_email)).perform(typeText("aa@test.aa"), closeSoftKeyboard());
+        onView(withId(R.id.input_password)).perform(typeText(""), closeSoftKeyboard());
+        onView(withId(R.id.btn_sign_in)).perform(click());
+
+
+        new Thread(() -> {
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException ex) {
+                ex.printStackTrace();
+            }
+//            onView(withId(R.id.textMain)).check(matches(isDisplayed()));
+//            onView(withId(R.id.btn_sign_in)).check(matched());
+//            intended(toPackage("com.example.lsdchat.ui.main.dialogs.ChatsFragment"));
+           /* Intent intent = new Intent();
+            ComponentName componentName = new ComponentName("com.example.lsdchat.ui",
+                    ChatsFragment.class.getName());
+            intent.setComponent(componentName);
+            Intents.init();
+            InstrumentationRegistry.getContext().startActivity(intent);*/
+
+        }).start();
+
+    }
+
 
 
 }

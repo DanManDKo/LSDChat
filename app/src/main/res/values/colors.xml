@@ -5,6 +5,8 @@
     <color name="colorAccent">#2BBC9B</color>
 
     <color name="colorWhite">#ffffff</color>
+    <color name="colorGray">#cccccc</color>
+    <color name="colorBlack">#000000</color>
     <color name="colorWhiteOpacity">#99ffffff</color>
     <color name="colorGreen">#2BBC9B</color>
     <color name="colorGreenDark">#219177</color>
@@ -15,4 +17,9 @@
     <color name="colorFbButton">#3b5998</color>
     <color name="colorButtonText">#009688</color>
     <color name="colorForgotPassword">#50000000</color>
-</resources>
+    <color name="colorButtonCreate">#327780</color>
+    <color name="colorNewChatText">#262626</color>
+
+    <color name="line">#28000000</color>
+
+   </resources>

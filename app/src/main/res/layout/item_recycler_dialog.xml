@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginLeft="16dp"
+    android:layout_marginRight="16dp"
+    android:layout_marginTop="16dp"
+    android:background="@color/colorWhite"
+    app:cardBackgroundColor="@color/colorWhite"
+    android:backgroundTint="@color/colorWhite"
+    >
+
+    <RelativeLayout
+        android:id="@+id/recycler_rl"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:padding="8dp">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/recycler_chat_logo"
+            android:layout_width="@dimen/usericon_size"
+            android:layout_height="@dimen/usericon_size"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="16dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/userpic_group" />
+
+
+        <TextView
+            android:id="@+id/recycler_chat_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/recycler_chat_logo"
+            android:layout_weight="20"
+            android:lines="1"
+            android:paddingRight="72dp"
+            android:textColor="@color/colorBlack"
+            tools:text="Chat namess s sssssss s s s s s s ss ss sss sss ss sss sss sssssssssss" />
+
+        <TextView
+            android:id="@+id/recycler_chat_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginLeft="16dp"
+            android:layout_weight="5"
+            android:lines="1"
+            tools:text="12/02/17" />
+
+        <TextView
+            android:id="@+id/recycler_chat_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/recycler_chat_name"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_toRightOf="@id/recycler_chat_logo"
+            android:lines="1"
+            tools:text="last person who send a message" />
+
+        <TextView
+            android:id="@+id/recycler_chat_last_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/recycler_chat_title"
+            android:layout_toRightOf="@id/recycler_chat_logo"
+            android:lines="1"
+            tools:text="last sended message" />
+
+        <TextView
+            android:id="@+id/recycler_chat_new_message_counter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/oval_shape"
+            android:paddingBottom="6dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:paddingTop="6dp"
+            android:textColor="@color/colorWhite"
+            android:visibility="gone"
+            tools:text="+3" />
+    </RelativeLayout>
+</android.support.v7.widget.CardView>

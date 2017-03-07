@@ -5,6 +5,8 @@ import com.example.lsdchat.api.login.request.LoginRequest;
 import com.example.lsdchat.api.login.request.SessionRequestNoAuth;
 import com.example.lsdchat.api.login.response.LoginResponse;
 import com.example.lsdchat.api.login.response.SessionResponse;
+import com.example.lsdchat.api.registration.request.UpdateRequest;
+import com.example.lsdchat.api.registration.request.UpdateRequestUser;
 import com.example.lsdchat.api.registration.service.RegistrationService;
 import com.example.lsdchat.api.registration.request.RegistrationCreateFileRequest;
 import com.example.lsdchat.api.registration.request.RegistrationCreateFileRequestBlob;
@@ -91,6 +93,16 @@ public class RegistrationModel implements RegistrationContract.Model {
     @Override
     public Observable<Void> uploadFileMap(Map<String, RequestBody> map, MultipartBody.Part part) {
         return mRegistrationService.uploadFileWithPartMap(map,part)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    @Override
+    public Observable<LoginResponse> updateUserInfo(String token, int userId, long blobId) {
+        UpdateRequestUser updateRequestUser = new UpdateRequestUser(blobId);
+        UpdateRequest body = new UpdateRequest(updateRequestUser);
+
+        return mRegistrationService.updateUserInfoRequest(userId, token, body)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
