@@ -18,7 +18,6 @@ public class RegistrationRequestUser {
     @SerializedName("blob_id")
     private Integer blobId;
 
-
     public RegistrationRequestUser(String email, String password, String fullName, String phone, String website, String facebookId, Integer blobId) {
         this.email = email;
         this.password = password;

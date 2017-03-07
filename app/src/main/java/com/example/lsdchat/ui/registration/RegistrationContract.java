@@ -3,15 +3,11 @@ package com.example.lsdchat.ui.registration;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.support.design.widget.TextInputEditText;
-import android.widget.Button;
-import android.widget.ImageView;
 
 import com.example.lsdchat.api.login.response.LoginResponse;
 import com.example.lsdchat.api.login.response.SessionResponse;
 import com.example.lsdchat.api.registration.response.RegistrationCreateFileResponse;
 import com.example.lsdchat.api.registration.response.RegistrationResponse;
-import com.redmadrobot.inputmask.MaskedTextChangedListener;
 
 import java.util.Map;
 
@@ -28,13 +24,15 @@ public interface RegistrationContract {
 
         void setPhoneNumber(String phone);
 
-        boolean validateRegForm(String email, String pass, String confPass);
+        boolean validateRegForm(String email, String pass, String confPass, String fullName);
 
         boolean validateEmail(String email);
 
         boolean validatePassword(String pass);
 
         boolean validateConfPassword(String pass, String confPass);
+
+        boolean validateFullName(String name);
 
         void onActivityResult(int requestCode, int resultCode, Intent data);
 
@@ -61,6 +59,8 @@ public interface RegistrationContract {
         void setLengthPasswordError();
 
         void setEquelsPasswordError();
+
+        void setFullNameError();
 
         void resetErrorMessages();
 
@@ -97,6 +97,8 @@ public interface RegistrationContract {
 
         Observable<Void> declareFileUploaded(long size, String token, long blobId);
 
-        Observable<Void> uploadFileMap(Map<String, RequestBody> map,MultipartBody.Part part);
+        Observable<Void> uploadFileMap(Map<String, RequestBody> map, MultipartBody.Part part);
+
+        Observable<LoginResponse> updateUserInfo(String token, int userId, long blobId);
     }
 }

@@ -17,4 +17,9 @@
     <color name="colorFbButton">#3b5998</color>
     <color name="colorButtonText">#009688</color>
     <color name="colorForgotPassword">#50000000</color>
-</resources>
+    <color name="colorButtonCreate">#327780</color>
+    <color name="colorNewChatText">#262626</color>
+
+    <color name="line">#28000000</color>
+
+   </resources>

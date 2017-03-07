@@ -42,6 +42,7 @@
 
     <!--registration form string-->
     <string name="invalid_email">Invalid email</string>
+    <string name="name_cannot_be_empty">Name cann`t be empty</string>
     <string name="password_is_weak">Password is weak. Please use at least two digits and two capitalized letters</string>
     <string name="passwords_donot_match">Passwords do not match</string>
     <string name="password_length">Password length should be 8-12 symbols</string>
@@ -75,7 +76,7 @@
         - a user tries to authorise with wrong login and password\n
         - a user uses invalid session token</string>
     <string name="error.code.403">Access has been refused. Possible causes:\n
-        - a user tries to retrieve chat messages for chat dialog he is not in occupants list.</string>
+        - a user tries to retrieve chat messages for chat dialog he is not in occupants mData.</string>
     <string name="error.code.404">The requested resource could not be found. Possible causes:\n
         - a user tries to retrieve chat messages for invalid chat dialog id.\n
         - a user tries to retrieve a custom object record with invalid id.</string>
@@ -93,4 +94,37 @@
     <string name="fab_behavior">com.example.lsdchat.behavior.FabOnScrollBehavior</string>
     <string name="lorem">Lorem \n ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</string>
     <string name="message_nochats_spannable_text_invite_friends">There are no chats yet. \n Invite friends and start a new chat.</string>
+
+
+    <!--new chat screen -->
+    <string name="chat_name">Chat name</string>
+    <string name="chat_privacy">Privacy</string>
+    <string name="chat_public">Public</string>
+    <string name="chat_private">Private</string>
+    <string name="chat_select_members">Select members</string>
+    <string name="chat_button_create">Create</string>
+    <string name="chat_error_name">Enter name chat</string>
+    <string name="chat_error_users">Select users from mData</string>
+    <string name="chat_error_type">Select type dialog (public or private)</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="seems_like_you_are_the_only_user">Seems like you are the only User :)</string>
+
+    <!--user-->
+    <string name="menu_search">Search</string>
+    <string name="clear_sort_created_at">Clear Sort (created_at)</string>
+    <string name="by_name_asc">By Name (ASC)</string>
+    <string name="by_name_desc">By Name (DESC)</string>
+    <string name="sorter">Sorter</string>
+    <string name="chats">Chats</string>
+
+    <!--user info-->
+    <string name="user_email">EMAIL</string>
+    <string name="user_phone">PHONE</string>
+    <string name="user_website">WEBSITE</string>
+    <string name="user_info_error_email">Please install email client app first</string>
+    <string name="user_info_error_phone">You cannot make calls from your device right now.</string>
+
+
 </resources>

@@ -13,8 +13,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
 
+import com.example.lsdchat.App;
 import com.example.lsdchat.R;
-import com.example.lsdchat.ui.MainActivity;
+import com.example.lsdchat.ui.main.MainActivity;
 import com.facebook.FacebookSdk;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.redmadrobot.inputmask.MaskedTextChangedListener;
@@ -57,7 +58,7 @@ public class RegistrationActivity extends AppCompatActivity implements Registrat
 
         setContentView(R.layout.activity_registration);
 
-        mRegistrationPresenter = new RegistrationPresenter(this);
+        mRegistrationPresenter = new RegistrationPresenter(this, App.getSharedPreferencesManager(this));
         initView();
 
         setRegFormHint();
@@ -68,6 +69,7 @@ public class RegistrationActivity extends AppCompatActivity implements Registrat
         mEmailEdit.addTextChangedListener(mRegistrationPresenter.getTextWatcher());
         mPassEdit.addTextChangedListener(mRegistrationPresenter.getTextWatcher());
         mConfPassEdit.addTextChangedListener(mRegistrationPresenter.getTextWatcher());
+        mNameEdit.addTextChangedListener(mRegistrationPresenter.getTextWatcher());
 
         MaskedTextChangedListener listener = new MaskedTextChangedListener(PHONE_MASK, true, mPhoneEdit, null,
                 new MaskedTextChangedListener.ValueListener() {
@@ -186,6 +188,11 @@ public class RegistrationActivity extends AppCompatActivity implements Registrat
     }
 
     @Override
+    public void setFullNameError() {
+        mName.setError(getString(R.string.name_cannot_be_empty));
+    }
+
+    @Override
     public void setClickableSignupButton(boolean value) {
         mSignUpButton.setClickable(value);
     }
@@ -205,6 +212,7 @@ public class RegistrationActivity extends AppCompatActivity implements Registrat
         mEmail.setError(null);
         mPass.setError(null);
         mConfPass.setError(null);
+        mName.setError(null);
     }
 
     @Override

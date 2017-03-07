@@ -4,7 +4,6 @@ package com.example.lsdchat.ui.splash;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Handler;
 import android.util.Log;
 
@@ -61,6 +60,7 @@ public class SplashScreenPresenter implements SplashContract.Presenter {
 
         if (isLogged()) {
             requestSessionAndLogin(mUser.getEmail(), mUser.getPassword());
+
             mNavigateToMain = true;
         }
     }
@@ -108,18 +108,8 @@ public class SplashScreenPresenter implements SplashContract.Presenter {
         AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
         builder.setTitle(mContext.getString(R.string.network_is_absent))
                 .setMessage(mContext.getString(R.string.check_connection))
-                .setNegativeButton(mContext.getString(R.string.cancel), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        ((Activity) mContext).finish();
-                    }
-                })
-                .setPositiveButton(mContext.getString(R.string.retry), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        leaveSplashScreen();
-                    }
-                }).setCancelable(false).create().show();
+                .setNegativeButton(mContext.getString(R.string.cancel), (dialog, which) -> ((Activity) mContext).finish())
+                .setPositiveButton(mContext.getString(R.string.retry), (dialog, which) -> leaveSplashScreen()).setCancelable(false).create().show();
 
     }
 

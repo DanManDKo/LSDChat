@@ -4,8 +4,12 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
+import io.realm.annotations.PrimaryKey;
+
 
 public class ItemDialog {
+
+    @PrimaryKey
     @SerializedName("_id")
     private String id;
     @SerializedName("created_at")
@@ -94,6 +98,7 @@ public class ItemDialog {
     public void setPhoto(String photo) {
         this.photo = photo;
     }
+
 
     public List<Integer> getOccupantsIdsList() {
         return occupantsIdsList;

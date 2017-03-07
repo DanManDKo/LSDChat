@@ -7,6 +7,7 @@ import com.example.lsdchat.api.login.response.SessionResponse;
 import com.example.lsdchat.api.registration.request.RegistrationCreateFileRequest;
 import com.example.lsdchat.api.registration.request.RegistrationDeclaringRequest;
 import com.example.lsdchat.api.registration.request.RegistrationRequest;
+import com.example.lsdchat.api.registration.request.UpdateRequest;
 import com.example.lsdchat.api.registration.response.RegistrationCreateFileResponse;
 import com.example.lsdchat.api.registration.response.RegistrationResponse;
 import com.example.lsdchat.constant.ApiConstant;
@@ -47,12 +48,11 @@ public interface RegistrationService {
     @PUT(ApiConstant.DECLARING_REQUEST)
     Observable<Void> declaringFileUploadedRequest(@Path(ApiConstant.UploadParametres.BLOB_ID) long bloId, @Header(ApiConstant.QB_TOKEN) String token, @Body RegistrationDeclaringRequest body);
 
-
     @Multipart
     @POST(ApiConstant.SERVER_AMAZON)
     Observable<Void> uploadFileWithPartMap(@PartMap() Map<String, RequestBody> partMap,
                                            @Part MultipartBody.Part file);
 
-
-
+    @PUT(ApiConstant.UPDATE_REQUEST)
+    Observable<LoginResponse> updateUserInfoRequest(@Path(ApiConstant.UploadParametres.ID) int userId, @Header(ApiConstant.QB_TOKEN) String token, @Body UpdateRequest body);
 }

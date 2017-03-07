@@ -7,8 +7,7 @@ import com.crashlytics.android.Crashlytics;
 import com.example.lsdchat.api.ApiManager;
 import com.example.lsdchat.manager.DataManager;
 import com.example.lsdchat.manager.SharedPreferencesManager;
-import com.facebook.FacebookSdk;
-import com.facebook.appevents.AppEventsLogger;
+import com.example.lsdchat.util.Utils;
 import com.facebook.drawee.backends.pipeline.Fresco;
 
 import io.fabric.sdk.android.Fabric;
@@ -20,9 +19,13 @@ public class App extends Application {
     private static DataManager sDataManager;
     private static ApiManager sApiManager;
     private static SharedPreferencesManager sSharedPreferencesManager;
+    private static Context context;
+
+    public static Context getContext() {
+        return context;
+    }
 
     public static DataManager getDataManager() {
-
         return sDataManager;
     }
 
@@ -43,7 +46,7 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-
+        context = getApplicationContext();
         Fresco.initialize(this);
 
         Fabric.with(this, new Crashlytics());
@@ -61,6 +64,9 @@ public class App extends Application {
                         .setFontAttrId(R.attr.fontPath)
                         .build()
         );
+
+        Utils.initLoader(getApplicationContext());
+
     }
 
 }

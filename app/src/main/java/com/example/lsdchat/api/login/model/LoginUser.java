@@ -1,9 +1,27 @@
 package com.example.lsdchat.api.login.model;
 
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.SerializedName;
 
-public class LoginUser {
+import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
+
+public class LoginUser extends RealmObject implements Parcelable {
+    public static final Creator<LoginUser> CREATOR = new Creator<LoginUser>() {
+        @Override
+        public LoginUser createFromParcel(Parcel in) {
+            return new LoginUser(in);
+        }
+
+        @Override
+        public LoginUser[] newArray(int size) {
+            return new LoginUser[size];
+        }
+    };
+    @PrimaryKey
     @SerializedName("id")
     private Integer id;
     @SerializedName("full_name")
@@ -36,6 +54,37 @@ public class LoginUser {
     private String customData;
     @SerializedName("user_tags")
     private String userTags;
+    private String imagePath;
+
+    public LoginUser() {
+    }
+
+    protected LoginUser(Parcel in) {
+        fullName = in.readString();
+        email = in.readString();
+        login = in.readString();
+        phone = in.readString();
+        website = in.readString();
+        createdAt = in.readString();
+        updatedAt = in.readString();
+        lastRequestAt = in.readString();
+        externalUserId = in.readInt();
+        facebookId = in.readString();
+        twitterId = in.readString();
+        twitterDigitsId = in.readInt();
+        blobId = in.readInt();
+        customData = in.readString();
+        userTags = in.readString();
+        imagePath = in.readString();
+    }
+
+    public String getImagePath() {
+        return imagePath;
+    }
+
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
+    }
 
     public Integer getId() {
         return id;
@@ -165,4 +214,29 @@ public class LoginUser {
         this.userTags = userTags;
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+
+        dest.writeString(fullName);
+        dest.writeString(email);
+        dest.writeString(login);
+        dest.writeString(phone);
+        dest.writeString(website);
+        dest.writeString(createdAt);
+        dest.writeString(updatedAt);
+        dest.writeString(lastRequestAt);
+        dest.writeInt(externalUserId);
+        dest.writeString(facebookId);
+        dest.writeString(twitterId);
+        dest.writeInt(twitterDigitsId);
+        dest.writeInt(blobId);
+        dest.writeString(customData);
+        dest.writeString(userTags);
+        dest.writeString(imagePath);
+    }
 }
