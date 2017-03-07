@@ -7,6 +7,7 @@ import com.example.lsdchat.constant.ApiConstant;
 import com.example.lsdchat.api.login.response.SessionResponse;
 
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.Header;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
@@ -22,6 +23,9 @@ public interface LoginService {
     @POST(ApiConstant.LOGIN_REQUEST)
     Observable<LoginResponse> getLogin(@Header(ApiConstant.QB_TOKEN) String token, @Body LoginRequest body);
 
+    @Headers(ApiConstant.HEADER_CONTENT_TYPE)
+    @DELETE(ApiConstant.SESSION_REQUEST)
+    Observable<Void> destroySession(@Header(ApiConstant.QB_TOKEN) String token);
 
 
 }

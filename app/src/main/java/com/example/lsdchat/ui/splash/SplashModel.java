@@ -24,7 +24,7 @@ public class SplashModel implements SplashContract.Model {
     private LoginService mLoginService;
 
     public SplashModel() {
-        mLoginService = App.getApiManager().getmLoginService();
+        mLoginService = App.getApiManager().getLoginService();
     }
 
     @Override

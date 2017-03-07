@@ -15,7 +15,7 @@ import android.widget.ProgressBar;
 
 import com.example.lsdchat.App;
 import com.example.lsdchat.R;
-import com.example.lsdchat.ui.MainActivity;
+import com.example.lsdchat.ui.main.MainActivity;
 import com.facebook.FacebookSdk;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.redmadrobot.inputmask.MaskedTextChangedListener;

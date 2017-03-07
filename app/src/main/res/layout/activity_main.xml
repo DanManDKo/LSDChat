@@ -1,91 +1,15 @@
-<android.support.v4.widget.DrawerLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/chats_drawer"
+    android:id="@+id/chats_coordinator"
+    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:clickable="true"
-    android:focusableInTouchMode="true">
+    android:layout_height="match_parent">
 
-    <android.support.design.widget.CoordinatorLayout
-        android:id="@+id/chats_coordinator"
+
+    <FrameLayout
+        android:id="@+id/fragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <android.support.design.widget.AppBarLayout
-            android:id="@+id/chats_appbar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
-
-           <include layout="@layout/toolbar"
-                    android:id="@+id/chats_toolbar"/>
-
-            <android.support.design.widget.TabLayout
-                android:id="@+id/chats_tabs"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-                android:visibility="gone"
-                app:tabGravity="fill"
-                app:tabIndicatorColor="#ffffff"
-                app:tabMode="fixed"/>
-        </android.support.design.widget.AppBarLayout>
-
-        <com.example.lsdchat.behavior.NonSwipeableViewPager
-            android:id="@+id/chats_viewpager"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
-
-        <LinearLayout
-            android:id="@+id/message_nochats_root_layout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:visibility="visible">
-
-            <ImageView
-                android:id="@+id/message_nochats_image_view"
-                android:layout_width="150dp"
-                android:layout_height="150dp"
-                android:layout_gravity="center"
-                android:src="@drawable/logo_empty_state"/>
-
-            <TextView
-                android:id="@+id/message_nochats_text_view"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:clickable="true"
-                android:gravity="center"
-                android:textColor="@color/colorGray"/>
-        </LinearLayout>
+        android:layout_height="match_parent"/>
 
 
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/chats_fab"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|end"
-            android:layout_marginBottom="16dp"
-            android:layout_marginRight="16dp"
-            android:clickable="true"
-            android:src="@drawable/ic_add_white_24dp"
-            app:backgroundTint="@color/colorNavyBlue"
-            app:elevation="8dp"
-            app:fabSize="normal"
-            app:layout_behavior="@string/fab_behavior"/>
-
-    </android.support.design.widget.CoordinatorLayout>
-
-    <android.support.design.widget.NavigationView
-        android:id="@+id/chats_nav"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_gravity="start"
-        android:fitsSystemWindows="true"
-        app:headerLayout="@layout/navigation_drawer_header"
-        app:menu="@menu/navigation_drawer_menu"/>
-</android.support.v4.widget.DrawerLayout>
+</LinearLayout>

@@ -18,8 +18,8 @@ import android.widget.TextView;
 import com.example.lsdchat.App;
 import com.example.lsdchat.R;
 import com.example.lsdchat.ui.forgot_password.ForgotPasswordFragment;
+import com.example.lsdchat.ui.main.MainActivity;
 import com.example.lsdchat.ui.registration.RegistrationActivity;
-import com.example.lsdchat.ui.MainActivity;
 import com.example.lsdchat.util.ErrorsCode;
 
 import retrofit2.adapter.rxjava.HttpException;

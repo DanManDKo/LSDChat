@@ -76,7 +76,7 @@
         - a user tries to authorise with wrong login and password\n
         - a user uses invalid session token</string>
     <string name="error.code.403">Access has been refused. Possible causes:\n
-        - a user tries to retrieve chat messages for chat dialog he is not in occupants list.</string>
+        - a user tries to retrieve chat messages for chat dialog he is not in occupants mData.</string>
     <string name="error.code.404">The requested resource could not be found. Possible causes:\n
         - a user tries to retrieve chat messages for invalid chat dialog id.\n
         - a user tries to retrieve a custom object record with invalid id.</string>
@@ -96,7 +96,6 @@
     <string name="message_nochats_spannable_text_invite_friends">There are no chats yet. \n Invite friends and start a new chat.</string>
 
 
-
     <!--new chat screen -->
     <string name="chat_name">Chat name</string>
     <string name="chat_privacy">Privacy</string>
@@ -105,9 +104,27 @@
     <string name="chat_select_members">Select members</string>
     <string name="chat_button_create">Create</string>
     <string name="chat_error_name">Enter name chat</string>
-    <string name="chat_error_users">Select users from list</string>
+    <string name="chat_error_users">Select users from mData</string>
     <string name="chat_error_type">Select type dialog (public or private)</string>
 
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="seems_like_you_are_the_only_user">Seems like you are the only User :)</string>
+
+    <!--user-->
+    <string name="menu_search">Search</string>
+    <string name="clear_sort_created_at">Clear Sort (created_at)</string>
+    <string name="by_name_asc">By Name (ASC)</string>
+    <string name="by_name_desc">By Name (DESC)</string>
+    <string name="sorter">Sorter</string>
+    <string name="chats">Chats</string>
+
+    <!--user info-->
+    <string name="user_email">EMAIL</string>
+    <string name="user_phone">PHONE</string>
+    <string name="user_website">WEBSITE</string>
+    <string name="user_info_error_email">Please install email client app first</string>
+    <string name="user_info_error_phone">You cannot make calls from your device right now.</string>
 
 
 </resources>

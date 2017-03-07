@@ -16,6 +16,7 @@ import com.example.lsdchat.model.User;
 import com.example.lsdchat.service.NotifyService;
 import com.example.lsdchat.util.Email;
 import com.example.lsdchat.util.Network;
+import com.example.lsdchat.util.Utils;
 import com.jakewharton.rxbinding.widget.RxTextView;
 
 import rx.Observable;
@@ -125,20 +126,21 @@ public class LoginPresenter implements LoginContract.Presenter {
         mModel.getLogin(email, password, token)
                 .doOnNext(loginResponse -> mView.navigateToMainScreen())
                 .subscribe(loginUser -> {
-
-                            addUserToDb(email, password, mView.isKeepSignIn());
+                    String fullName = loginUser.getLoginUser().getFullName();
+                    long blobId = loginUser.getLoginUser().getBlobId();
+                            if (blobId!=0) {
+                                mModel.saveUser(new User(email,password,fullName,blobId,mView.isKeepSignIn()));
+                            }
+                            else {
+                                mModel.saveUser(new User(email,password,fullName,mView.isKeepSignIn()));
+                            }
                         },
                         throwable -> mView.dialogError(throwable));
     }
 
-    //    add current user to db
-    private void addUserToDb(String email, String password, boolean isKeepSignIn) {
-        User currentUser = new User();
-        currentUser.setEmail(email);
-        currentUser.setPassword(password);
-        currentUser.setSignIn(isKeepSignIn);
-        mDataManager.insertUser(currentUser);
-    }
+
+
+
 
 
     @Override
