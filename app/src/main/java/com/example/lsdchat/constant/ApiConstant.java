@@ -37,6 +37,8 @@ public class ApiConstant {
     public static final int TYPE_DIALOG_GROUP = 2;
     public static final int TYPE_DIALOG_PRIVATE = 3;
 
+
+
     //headers
     public static final String HEADER_CONTENT_TYPE = "Content-Type: application/json";
 

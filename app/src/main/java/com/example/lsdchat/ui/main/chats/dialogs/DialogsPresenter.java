@@ -8,6 +8,7 @@ import android.widget.RelativeLayout;
 import com.example.lsdchat.constant.ApiConstant;
 import com.example.lsdchat.manager.SharedPreferencesManager;
 import com.example.lsdchat.model.DialogModel;
+import com.example.lsdchat.ui.main.conversation.ConversationFragment;
 import com.example.lsdchat.util.Utils;
 
 import java.util.ArrayList;
@@ -87,7 +88,8 @@ public class DialogsPresenter implements DialogsContract.Presenter {
     @Override
     public void setOnClickListener(RelativeLayout relativeLayout, DialogModel dialogModel) {
         relativeLayout.setOnClickListener(v -> {
-//            mView.navigateToChat();
+            mView.navigateToChat(ConversationFragment
+                    .newInstance(dialogModel.getId(),dialogModel.getType(),dialogModel.getName()));
 
         });
     }

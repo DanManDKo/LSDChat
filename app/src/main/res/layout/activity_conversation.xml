@@ -1,105 +1,107 @@
-<android.support.design.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/conversation_coordinator"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-    <android.support.design.widget.AppBarLayout
-        android:id="@+id/conversation_appbar"
+    <include layout="@layout/toolbar" />
+
+    <android.support.design.widget.CoordinatorLayout
+        android:id="@+id/conversation_coordinator"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+        android:layout_height="match_parent">
 
-        <include
-            android:id="@+id/conversation_toolbar"
-            layout="@layout/toolbar"/>
-    </android.support.design.widget.AppBarLayout>
 
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                    android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
-                    android:background="#e1e1e1"
-                    android:orientation="vertical">
+        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:background="#e1e1e1"
+            android:orientation="vertical">
 
-        <LinearLayout android:id="@+id/conversation_error_wrapper"
-                      android:layout_width="match_parent"
-                      android:layout_height="wrap_content"
-                      android:layout_marginTop="?attr/actionBarSize"
-                      android:orientation="vertical">
-
-            <TextView android:id="@+id/conversation_error"
-                      android:layout_width="match_parent"
-                      android:layout_height="wrap_content"
-                      android:gravity="center"
-                      android:paddingBottom="16dp"
-                      android:paddingTop="16dp"
-                      android:text="Connection problem"
-                      android:textColor="@color/colorRed"
-
-                      android:textSize="12dp"
-                      android:visibility="gone"/>
-        </LinearLayout>
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/conversation_list"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_above="@+id/conversation_sendform"
-            android:layout_below="@id/conversation_error_wrapper"
-            android:divider="@null"
-            android:dividerHeight="0dp"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
-            android:text="hello world"/>
-
-        <LinearLayout
-            android:id="@+id/conversation_sendform"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentLeft="true"
-            android:background="@color/colorWhite"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:paddingBottom="2dp">
-
-            <ImageButton
-                android:id="@+id/conversation_smiles"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:id="@+id/conversation_error_wrapper"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentRight="true"
-                android:layout_marginLeft="8dp"
-                android:layout_marginRight="8dp"
-                android:background="@drawable/smiles"/>
+                android:orientation="vertical">
 
-            <EditText
-                android:id="@+id/conversation_edittext"
-                android:layout_width="252dp"
+                <TextView
+                    android:id="@+id/conversation_error"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:paddingBottom="16dp"
+                    android:paddingTop="16dp"
+                    android:text="Connection problem"
+                    android:textColor="@color/colorRed"
+
+                    android:textSize="12dp"
+                    android:visibility="gone" />
+            </LinearLayout>
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/conversation_list"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_above="@+id/conversation_sendform"
+                android:layout_below="@id/conversation_error_wrapper"
+                android:divider="@null"
+                android:dividerHeight="0dp"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:text="hello world" />
+
+            <LinearLayout
+                android:id="@+id/conversation_sendform"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
                 android:layout_alignParentLeft="true"
-                android:layout_alignTop="@+id/button1"
-                android:layout_toLeftOf="@+id/conversation_send"
-                android:layout_weight="0.72"
-                android:ems="10"
-                android:maxHeight="80dp"
-                android:maxLength="500"/>
+                android:background="@color/colorWhite"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingBottom="2dp">
 
-            <ImageButton
-                android:id="@+id/conversation_send"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentRight="true"
-                android:layout_marginLeft="8dp"
-                android:layout_marginRight="8dp"
-                android:background="@drawable/send"/>
-        </LinearLayout>
-        <ProgressBar android:id="@+id/conversation_progress_bar"
-                     android:layout_width="64dp"
-                     android:layout_height="64dp"
-                     android:layout_centerInParent="true"
-                     android:visibility="gone"/>
-    </RelativeLayout>
-</android.support.design.widget.CoordinatorLayout>
+                <ImageButton
+                    android:id="@+id/conversation_smiles"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    android:background="@drawable/smiles" />
+
+                <EditText
+                    android:id="@+id/conversation_edittext"
+                    android:layout_width="252dp"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignTop="@+id/button1"
+                    android:layout_toLeftOf="@+id/conversation_send"
+                    android:layout_weight="0.72"
+                    android:ems="10"
+                    android:maxHeight="80dp"
+                    android:maxLength="500" />
+
+                <ImageButton
+                    android:id="@+id/conversation_send"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    android:background="@drawable/send" />
+            </LinearLayout>
+
+            <ProgressBar
+                android:id="@+id/conversation_progress_bar"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:layout_centerInParent="true"
+                android:visibility="gone" />
+        </RelativeLayout>
+    </android.support.design.widget.CoordinatorLayout>
+
+</LinearLayout>

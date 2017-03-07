@@ -1,4 +1,4 @@
-package com.example.lsdchat.ui.conversation;
+package com.example.lsdchat.ui.main.conversation;
 
 
 import android.content.Context;

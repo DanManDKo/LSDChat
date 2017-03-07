@@ -55,7 +55,9 @@
             android:process=":myservice" />
 
         <activity android:name=".ui.BaseActivity" />
-        <activity android:name=".ui.main.MainActivity"></activity>
+        <activity android:name=".ui.main.MainActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            />
     </application>
 
 </manifest>

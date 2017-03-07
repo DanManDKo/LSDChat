@@ -1,10 +1,10 @@
 package com.example.lsdchat.manager;
 
-<<<<<<< Temporary merge branch 1
-import com.example.lsdchat.model.ContactsModel;
-=======
-import com.example.lsdchat.model.RealmMessage;
->>>>>>> Temporary merge branch 2
+
+import com.example.lsdchat.api.dialog.model.ItemMessage;
+import com.example.lsdchat.api.login.model.LoginUser;
+import com.example.lsdchat.constant.ApiConstant;
+import com.example.lsdchat.model.DialogModel;
 import com.example.lsdchat.model.User;
 import com.example.lsdchat.model.UserQuick;
 

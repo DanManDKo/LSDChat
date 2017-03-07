@@ -2,7 +2,6 @@ package com.example.lsdchat.unit.registration;
 
 import com.example.lsdchat.ui.registration.RegistrationActivity;
 import com.example.lsdchat.ui.registration.RegistrationContract;
-import com.example.lsdchat.ui.registration.RegistrationPresenter;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -24,7 +23,7 @@ public class RegistrationPresenterTest {
     @Before
     public void init() throws Exception {
         view = mock(RegistrationActivity.class);
-        presenter = new RegistrationPresenter(view);
+//        presenter = new RegistrationPresenter(view);
     }
 
     @Test

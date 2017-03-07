@@ -1,10 +1,8 @@
-package com.example.lsdchat.ui.conversation;
+package com.example.lsdchat.ui.main.conversation;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -26,11 +24,12 @@ import com.example.lsdchat.R;
 import com.example.lsdchat.api.dialog.model.ItemMessage;
 import com.example.lsdchat.constant.ApiConstant;
 import com.example.lsdchat.listener.EndlessScrollListener;
+import com.example.lsdchat.ui.main.fragment.BaseFragment;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ConversationFragment extends Fragment implements ConversationContract.View {
+public class ConversationFragment extends BaseFragment implements ConversationContract.View {
     private static final String EMPTY_STRING = "";
 
     private static final String DIALOG_ID = "dialog_id";
@@ -51,6 +50,7 @@ public class ConversationFragment extends Fragment implements ConversationContra
     private String ownerJID = "23163511-52350@chat.quickblox.com";
     private String mucToJID;
     private String dialogID;
+    private String mNameDialog;
 
     private ArrayList<ItemMessage> mMessageList = new ArrayList<>();
 
@@ -71,17 +71,16 @@ public class ConversationFragment extends Fragment implements ConversationContra
         setHasOptionsMenu(true);
     }
 
-    @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.activity_conversation, container, false);
         mConversationPresenter = new ConversationPresenter(this, App.getSharedPreferencesManager(getActivity()));
         dialogID = getArguments().getString(DIALOG_ID);
         mucToJID = ApiConstant.APP_ID + "_" + dialogID + "@muc.chat.quickblox.com";
+        mNameDialog = getArguments().getString(DIALOG_NAME);
 
         initView(view);
 
-        configurateToolbar();
 
         Intent intentService = new Intent(getActivity(), XMPPService.class);
         getActivity().startService(intentService);
@@ -159,7 +158,7 @@ public class ConversationFragment extends Fragment implements ConversationContra
     }
 
     private void initView(View view) {
-        mToolbar = (Toolbar) view.findViewById(R.id.conversation_toolbar);
+        mToolbar = (Toolbar) view.findViewById(R.id.chats_toolbar);
 
         mMessage = (EditText) view.findViewById(R.id.conversation_edittext);
         mButtonSend = (ImageButton) view.findViewById(R.id.conversation_send);
@@ -167,16 +166,11 @@ public class ConversationFragment extends Fragment implements ConversationContra
         mRecyclerView = (RecyclerView) view.findViewById(R.id.conversation_list);
         mTextViewError = (TextView) view.findViewById(R.id.conversation_error);
         mProgressBar = (ProgressBar) view.findViewById(R.id.conversation_progress_bar);
+
+        initToolbar(mToolbar,mNameDialog);
     }
 
-    private void configurateToolbar() {
-        ((AppCompatActivity) getActivity()).setSupportActionBar(mToolbar);
-        if (((AppCompatActivity) getActivity()).getSupportActionBar() != null) {
-            ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            ((AppCompatActivity) getActivity()).getSupportActionBar().setHomeButtonEnabled(true);
-            ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle("Conversation");
-        }
-    }
+
 
     @Override
     public void fillConversationAdapter(List<ItemMessage> list) {
