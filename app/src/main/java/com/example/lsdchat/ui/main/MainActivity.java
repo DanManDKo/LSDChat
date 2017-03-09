@@ -13,6 +13,7 @@ import com.example.lsdchat.util.UsersUtil;
 
 import java.util.List;
 
+// TODO: 3/9/17 [Code Review] Just cleanup the code :)
 public class MainActivity extends AppCompatActivity {
 
     private FrameLayout mFrameLayout;

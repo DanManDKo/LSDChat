@@ -32,13 +32,16 @@ public class ChatsPresenter implements ChatsContract.Presenter {
 
     public ChatsPresenter(ChatsContract.View mView, SharedPreferencesManager sharedPreferencesManager) {
         this.mView = mView;
+        // TODO: 3/9/17 [Code Review] inject ChatsContract.Model instance as a parameter in constructor,
+        // SharedPreferencesManager should be in model layer
         mModel = new ChatsModel();
         this.mSharedPreferencesManager = sharedPreferencesManager;
         mUser = mModel.getCurrentUser();
 
     }
 
-
+    // TODO: 3/9/17 [Code Review] mFloatingActionButton.setOnClickListener should locate in fragment, call presenter's startNewChat
+    // method, and also make navigateToNewChatScreen method in View layer and call it here
     @Override
     public void fabClick(FloatingActionButton mFloatingActionButton) {
         mFloatingActionButton.setOnClickListener(v -> mView.startNewChat());

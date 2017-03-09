@@ -84,6 +84,7 @@ public class Utils {
 
 
     private static Observable<File> saveImage(Response<ResponseBody> response, long blobId) {
+        // TODO: 3/9/17 [Code Review] Use Observable.fromCallable to avoid backpressure errors
         return Observable.create(subscriber -> {
             try {
 

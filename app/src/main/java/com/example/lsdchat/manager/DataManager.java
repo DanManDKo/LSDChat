@@ -14,6 +14,8 @@ import io.realm.Realm;
 import io.realm.RealmResults;
 import io.realm.Sort;
 
+// TODO: 3/9/17 [Code Review] make sure all your code related to work with db runs on working thread
+// (create Observable wrappers maybe)
 public class DataManager {
     private Realm mRealm;
 
