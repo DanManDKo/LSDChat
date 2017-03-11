@@ -9,6 +9,7 @@ import android.widget.Toast;
 
 import com.example.lsdchat.App;
 import com.example.lsdchat.api.dialog.model.ItemMessage;
+import com.example.lsdchat.constant.ApiConstant;
 import com.example.lsdchat.manager.SharedPreferencesManager;
 import com.example.lsdchat.util.Network;
 
@@ -22,14 +23,15 @@ public class ConversationPresenter implements ConversationContract.Presenter {
     private Context mContext;
     private SharedPreferencesManager mPreferencesManager;
     private BroadcastReceiver mBroadcastReceiver;
-    private String ownerJID = "23163511-52350@chat.quickblox.com";
-//    private String dialogID = "589f6bfda0eb47ea8400026a";
+    private int userID;
 
     public ConversationPresenter(ConversationContract.View view, SharedPreferencesManager manager) {
         mView = view;
         mContext = view.getContext();
         mModel = new ConversationModel();
         mPreferencesManager = manager;
+
+        userID = mPreferencesManager.getUserID();
     }
 
     @Override
@@ -60,16 +62,16 @@ public class ConversationPresenter implements ConversationContract.Presenter {
 
                         retrieveNewMessage(mView.getCurrentDialogID(), messageID);
 
-                        if (fromJID.equals(ownerJID)) {
-                            Log.e("AAA", "Got a message from myself");
-//                            mAdapter.addFirst(item);
-//                            mRecyclerView.scrollToPosition(0);
-                        } else {
-                            Log.e("AAA", "Got a message from friend");
-
-//                            mAdapter.addFirst(item);
-//                            mRecyclerView.scrollToPosition(0);
-                        }
+//                        if (fromJID.equals(ownerJID)) {
+//                            Log.e("AAA", "Got a message from myself");
+////                            mAdapter.addFirst(item);
+////                            mRecyclerView.scrollToPosition(0);
+//                        } else {
+//                            Log.e("AAA", "Got a message from friend");
+//
+////                            mAdapter.addFirst(item);
+////                            mRecyclerView.scrollToPosition(0);
+//                        }
                         return;
                 }
             }
@@ -80,19 +82,18 @@ public class ConversationPresenter implements ConversationContract.Presenter {
 
     private void retrieveNewMessage(String dialogID, String messageID) {
         mModel.getMessageByMessageID(mPreferencesManager.getToken(), dialogID, messageID)
-                .subscribe(itemMessage -> {
-                    saveMessagesToDataBase(itemMessage);
+                .subscribe(messagesResponse -> {
+                    ItemMessage im = messagesResponse.getItemMessageList().get(0);
+                    saveMessagesToDataBase(im);
                     addNewMessageToAdapterList(messageID);
-                    Log.e("retrieveNewMessage", itemMessage.getMessage());
+                    Log.e("retrieveNewMessage", im.getMessage());
                 }, throwable -> {
-                    Log.e("retrieveNewMessage", throwable.getMessage());
+                    Log.e("retrieveNewMessage", throwable.getMessage().toString());
                 });
     }
 
     @Override
     public void getMessages(String dialogId) {
-        //Get token from DataBase
-        //mPreferencesManager.getToken();
         mModel.getMessagesByDialogId(mPreferencesManager.getToken(), dialogId)
                 .doOnRequest(aLong -> mView.showLoadProgressBar(true))
                 .doOnUnsubscribe(() -> mView.showLoadProgressBar(false))
@@ -102,6 +103,7 @@ public class ConversationPresenter implements ConversationContract.Presenter {
                     fillAdapterListWithMessages(dialogId);
 
                 }, throwable -> {
+                    Log.e("AAA", throwable.getMessage().toString());
                 });
     }
 
@@ -173,7 +175,7 @@ public class ConversationPresenter implements ConversationContract.Presenter {
         if (page + 20 <= list.size()) {
             mView.loadMoreData(list.subList(page, page + 20));
         } else {
-            Toast.makeText(mContext, "no more messages", Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext, "All history up to date", Toast.LENGTH_SHORT).show();
         }
     }
 }

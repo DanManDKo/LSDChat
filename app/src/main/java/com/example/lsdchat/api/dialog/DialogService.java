@@ -38,7 +38,7 @@ public interface DialogService {
 
     @Headers(ApiConstant.HEADER_CONTENT_TYPE)
     @GET(ApiConstant.MESSAGES_REQUEST)
-    Observable<ItemMessage> getMessageById(@Header(ApiConstant.QB_TOKEN) String token, @Query(ApiConstant.MessageRequestParams.CHAT_DIALOG_ID) String chatDialogId, @Query(ApiConstant.MessageRequestParams.MESSAGE_ID) String messageID);
+    Observable<MessagesResponse> getMessageById(@Header(ApiConstant.QB_TOKEN) String token, @Query("chat_dialog_id") String chatDialogId, @Query("_id") String messageID);
 
     @Headers(ApiConstant.HEADER_CONTENT_TYPE)
     @POST(ApiConstant.MESSAGES_REQUEST)

@@ -2,11 +2,14 @@ package com.example.lsdchat.ui.main.conversation;
 
 import android.app.Service;
 import android.content.Intent;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.util.Log;
+
+import com.example.lsdchat.model.User;
 
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
@@ -33,7 +36,9 @@ public class XMPPService extends Service {
     private XMPPConnection mConnection;
 
 
+
     public XMPPService() {
+
     }
 
     public static XMPPConnection.ConnectionState getState() {
@@ -50,10 +55,10 @@ public class XMPPService extends Service {
         return sLoggedInState;
     }
 
-    private void initConnection() {
+    private void initConnection(String userID, String password, String dialogID) {
         Log.d(TAG, "initConnection()");
         if (mConnection == null) {
-            mConnection = new XMPPConnection(this);
+            mConnection = new XMPPConnection(this, userID, password, dialogID);
         }
         try {
             mConnection.connect();
@@ -78,7 +83,7 @@ public class XMPPService extends Service {
         Log.d(TAG, "onCreate()");
     }
 
-    public void start() {
+    public void start(String userID, String password, String dialogID) {
         Log.d(TAG, "Service Start() function called");
         if (!mActive) {
             mActive = true;
@@ -89,7 +94,7 @@ public class XMPPService extends Service {
 
                         Looper.prepare();
                         mTHandler = new Handler();
-                        initConnection();
+                        initConnection(userID, password, dialogID);
                         //THE CODE HERE RUNS IN A BACKGROUND THREAD.
                         Looper.loop();
                     }
@@ -116,7 +121,12 @@ public class XMPPService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(TAG, "onStartCommand()");
-        start();
+        Bundle bundle = intent.getExtras();
+
+        String userID = String.valueOf(bundle.get("userID"));
+        String password = String.valueOf(bundle.get("password"));
+        String dialogID = String.valueOf(bundle.get("dialogID"));
+        start(userID, password, dialogID);
         return Service.START_STICKY;
         //RETURNING START_STICKY CAUSES OUR CODE TO STICK AROUND WHEN THE APP ACTIVITY HAS DIED.
     }

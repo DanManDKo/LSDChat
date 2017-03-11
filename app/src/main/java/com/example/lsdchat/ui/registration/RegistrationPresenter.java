@@ -18,6 +18,7 @@ import com.example.lsdchat.R;
 import com.example.lsdchat.constant.ApiConstant;
 import com.example.lsdchat.manager.SharedPreferencesManager;
 import com.example.lsdchat.model.User;
+import com.example.lsdchat.util.CreateMapRequestBody;
 import com.example.lsdchat.util.Email;
 import com.example.lsdchat.util.ErrorsCode;
 import com.example.lsdchat.util.Network;
@@ -189,11 +190,14 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
                 .doOnRequest(request -> mView.showProgressBar())
                 .doOnUnsubscribe(() -> mView.hideProgressBar())
                 .doOnNext(loginResponse -> {
-                    int userId = loginResponse.getLoginUser().getId();
-                    saveUserToDataBase(email, password, true);
+                    int userID = loginResponse.getLoginUser().getId();
+                    String userName = loginResponse.getLoginUser().getFullName();
+                    long blobID = loginResponse.getLoginUser().getBlobId();
+
+                    saveUserToDataBase(email, password, userName, userID, blobID, true);
 
                     if (mUploadFile != null) {
-                        getBlobObjectCreateFile(token, getFileMimeType(mUploadFile), mUploadFile.getName(), userId);
+                        getBlobObjectCreateFile(token, getFileMimeType(mUploadFile), mUploadFile.getName(), userID);
                     } else {
                         Toast.makeText(mContext, mContext.getString(R.string.registration_complete), Toast.LENGTH_SHORT).show();
                         mView.navigateToMainScreen();
@@ -208,13 +212,16 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
                 });
     }
 
-    private void saveUserToDataBase(String email, String password, boolean isKeepSignIn) {
+    private void saveUserToDataBase(String email, String password, String fullName, int userID, long blobID, boolean isKeepSignIn) {
         User user = new User();
         user.setEmail(email);
         user.setPassword(password);
+        user.setFullName(fullName);
+        user.setId(userID);
+        user.setBlobId(blobID);
         user.setSignIn(isKeepSignIn);
 
-        App.getDataManager().insertUser(user);
+        App.getDataManager().saveUserToRealm(user);
     }
 
     private void getBlobObjectCreateFile(String token, String mime, String fileName, int userId) {
@@ -226,33 +233,10 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
                     String params = registrationCreateFileResponse.getBlob().getBlobObjestAccess().getParams();
                     Uri uri = Uri.parse(params);
 
-                    RequestBody contentR = RequestBody.create(MultipartBody.FORM, uri.getQueryParameter(ApiConstant.UploadParametres.CONTENT_TYPE));
-                    RequestBody expiresR = RequestBody.create(MultipartBody.FORM, uri.getQueryParameter(ApiConstant.UploadParametres.EXPIRES));
-                    RequestBody aclR = RequestBody.create(MultipartBody.FORM, uri.getQueryParameter(ApiConstant.UploadParametres.ACL));
-                    RequestBody keyR = RequestBody.create(MultipartBody.FORM, uri.getQueryParameter(ApiConstant.UploadParametres.KEY));
-                    RequestBody policyR = RequestBody.create(MultipartBody.FORM, uri.getQueryParameter(ApiConstant.UploadParametres.POLICY));
-                    RequestBody successR = RequestBody.create(MultipartBody.FORM, uri.getQueryParameter(ApiConstant.UploadParametres.SUCCESS_ACTION_STATUS));
-                    RequestBody algorithmR = RequestBody.create(MultipartBody.FORM, uri.getQueryParameter(ApiConstant.UploadParametres.ALGORITHM));
-                    RequestBody credentialR = RequestBody.create(MultipartBody.FORM, uri.getQueryParameter(ApiConstant.UploadParametres.CREDENTIAL));
-                    RequestBody dateR = RequestBody.create(MultipartBody.FORM, uri.getQueryParameter(ApiConstant.UploadParametres.DATE));
-                    RequestBody signatureR = RequestBody.create(MultipartBody.FORM, uri.getQueryParameter(ApiConstant.UploadParametres.SIGNATURE));
-
                     RequestBody file = RequestBody.create(MediaType.parse(getFileMimeType(mUploadFile)), mUploadFile);
                     MultipartBody.Part multiPart = MultipartBody.Part.createFormData(ApiConstant.UploadParametres.FILE, mUploadFile.getName(), file);
 
-                    HashMap<String, RequestBody> map = new HashMap<>();
-                    map.put(ApiConstant.UploadParametres.CONTENT_TYPE, contentR);
-                    map.put(ApiConstant.UploadParametres.EXPIRES, expiresR);
-                    map.put(ApiConstant.UploadParametres.ACL, aclR);
-                    map.put(ApiConstant.UploadParametres.KEY, keyR);
-                    map.put(ApiConstant.UploadParametres.POLICY, policyR);
-                    map.put(ApiConstant.UploadParametres.SUCCESS_ACTION_STATUS, successR);
-                    map.put(ApiConstant.UploadParametres.ALGORITHM, algorithmR);
-                    map.put(ApiConstant.UploadParametres.CREDENTIAL, credentialR);
-                    map.put(ApiConstant.UploadParametres.DATE, dateR);
-                    map.put(ApiConstant.UploadParametres.SIGNATURE, signatureR);
-
-                    uploadFileRetrofit(token, blobId, map, multiPart, userId);
+                    uploadFileRetrofit(token, blobId, CreateMapRequestBody.createMapRequestBody(uri), multiPart, userId);
                 }, throwable -> {
 
                     decodeThrowableAndShowAlert(throwable);
@@ -283,8 +267,7 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
                 .doOnUnsubscribe(() -> mView.hideProgressBar())
                 .subscribe(aVoid -> {
                     updateUserBlobId(token, userId, blobId);
-//                    Toast.makeText(mContext, mContext.getString(R.string.registration_complete), Toast.LENGTH_SHORT).show();
-//                    mView.navigateToMainScreen();
+
                 }, throwable -> {
 
                     mView.setClickableSignupButton(true);

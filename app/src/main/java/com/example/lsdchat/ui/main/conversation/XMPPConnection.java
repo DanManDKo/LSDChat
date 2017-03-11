@@ -6,6 +6,10 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.util.Log;
 
+import com.example.lsdchat.App;
+import com.example.lsdchat.constant.ApiConstant;
+import com.example.lsdchat.model.User;
+
 import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.ConnectionListener;
 import org.jivesoftware.smack.MessageListener;
@@ -27,42 +31,27 @@ import java.io.IOException;
 import java.util.Random;
 
 public class XMPPConnection implements ConnectionListener {
-    //back up with alpha dependence
-    //http://pastebin.com/uewjWzYA
 
-    //back up with multyChat
-    //http://pastebin.com/fBEdcT3j
-
-    //app_id + doalog_id
-    public static final String mucChat = "52350_589f6bfda0eb47ea8400026a@muc.chat.quickblox.com";
     private final Context mApplicationContext;
     private final String mUsername;
     private final String mPassword;
     private final String mServiceName;
-    String jid;
+    public String mucChat;
+
     MultiUserChat muc;
     MultiUserChatManager manager;
     private XMPPTCPConnection mConnection;
     //Receives messages from the ui thread.
     private BroadcastReceiver uiThreadMessageReceiver;
 
-    public XMPPConnection(Context context) {
+    public XMPPConnection(Context context, String userID, String password, String dialogID) {
         Log.e("AAA", "RoosterConnection Constructor called.");
         mApplicationContext = context.getApplicationContext();
-
-        /*There we have to retrieve user_id AND app_id AND password from DataBase
-        *concat user_id + "-" + "ApiConstant.APP_ID";*/
-        jid = "23163511-52350@chat.quickblox.com";
-        //password from DataBase
-        mPassword = "aaaaaaaa";
-
-        if (jid != null) {
-            mUsername = jid.split("@")[0];
-            mServiceName = jid.split("@")[1];
-        } else {
-            mUsername = "";
-            mServiceName = "";
-        }
+//        jid = "23163511-52350@chat.quickblox.com";
+        mPassword = password;
+        mUsername = userID + "-" + ApiConstant.APP_ID;
+        mServiceName = ApiConstant.MessageRequestParams.USER_CHAT;
+        mucChat = ApiConstant.APP_ID + "_" + dialogID + ApiConstant.MessageRequestParams.MULTI_USER_CHAT;
     }
 
     public void connect() throws IOException, XMPPException, SmackException {

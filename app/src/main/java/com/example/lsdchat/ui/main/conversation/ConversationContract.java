@@ -57,6 +57,6 @@ public interface ConversationContract {
 
         Observable<ItemMessage> createDialogMessage(String token, String dialogId, String message);
 
-        Observable<ItemMessage> getMessageByMessageID(String token, String dialogID, String messageID);
+        Observable<MessagesResponse> getMessageByMessageID(String token, String dialogID, String messageID);
     }
 }

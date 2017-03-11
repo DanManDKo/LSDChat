@@ -19,9 +19,11 @@ public class ConversationRecyclerAdapter extends RecyclerView.Adapter<RecyclerVi
     private static final String SENDER_NAME = "Me";
 
     private List<ItemMessage> mList;
+    private int userID;
 
-    public ConversationRecyclerAdapter(List<ItemMessage> list, ConversationPresenter mConversationPresenter) {
+    public ConversationRecyclerAdapter(List<ItemMessage> list, ConversationPresenter mConversationPresenter, int userID) {
         mList = list;
+        this.userID = userID;
         this.mConversationPresenter = mConversationPresenter;
     }
 
@@ -30,13 +32,12 @@ public class ConversationRecyclerAdapter extends RecyclerView.Adapter<RecyclerVi
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         View view;
 
-        switch (viewType) {
-            case 23163511:
-                view = inflater.inflate(R.layout.right_item_message_row, parent, false);
-                return new OutcomingViewHolder(view);
-            default:
-                view = inflater.inflate(R.layout.left_item_message_row, parent, false);
-                return new IncomingViewHolder(view);
+        if (viewType == userID) {
+            view = inflater.inflate(R.layout.right_item_message_row, parent, false);
+            return new OutcomingViewHolder(view);
+        } else {
+            view = inflater.inflate(R.layout.left_item_message_row, parent, false);
+            return new IncomingViewHolder(view);
         }
     }
 
@@ -44,30 +45,27 @@ public class ConversationRecyclerAdapter extends RecyclerView.Adapter<RecyclerVi
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         ItemMessage itemMessage = mList.get(position);
         if (itemMessage != null) {
-            switch (itemMessage.getSender_id()) {
-                //get app owner id from db
-                case 23163511:
-                    ((OutcomingViewHolder) holder).message.setText(mList.get(position).getMessage());
-                    String timeOut = mList.get(position).getCreatedAt().split("T")[1];
-                    ((OutcomingViewHolder) holder).time.setText(timeOut);
-                    ((OutcomingViewHolder) holder).personName.setText(SENDER_NAME);
 
-                    ((OutcomingViewHolder) holder).messageRoot.setOnClickListener(view -> {
+            if (itemMessage.getSender_id() == userID) {
+                ((OutcomingViewHolder) holder).message.setText(mList.get(position).getMessage());
+                String timeOut = mList.get(position).getCreatedAt().split("T")[1];
+                ((OutcomingViewHolder) holder).time.setText(timeOut);
+                ((OutcomingViewHolder) holder).personName.setText(SENDER_NAME);
 
-                        mConversationPresenter.onAdapterItemClicked(mList.get(position).getId(), position);
-                    });
-                    break;
-                default:
-                    ((IncomingViewHolder) holder).message.setText(mList.get(position).getMessage());
-                    String timeIn = mList.get(position).getCreatedAt().split("T")[1];
-                    ((IncomingViewHolder) holder).time.setText(timeIn);
-                    ((IncomingViewHolder) holder).personName.setText("Sender");
+                ((OutcomingViewHolder) holder).messageRoot.setOnClickListener(view -> {
 
-                    ((IncomingViewHolder) holder).messageRoot.setOnClickListener(view -> {
+                    mConversationPresenter.onAdapterItemClicked(mList.get(position).getId(), position);
+                });
+            } else {
+                ((IncomingViewHolder) holder).message.setText(mList.get(position).getMessage());
+                String timeIn = mList.get(position).getCreatedAt().split("T")[1];
+                ((IncomingViewHolder) holder).time.setText(timeIn);
+                ((IncomingViewHolder) holder).personName.setText("Sender");
 
-                        mConversationPresenter.onAdapterItemClicked(mList.get(position).getId(), position);
-                    });
-                    break;
+                ((IncomingViewHolder) holder).messageRoot.setOnClickListener(view -> {
+
+                    mConversationPresenter.onAdapterItemClicked(mList.get(position).getId(), position);
+                });
             }
         }
     }
@@ -124,15 +122,16 @@ public class ConversationRecyclerAdapter extends RecyclerView.Adapter<RecyclerVi
 
     public void addFirst(ItemMessage object) {
         mList.add(0, object);
-//        mList.add(object);
         notifyDataSetChanged();
     }
 
     public void addAll(List<ItemMessage> list, int startIndex, int lastIndex) {
-        List<ItemMessage> temp = list.subList(startIndex, lastIndex);
-        Log.e("AAA", String.valueOf(temp.size()));
-        mList.addAll(temp);
-        notifyDataSetChanged();
+        if (list.size() != 0 && list.size() >= lastIndex) {
+            List<ItemMessage> temp = list.subList(startIndex, lastIndex);
+            Log.e("AAA", String.valueOf(temp.size()));
+            mList.addAll(temp);
+            notifyDataSetChanged();
+        }
     }
 
     public void addMore(List<ItemMessage> list) {

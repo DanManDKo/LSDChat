@@ -24,6 +24,8 @@ import com.example.lsdchat.R;
 import com.example.lsdchat.api.dialog.model.ItemMessage;
 import com.example.lsdchat.constant.ApiConstant;
 import com.example.lsdchat.listener.EndlessScrollListener;
+import com.example.lsdchat.manager.SharedPreferencesManager;
+import com.example.lsdchat.model.User;
 import com.example.lsdchat.ui.main.fragment.BaseFragment;
 
 import java.util.ArrayList;
@@ -37,6 +39,7 @@ public class ConversationFragment extends BaseFragment implements ConversationCo
     private static final String DIALOG_NAME = "dialog_name";
 
     private ConversationPresenter mConversationPresenter;
+
     private Toolbar mToolbar;
     private EditText mMessage;
     private TextView mTextViewError;
@@ -47,7 +50,7 @@ public class ConversationFragment extends BaseFragment implements ConversationCo
     private ConversationRecyclerAdapter mAdapter;
     private RecyclerView mRecyclerView;
 
-    private String ownerJID = "23163511-52350@chat.quickblox.com";
+//    private String ownerJID = "23163511-52350@chat.quickblox.com";
     private String mucToJID;
     private String dialogID;
     private String mNameDialog;
@@ -76,16 +79,19 @@ public class ConversationFragment extends BaseFragment implements ConversationCo
         View view = inflater.inflate(R.layout.activity_conversation, container, false);
         mConversationPresenter = new ConversationPresenter(this, App.getSharedPreferencesManager(getActivity()));
         dialogID = getArguments().getString(DIALOG_ID);
-        mucToJID = ApiConstant.APP_ID + "_" + dialogID + "@muc.chat.quickblox.com";
+        mucToJID = ApiConstant.APP_ID + "_" + dialogID + ApiConstant.MessageRequestParams.MULTI_USER_CHAT;
         mNameDialog = getArguments().getString(DIALOG_NAME);
 
         initView(view);
 
-
+        User user = App.getDataManager().getUser();
         Intent intentService = new Intent(getActivity(), XMPPService.class);
+        intentService.putExtra("userID", user.getId());
+        intentService.putExtra("password", user.getPassword());
+        intentService.putExtra("dialogID", dialogID);
         getActivity().startService(intentService);
 
-        mAdapter = new ConversationRecyclerAdapter(mMessageList, mConversationPresenter);
+        mAdapter = new ConversationRecyclerAdapter(mMessageList, mConversationPresenter, user.getId());
 
         if (mConversationPresenter.isOnline()) {
             mConversationPresenter.getMessages(dialogID);
@@ -175,7 +181,7 @@ public class ConversationFragment extends BaseFragment implements ConversationCo
     @Override
     public void fillConversationAdapter(List<ItemMessage> list) {
         Log.e("AAA", String.valueOf(mMessageList.size()));
-        mAdapter.addAll(list, 0, 10);
+        mAdapter.addAll(list, 0, 1);
     }
 
     @Override
