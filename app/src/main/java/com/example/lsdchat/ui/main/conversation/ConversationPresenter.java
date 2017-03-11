@@ -9,6 +9,7 @@ import android.widget.Toast;
 
 import com.example.lsdchat.App;
 import com.example.lsdchat.api.dialog.model.ItemMessage;
+import com.example.lsdchat.constant.ApiConstant;
 import com.example.lsdchat.manager.SharedPreferencesManager;
 import com.example.lsdchat.util.Network;
 
