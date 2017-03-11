@@ -76,5 +76,7 @@ public class ApiConstant {
         public static final String DATE_SENT = "date_sent";
         public static final String MESSAGE_ID = "_id";
         public static final int MESSAGE_LIMIT = 100;
+        public static final String MULTI_USER_CHAT = "@muc.chat.quickblox.com";
+        public static final String USER_CHAT = "chat.quickblox.com";
     }
 }

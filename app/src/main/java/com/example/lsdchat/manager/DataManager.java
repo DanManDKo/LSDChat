@@ -1,6 +1,9 @@
 package com.example.lsdchat.manager;
 
 
+import android.content.Context;
+
+import com.example.lsdchat.App;
 import com.example.lsdchat.api.dialog.model.ItemMessage;
 import com.example.lsdchat.api.login.model.LoginUser;
 import com.example.lsdchat.constant.ApiConstant;
@@ -47,15 +50,6 @@ public class DataManager {
         if (!realmResults.isEmpty()) {
             mRealm.executeTransaction(realm -> realm.deleteAll());
         }
-    }
-
-    //handle messages
-    public void insertRealmMessage(ItemMessage message) {
-        mRealm.executeTransaction(realm -> realm.copyToRealmOrUpdate(message));
-    }
-
-    public List<ItemMessage> retrieveMessagesByDialogId(String chatDialogId) {
-        return mRealm.where(ItemMessage.class).equalTo(ItemMessage.CHAT_DIALOG_ID, chatDialogId).findAllSorted(ItemMessage.DATE_SENT, Sort.DESCENDING);
     }
 
     public void insertUserQuickToDB(LoginUser user) {
@@ -108,9 +102,21 @@ public class DataManager {
         return mRealm.where(DialogModel.class).equalTo("type", type).findAllSorted("updatedAt", Sort.DESCENDING);
     }
 
-
+    //handle messages
     public ItemMessage retrieveMessageById(String messageId) {
         return mRealm.where(ItemMessage.class).equalTo(ItemMessage.MESSAGE_ID, messageId).findFirst();
     }
 
+    public void insertRealmMessage(ItemMessage message) {
+        mRealm.executeTransaction(realm -> realm.copyToRealmOrUpdate(message));
+    }
+
+    public List<ItemMessage> retrieveMessagesByDialogId(String chatDialogId) {
+        return mRealm.where(ItemMessage.class).equalTo(ItemMessage.CHAT_DIALOG_ID, chatDialogId).findAllSorted(ItemMessage.DATE_SENT, Sort.DESCENDING);
+    }
+
+    public void saveUserToRealm(User user) {
+        deleteAllUserDb();
+        mRealm.executeTransaction(realm -> realm.copyToRealmOrUpdate(user));
+    }
 }
