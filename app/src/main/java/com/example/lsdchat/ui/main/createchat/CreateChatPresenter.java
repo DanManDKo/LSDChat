@@ -23,6 +23,7 @@ import com.example.lsdchat.api.dialog.request.CreateDialogRequest;
 import com.example.lsdchat.constant.ApiConstant;
 import com.example.lsdchat.manager.SharedPreferencesManager;
 import com.example.lsdchat.model.ContactsModel;
+import com.example.lsdchat.ui.main.conversation.ConversationFragment;
 import com.example.lsdchat.util.CreateMapRequestBody;
 import com.example.lsdchat.util.StorageHelper;
 import com.example.lsdchat.util.UsersUtil;
@@ -127,13 +128,10 @@ public class CreateChatPresenter implements CreateChatContract.Presenter {
 
     @Override
     public void createDialog(String token, CreateDialogRequest request) {
-
         mModel.createDialog(token, request)
                 .subscribe(itemDialog -> {
-                            Log.e("DIALOG", itemDialog.getId());
-                            Log.e("DIALOG", itemDialog.getName());
-                            Log.e("DIALOG", itemDialog.getPhoto());
-                            Log.e("DIALOG", itemDialog.getOccupantsIdsList().toString());
+                            mView.navigateToChat(ConversationFragment
+                                    .newInstance(itemDialog.getId(), itemDialog.getType(), itemDialog.getName()));
                         },
                         throwable -> {
                             Log.e("DIALOG", throwable.getMessage());
@@ -307,7 +305,6 @@ public class CreateChatPresenter implements CreateChatContract.Presenter {
     }
 
 
-
     @Override
     public void setOnCheckedChangeListener(RadioGroup radioGroup) {
         radioGroup.setOnCheckedChangeListener((group, checkedId) -> {
@@ -367,7 +364,7 @@ public class CreateChatPresenter implements CreateChatContract.Presenter {
         if (user.getBlobId() != 0) {
             Utils.downloadContent(user.getBlobId(), getToken())
                     .flatMap(contentResponse -> Observable.just(contentResponse.getItemContent().getImageUrl()))
-                    .subscribe(imageUrl -> Utils.downloadImageToView(imageUrl, imageView), throwable -> {
+                    .subscribe(imageUrl -> Utils.setImageByUrl(imageUrl, imageView), throwable -> {
                         Log.e("IMAGE-error", throwable.getMessage());
                     });
 

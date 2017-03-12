@@ -4,6 +4,7 @@ package com.example.lsdchat.ui.main.createchat;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.support.v4.app.Fragment;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -61,6 +62,8 @@ public interface CreateChatContract {
         // TODO: 3/9/17 [Code Review] ask someone to implement this method's logic. What should be in it?
         // I don't know, for sure
         void addModel(List<ContactsModel> list);
+
+        void navigateToChat(Fragment fragment);
     }
 
     interface Presenter {

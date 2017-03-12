@@ -69,7 +69,7 @@ public class UsersPresenter implements UsersContract.Presenter {
         if (loginUser.getBlobId() != 0) {
             Utils.downloadContent(loginUser.getBlobId(), getToken())
                     .flatMap(contentResponse -> Observable.just(contentResponse.getItemContent().getImageUrl()))
-                    .subscribe(imageUrl -> Utils.downloadImageToView(imageUrl, imageView), throwable -> {
+                    .subscribe(imageUrl -> Utils.setImageByUrl(imageUrl, imageView), throwable -> {
                         Log.e("IMAGE-error", throwable.getMessage());
                     });
 

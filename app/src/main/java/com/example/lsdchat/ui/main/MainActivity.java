@@ -4,17 +4,19 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import com.example.lsdchat.R;
 import com.example.lsdchat.manager.SharedPreferencesManager;
 import com.example.lsdchat.ui.main.chats.ChatsFragment;
+import com.example.lsdchat.ui.main.conversation.ConversationFragment;
+import com.example.lsdchat.ui.main.editchat.EditchatFragment;
 import com.example.lsdchat.ui.main.fragment.BaseFragment;
 import com.example.lsdchat.util.UsersUtil;
 
 import java.util.List;
 
-// TODO: 3/9/17 [Code Review] Just cleanup the code :)
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements ConversationFragment.OnEditchatButtonClicked {
 
     private FrameLayout mFrameLayout;
 
@@ -36,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void replaceFragment(Fragment fragment) {
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragment, fragment).commit();
+        getSupportFragmentManager().beginTransaction().addToBackStack(null).replace(R.id.fragment, fragment).commit();
     }
 
 
@@ -58,5 +60,11 @@ public class MainActivity extends AppCompatActivity {
         if(!handled) {
             super.onBackPressed();
         }
+    }
+
+    @Override
+    public void onEditchatSelected(String dialogID) {
+        //replaceFragment(EditchatFragment.newInstance("589f6bfda0eb47ea8400026a"));
+        Toast.makeText(this, dialogID, Toast.LENGTH_SHORT).show();
     }
 }

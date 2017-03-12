@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -193,5 +194,10 @@ public class CreateChatFragment extends BaseFragment implements CreateChatContra
     @Override
     public void showErrorDialog(String message) {
         ErrorsCode.showErrorDialog(getActivity(), message);
+    }
+
+    @Override
+    public void navigateToChat(Fragment fragment) {
+        getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragment, fragment).commit();
     }
 }

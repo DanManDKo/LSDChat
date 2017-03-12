@@ -179,12 +179,6 @@ public class ChatsFragment extends BaseFragment implements ChatsContract.View {
     private void setHeaderImage() {
         if (mPresenter.getUserModel().getBlobId() != 0) {
             mPresenter.getUserAvatar().subscribe(s -> Utils.setImageByUrl(s, mHeaderImage));
-        } else {
-            Uri uri = new Uri.Builder()
-                    .scheme(UriUtil.LOCAL_RESOURCE_SCHEME) // "res"
-                    .path(String.valueOf(R.drawable.userpic))
-                    .build();
-            mHeaderImage.setImageURI(uri);
         }
     }
 
