@@ -1,6 +1,7 @@
 package com.example.lsdchat.ui.main.chats;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -31,13 +32,15 @@ import android.widget.Toast;
 import com.example.lsdchat.App;
 import com.example.lsdchat.R;
 import com.example.lsdchat.behavior.NonSwipeableViewPager;
+import com.example.lsdchat.constant.ApiConstant;
 import com.example.lsdchat.ui.login.LoginActivity;
 import com.example.lsdchat.ui.main.ViewPagerAdapter;
-import com.example.lsdchat.ui.main.conversation.ConversationFragment;
+import com.example.lsdchat.ui.main.chats.dialogs.DialogsFragment;
 import com.example.lsdchat.ui.main.createchat.CreateChatFragment;
-import com.example.lsdchat.ui.main.editchat.EditchatFragment;
 import com.example.lsdchat.ui.main.fragment.BaseFragment;
 import com.example.lsdchat.ui.main.users.UsersFragment;
+import com.example.lsdchat.util.Utils;
+import com.facebook.common.util.UriUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -78,15 +81,13 @@ public class ChatsFragment extends BaseFragment implements ChatsContract.View {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_chats, container, false);
         mPresenter = new ChatsPresenter(this, new ChatsModel(App.getSharedPreferencesManager(getActivity())));
-        mPresenter.getAllDialogAndSave();
+
 
         initView(view);
         initToolbar(mToolbar, "Chats");
 
 
-        mFloatingActionButton.setOnClickListener(v -> {
-            navigateToNewChat();
-        });
+        mFloatingActionButton.setOnClickListener(v -> navigateToNewChat());
 
 
         setNavigationItemSelectedListener();
@@ -113,7 +114,7 @@ public class ChatsFragment extends BaseFragment implements ChatsContract.View {
                     navigateToSetting();
                     break;
                 case R.id.item_log_out:
-                    mPresenter.destroySession();
+                    mPresenter.onLogout();
                     break;
             }
             mDrawerLayout.closeDrawers();
@@ -143,7 +144,7 @@ public class ChatsFragment extends BaseFragment implements ChatsContract.View {
         setSpannableText();
 
 
-        initViewPagerAdapter(mPresenter.setFragmentList());
+        initViewPagerAdapter(setFragmentList());
 
 
         /*
@@ -152,13 +153,39 @@ public class ChatsFragment extends BaseFragment implements ChatsContract.View {
        */
         toggleTabsVisibility(true);
 
-//        mHeaderLayout = mNavigationView.inflateHeaderView(R.layout.navigation_drawer_header);
         mHeaderLayout = mNavigationView.getHeaderView(0);
         mHeaderImage = (CircleImageView) mHeaderLayout.findViewById(R.id.nav_view_avatar);
         mHeaderName = (TextView) mHeaderLayout.findViewById(R.id.nav_view_full_name);
         mHeaderEmail = (TextView) mHeaderLayout.findViewById(R.id.nav_view_email_address);
 
-        mPresenter.setHeaderData(mHeaderImage, mHeaderName, mHeaderEmail);
+        /*
+        * set header data:
+        * avatar, full name, email
+        * */
+        setHeaderImage();
+        mHeaderName.setText(mPresenter.getUserModel().getFullName());
+        mHeaderEmail.setText(mPresenter.getUserModel().getEmail());
+    }
+
+
+    private List<Fragment> setFragmentList() {
+        List<Fragment> list = new ArrayList<>();
+        list.add(new DialogsFragment().newInstance(ApiConstant.TYPE_DIALOG_PUBLIC));
+        list.add(new DialogsFragment().newInstance(ApiConstant.TYPE_DIALOG_GROUP));
+
+        return list;
+    }
+
+    private void setHeaderImage() {
+        if (mPresenter.getUserModel().getBlobId() != 0) {
+            mPresenter.getUserAvatar().subscribe(s -> Utils.setImageByUrl(s, mHeaderImage));
+        } else {
+            Uri uri = new Uri.Builder()
+                    .scheme(UriUtil.LOCAL_RESOURCE_SCHEME) // "res"
+                    .path(String.valueOf(R.drawable.userpic))
+                    .build();
+            mHeaderImage.setImageURI(uri);
+        }
     }
 
     private void initViewPagerAdapter(List<Fragment> fragmentList) {
@@ -242,7 +269,7 @@ public class ChatsFragment extends BaseFragment implements ChatsContract.View {
     }
 
     @Override
-    public void logOut() {
+    public void navigateToLoginActivity() {
         startActivity(new Intent(getActivity(), LoginActivity.class));
         getActivity().finish();
     }

@@ -2,6 +2,7 @@ package com.example.lsdchat.util;
 
 import android.content.Context;
 import android.os.Environment;
+import android.util.Log;
 import android.widget.ImageView;
 
 import com.example.lsdchat.App;
@@ -24,6 +25,7 @@ import okhttp3.ResponseBody;
 import okio.BufferedSink;
 import okio.Okio;
 import retrofit2.Response;
+import rx.Emitter;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -37,6 +39,15 @@ public class Utils {
         return mDialogService.downloadContent(blobId, token)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public static Observable<String> getUrlImage(long blobId, String token) {
+        return Observable.fromEmitter(stringEmitter -> downloadContent(blobId, token)
+                .flatMap(contentResponse -> Observable.just(contentResponse.getItemContent().getImageUrl()))
+                .subscribe(imageUrl -> {
+                    stringEmitter.onNext(imageUrl);
+                    stringEmitter.onCompleted();
+                }, throwable -> Log.e("utils/getUrlImage-error", throwable.getMessage())), Emitter.BackpressureMode.NONE);
     }
 
 
@@ -62,14 +73,14 @@ public class Utils {
         imageLoader = ImageLoader.getInstance();
 
     }
-    public static void downloadImageToView(String url, CircleImageView imageView){
+    public static void setImageByUrl(String url, CircleImageView imageView){
         imageLoader.displayImage(url, imageView);
     }
-    public static void downloadImageToView(String url, SimpleDraweeView imageView){
+    public static void setImageByUrl(String url, SimpleDraweeView imageView){
         imageLoader.displayImage(url, imageView);
     }
 
-    public static void downloadImageToView(String url, ImageView imageView){
+    public static void setImageByUrl(String url, ImageView imageView){
         imageLoader.displayImage(url, imageView);
     }
 
