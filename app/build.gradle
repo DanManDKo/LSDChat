@@ -1,4 +1,5 @@
 //noinspection GradleCompatible
+//noinspection GradleCompatible
 buildscript {
     repositories {
         maven { url 'https://maven.fabric.io/public' }
@@ -13,6 +14,7 @@ buildscript {
 apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
 apply plugin: 'me.tatarka.retrolambda'
+
 apply plugin: 'realm-android'
 
 repositories {
