@@ -9,7 +9,6 @@ import android.widget.Toast;
 
 import com.example.lsdchat.App;
 import com.example.lsdchat.api.dialog.model.ItemMessage;
-import com.example.lsdchat.constant.ApiConstant;
 import com.example.lsdchat.manager.SharedPreferencesManager;
 import com.example.lsdchat.util.Network;
 
@@ -27,7 +26,7 @@ public class ConversationPresenter implements ConversationContract.Presenter {
 
     public ConversationPresenter(ConversationContract.View view, SharedPreferencesManager manager) {
         mView = view;
-        mContext = view.getContext();
+        mContext = view.getViewContext();
         mModel = new ConversationModel();
         mPreferencesManager = manager;
 

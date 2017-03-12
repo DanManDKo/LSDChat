@@ -37,7 +37,7 @@ public interface ConversationContract {
     }
 
     interface View {
-        Context getContext();
+        Context getViewContext();
 
         String getCurrentDialogID();
 

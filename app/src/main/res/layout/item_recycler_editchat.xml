@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:fresco="http://schemas.android.com/apk/res-auto"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+    <com.facebook.drawee.view.SimpleDraweeView
+        android:id="@+id/item_editchat_usericon"
+        android:layout_width="@dimen/usericon_size"
+        android:layout_height="@dimen/usericon_size"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:layout_marginBottom="@dimen/activity_vertical_margin"
+        android:contentDescription="@string/cda_userpic_reg"
+        android:scaleType="centerCrop"
+        fresco:backgroundImage="@drawable/userpic"
+        fresco:placeholderImage="@drawable/userpic"
+        fresco:placeholderImageScaleType="fitCenter"
+        fresco:roundAsCircle="true"
+        tools:background="@color/colorBlack"/>
+
+    <TextView
+        android:id="@+id/item_editchat_username"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="12dp"
+        android:layout_toRightOf="@id/item_editchat_usericon"
+        android:textColor="@color/colorNewChatText"
+        tools:text="User Name"/>
+
+    <CheckBox
+        android:id="@+id/item_editchat_checkbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"/>
+</RelativeLayout>

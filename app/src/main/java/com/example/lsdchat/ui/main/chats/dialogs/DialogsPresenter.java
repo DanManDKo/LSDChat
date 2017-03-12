@@ -62,7 +62,6 @@ public class DialogsPresenter implements DialogsContract.Presenter {
     }
 
 
-
     @Override
     public void setImageDialog(CircleImageView imageView, DialogModel dialogModel) {
         if (dialogModel.getPhoto() != null && !dialogModel.getPhoto().isEmpty()) {
@@ -89,7 +88,7 @@ public class DialogsPresenter implements DialogsContract.Presenter {
     public void setOnClickListener(RelativeLayout relativeLayout, DialogModel dialogModel) {
         relativeLayout.setOnClickListener(v -> {
             mView.navigateToChat(ConversationFragment
-                    .newInstance(dialogModel.getId(),dialogModel.getType(),dialogModel.getName()));
+                    .newInstance(dialogModel.getId(), dialogModel.getType(), dialogModel.getName()));
 
         });
     }
