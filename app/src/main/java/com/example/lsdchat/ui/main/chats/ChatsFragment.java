@@ -33,7 +33,9 @@ import com.example.lsdchat.R;
 import com.example.lsdchat.behavior.NonSwipeableViewPager;
 import com.example.lsdchat.ui.login.LoginActivity;
 import com.example.lsdchat.ui.main.ViewPagerAdapter;
+import com.example.lsdchat.ui.main.conversation.ConversationFragment;
 import com.example.lsdchat.ui.main.createchat.CreateChatFragment;
+import com.example.lsdchat.ui.main.editchat.EditchatFragment;
 import com.example.lsdchat.ui.main.fragment.BaseFragment;
 import com.example.lsdchat.ui.main.users.UsersFragment;
 
