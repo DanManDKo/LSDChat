@@ -62,15 +62,9 @@ public class ChatsFragment extends BaseFragment implements ChatsContract.View {
     private LinearLayout mNoChatsMessage;
 
 
-
-
     public ChatsFragment() {
     }
 
-    @Override
-    public DrawerLayout getDrawerLayout() {
-        return mDrawerLayout;
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -81,24 +75,51 @@ public class ChatsFragment extends BaseFragment implements ChatsContract.View {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_chats, container, false);
-        mPresenter = new ChatsPresenter(this, App.getSharedPreferencesManager(getActivity()));
+        mPresenter = new ChatsPresenter(this, new ChatsModel(App.getSharedPreferencesManager(getActivity())));
         mPresenter.getAllDialogAndSave();
 
         initView(view);
         initToolbar(mToolbar, "Chats");
 
-        mPresenter.fabClick(mFloatingActionButton);
+
+        mFloatingActionButton.setOnClickListener(v -> {
+            navigateToNewChat();
+        });
 
 
-        mPresenter.setNavigationItemSelectedListener(mNavigationView);
+        setNavigationItemSelectedListener();
 
 
         return view;
     }
 
+    private void setNavigationItemSelectedListener() {
+        mNavigationView.setNavigationItemSelectedListener(item -> {
+            item.setChecked(true);
+            switch (item.getItemId()) {
+                case R.id.item_create_new_chat:
+                    navigateToNewChat();
+                    break;
+                case R.id.item_users:
+                    navigateToUsers();
+                    break;
+                case R.id.item_invite_users:
+                    navigateToInviteUsers();
+                    break;
 
-    @Override
-    public void startNewChat() {
+                case R.id.item_settings:
+                    navigateToSetting();
+                    break;
+                case R.id.item_log_out:
+                    mPresenter.destroySession();
+                    break;
+            }
+            mDrawerLayout.closeDrawers();
+            return false;
+        });
+    }
+
+    private void navigateToNewChat() {
         replaceFragment(new CreateChatFragment());
     }
 
@@ -141,7 +162,7 @@ public class ChatsFragment extends BaseFragment implements ChatsContract.View {
     private void initViewPagerAdapter(List<Fragment> fragmentList) {
         mViewPager.setOffscreenPageLimit(1);
         mViewPager.setAdapter(new ViewPagerAdapter(getActivity().getSupportFragmentManager()
-                ,fragmentList, setFillTitleList()));
+                , fragmentList, setFillTitleList()));
         mTabLayout.setupWithViewPager(mViewPager);
 
     }
@@ -152,7 +173,6 @@ public class ChatsFragment extends BaseFragment implements ChatsContract.View {
         titleList.add("Private");
         return titleList;
     }
-
 
 
     private void toggleTabsVisibility(boolean value) {
@@ -205,17 +225,17 @@ public class ChatsFragment extends BaseFragment implements ChatsContract.View {
     }
 
     @Override
-    public void startUsers() {
+    public void navigateToUsers() {
         replaceFragment(new UsersFragment());
     }
 
     @Override
-    public void startInviteUsers() {
+    public void navigateToInviteUsers() {
         dialogError("kjndaskjhads");
     }
 
     @Override
-    public void startSetting() {
+    public void navigateToSetting() {
 
     }
 

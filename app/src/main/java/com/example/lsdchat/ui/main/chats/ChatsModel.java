@@ -6,6 +6,7 @@ import com.example.lsdchat.api.dialog.DialogService;
 import com.example.lsdchat.api.dialog.response.DialogsResponse;
 import com.example.lsdchat.api.login.service.LoginService;
 import com.example.lsdchat.manager.DataManager;
+import com.example.lsdchat.manager.SharedPreferencesManager;
 import com.example.lsdchat.model.DialogModel;
 import com.example.lsdchat.model.User;
 
@@ -19,11 +20,19 @@ public class ChatsModel implements ChatsContract.Model {
     private DataManager mDataManager;
     private LoginService mLoginService;
     private DialogService mDialogService;
+    private SharedPreferencesManager mSharedPreferencesManager;
 
-    public ChatsModel() {
+    public ChatsModel(SharedPreferencesManager sharedPreferencesManager) {
+        mSharedPreferencesManager = sharedPreferencesManager;
         mLoginService = App.getApiManager().getLoginService();
         mDataManager = App.getDataManager();
         mDialogService = App.getApiManager().getDialogService();
+    }
+
+
+    @Override
+    public String getToken() {
+       return mSharedPreferencesManager.getToken();
     }
 
     @Override
