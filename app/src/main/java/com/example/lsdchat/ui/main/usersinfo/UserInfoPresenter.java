@@ -4,8 +4,14 @@ package com.example.lsdchat.ui.main.usersinfo;
 import android.util.Log;
 import android.widget.ImageView;
 
+import com.example.lsdchat.App;
 import com.example.lsdchat.manager.SharedPreferencesManager;
+import com.example.lsdchat.model.UserAvatar;
 import com.example.lsdchat.util.Utils;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import rx.Observable;
 
@@ -21,18 +27,13 @@ public class UserInfoPresenter implements UserInfoContract.Presenter {
 
 
     @Override
-    public void setImageView(ImageView imageView, long blobId) {
-        if (blobId != 0) {
-            Utils.downloadContent(blobId, mSharedPreferencesManager.getToken())
-                    .flatMap(contentResponse -> Observable.just(contentResponse.getItemContent().getImageUrl()))
-                    .subscribe(imageUrl -> {
-                        Utils.setImageByUrl(imageUrl, imageView);
-                    }, throwable -> {
-                        Log.e("IMAGE-error", throwable.getMessage());
-                    });
-
+    public String getImagePath(int userId) {
+        List<UserAvatar> mUserAvatars = App.getDataManager().getListUserAvatar();
+        Map<Integer, String> mMapAvatar = new HashMap<>();
+        for (UserAvatar user: mUserAvatars) {
+            mMapAvatar.put(user.getUserId(),user.getImagePath());
         }
+
+        return mMapAvatar.get(userId);
     }
-
-
 }

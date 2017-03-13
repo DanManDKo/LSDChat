@@ -72,9 +72,12 @@ public class UserInfoFragment extends BaseFragment implements UserInfoContract.V
         mEmail.setText(mLoginUser.getEmail());
         mPhone.setText(mLoginUser.getPhone());
         mWebsite.setText(mLoginUser.getWebsite());
-        mImageUser.setImageURI(Uri.fromFile(new File(mLoginUser.getImagePath())));
-//        mPresenter.setImageView(mImageUser, mLoginUser.getBlobId());
 
+
+        String path = mPresenter.getImagePath(mLoginUser.getId());
+        if (path != null) {
+            mImageUser.setImageURI(Uri.fromFile(new File(path)));
+        }
         onClick();
 
 

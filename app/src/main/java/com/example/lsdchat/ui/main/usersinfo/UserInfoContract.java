@@ -15,7 +15,7 @@ public interface UserInfoContract {
     }
 
     interface Presenter {
-        void setImageView(ImageView imageView, long blobId);
+        String getImagePath(int userId);
 
 
     }
