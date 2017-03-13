@@ -3,10 +3,12 @@ package com.example.lsdchat.ui.main.chats;
 
 import com.example.lsdchat.model.DialogModel;
 import com.example.lsdchat.model.User;
-import com.example.lsdchat.util.Utils;
+import com.example.lsdchat.model.UserAvatar;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import rx.Observable;
 
@@ -27,7 +29,17 @@ public class ChatsPresenter implements ChatsContract.Presenter {
 
     @Override
     public Observable<String> getUserAvatar() {
-        return Utils.getUrlImage(mUser.getBlobId(), mModel.getToken());
+        Map<Integer, String> mapAvatar = new HashMap<>();
+        return Observable.fromCallable(() -> {
+            mModel.getObservableUserAvatar()
+                    .subscribe(userAvatars -> {
+                        for (UserAvatar user : userAvatars) {
+                            mapAvatar.put(user.getUserId(), user.getImagePath());
+                        }
+                    });
+            return mapAvatar.get(mUser.getId());
+        });
+
     }
 
     @Override
@@ -53,7 +65,10 @@ public class ChatsPresenter implements ChatsContract.Presenter {
                     Observable.from(dialogList)
                             .subscribe(dialog -> list.add(new DialogModel(dialog)));
                     mModel.saveDialog(list);
+
                 }, throwable -> mView.showMessageError(throwable));
 
     }
+
+
 }

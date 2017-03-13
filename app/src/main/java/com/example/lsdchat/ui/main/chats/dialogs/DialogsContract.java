@@ -13,7 +13,6 @@ import java.util.List;
 import de.hdodenhof.circleimageview.CircleImageView;
 import rx.Observable;
 
-// TODO: 3/9/17 [Code Review] pls check code review TODOs in ChatsContract.class and apply appropriate changes here
 public interface DialogsContract {
 
     interface Model {

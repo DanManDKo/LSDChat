@@ -61,20 +61,6 @@ public class DataManager {
     }
 
 
-    public List<LoginUser> getUsersQuickList(String sort) {
-        switch (sort) {
-            case ApiConstant.SORT_CREATE_AT:
-                return mRealm.where(LoginUser.class).findAll();
-            case ApiConstant.SORT_NAME_ACS:
-                return mRealm.where(LoginUser.class).findAllSorted("fullName", Sort.ASCENDING);
-            case ApiConstant.SORT_NAME_DESC:
-                return mRealm.where(LoginUser.class).findAllSorted("fullName", Sort.DESCENDING);
-            default:
-                return mRealm.where(LoginUser.class).findAll();
-        }
-
-    }
-
     public List<LoginUser> getUsersQuickList() {
         return mRealm.where(LoginUser.class).findAll();
     }
@@ -127,6 +113,13 @@ public class DataManager {
         return mRealm.where(DialogModel.class).equalTo("type", type).findAllSorted("updatedAt", Sort.DESCENDING);
     }
 
+    public Observable<List<DialogModel>> getObservableDialogsByType(int type) {
+        return Observable.fromCallable(() ->
+            mRealm.where(DialogModel.class).equalTo("type", type).findAllSorted("updatedAt", Sort.DESCENDING));
+    }
+
+
+
     //handle messages
     public ItemMessage retrieveMessageById(String messageId) {
         return mRealm.where(ItemMessage.class).equalTo(ItemMessage.MESSAGE_ID, messageId).findFirst();
@@ -145,13 +138,8 @@ public class DataManager {
         mRealm.executeTransaction(realm -> realm.copyToRealmOrUpdate(user));
     }
 
-
     public void saveUserAvatar(UserAvatar userAvatar) {
         mRealm.executeTransaction(realm -> realm.copyToRealmOrUpdate(userAvatar));
-    }
-
-    public List<UserAvatar> getListUserAvatar() {
-        return mRealm.where(UserAvatar.class).findAll();
     }
 
     public Observable<List<UserAvatar>> getObservableUserAvatar() {

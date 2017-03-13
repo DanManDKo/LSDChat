@@ -7,6 +7,8 @@ import android.widget.RelativeLayout;
 
 import com.example.lsdchat.api.login.model.LoginUser;
 
+import rx.Observable;
+
 public interface UserInfoContract {
 
     interface View {
@@ -15,7 +17,7 @@ public interface UserInfoContract {
     }
 
     interface Presenter {
-        String getImagePath(int userId);
+        Observable<String> getUserAvatar(int userId);
 
 
     }

@@ -9,25 +9,30 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import rx.Observable;
+
 public class UserInfoPresenter implements UserInfoContract.Presenter {
 
     private UserInfoContract.View mView;
-    private SharedPreferencesManager mSharedPreferencesManager;
 
-    public UserInfoPresenter(UserInfoContract.View mView, SharedPreferencesManager sharedPreferencesManager) {
+    public UserInfoPresenter(UserInfoContract.View mView) {
         this.mView = mView;
-        this.mSharedPreferencesManager = sharedPreferencesManager;
+
     }
 
 
     @Override
-    public String getImagePath(int userId) {
-        List<UserAvatar> mUserAvatars = App.getDataManager().getListUserAvatar();
-        Map<Integer, String> mMapAvatar = new HashMap<>();
-        for (UserAvatar user : mUserAvatars) {
-            mMapAvatar.put(user.getUserId(), user.getImagePath());
-        }
+    public Observable<String> getUserAvatar(int userId) {
+        Map<Integer, String> mapAvatar = new HashMap<>();
+        return Observable.fromCallable(() -> {
+            App.getDataManager().getObservableUserAvatar()
+                    .subscribe(userAvatars -> {
+                        for (UserAvatar user : userAvatars) {
+                            mapAvatar.put(user.getUserId(), user.getImagePath());
+                        }
+                    });
+            return mapAvatar.get(userId);
+        });
 
-        return mMapAvatar.get(userId);
     }
 }

@@ -39,15 +39,12 @@ import com.example.lsdchat.ui.main.chats.dialogs.DialogsFragment;
 import com.example.lsdchat.ui.main.createchat.CreateChatFragment;
 import com.example.lsdchat.ui.main.fragment.BaseFragment;
 import com.example.lsdchat.ui.main.users.UsersFragment;
-import com.example.lsdchat.util.UsersUtil;
-import com.example.lsdchat.util.Utils;
-import com.facebook.common.util.UriUtil;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
-import rx.Observable;
 
 
 public class ChatsFragment extends BaseFragment implements ChatsContract.View {
@@ -186,9 +183,14 @@ public class ChatsFragment extends BaseFragment implements ChatsContract.View {
     }
 
     private void setHeaderImage() {
-        if (mPresenter.getUserModel().getBlobId() != 0) {
-            mPresenter.getUserAvatar().subscribe(s -> Utils.setImageByUrl(s, mHeaderImage));
-        }
+        mPresenter.getUserAvatar().subscribe(path -> {
+            if (path != null) {
+                mHeaderImage.setImageURI(Uri.fromFile(new File(path)));
+            } else {
+                mHeaderImage.setImageResource(R.drawable.userpic);
+            }
+        });
+
     }
 
     private void initViewPagerAdapter(List<Fragment> fragmentList) {

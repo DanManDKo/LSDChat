@@ -77,13 +77,7 @@ public class Utils {
         imageLoader.displayImage(url, imageView);
     }
 
-    public static void setImageByUrl(String url, SimpleDraweeView imageView) {
-        imageLoader.displayImage(url, imageView);
-    }
 
-    public static void setImageByUrl(String url, ImageView imageView) {
-        imageLoader.displayImage(url, imageView);
-    }
 
     public static Observable<File> downloadImage(long blobId, String token) {
         DialogService mDialogService = App.getApiManager().getDialogService();

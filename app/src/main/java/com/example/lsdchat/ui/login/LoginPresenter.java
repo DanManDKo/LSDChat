@@ -126,15 +126,17 @@ public class LoginPresenter implements LoginContract.Presenter {
         mModel.getLogin(email, password, token)
                 .retry(3)
                 .doOnNext(loginResponse -> mView.navigateToMainScreen())
+                .flatMap(loginResponse -> Observable.just(loginResponse.getLoginUser()))
                 .subscribe(loginUser -> {
-                    String fullName = loginUser.getLoginUser().getFullName();
-                    long blobId = loginUser.getLoginUser().getBlobId();
+                    String fullName = loginUser.getFullName();
+                    int userId = loginUser.getId();
+                    long blobId = loginUser.getBlobId();
 
                             if (blobId!=0) {
-                                mModel.saveUser(new User(email,password,fullName,blobId,mView.isKeepSignIn()));
+                                mModel.saveUser(new User(email,password,fullName,userId,blobId,mView.isKeepSignIn()));
                             }
                             else {
-                                mModel.saveUser(new User(email,password,fullName,mView.isKeepSignIn()));
+                                mModel.saveUser(new User(email,password,fullName,userId,mView.isKeepSignIn()));
                             }
                         },
                         throwable -> mView.dialogError(throwable));

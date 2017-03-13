@@ -7,6 +7,7 @@ import android.widget.TextView;
 import com.example.lsdchat.api.dialog.response.DialogsResponse;
 import com.example.lsdchat.model.DialogModel;
 import com.example.lsdchat.model.User;
+import com.example.lsdchat.model.UserAvatar;
 
 import java.util.List;
 
@@ -51,6 +52,8 @@ public interface ChatsContract {
         List<DialogModel> getDialogsByType(int type);
 
         String getToken();
+
+        Observable<List<UserAvatar>> getObservableUserAvatar();
     }
 
 }
