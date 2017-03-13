@@ -40,15 +40,6 @@ public class Utils {
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
-    public static Observable<String> getUrlImage(long blobId, String token) {
-        return Observable.fromEmitter(stringEmitter -> downloadContent(blobId, token)
-                .flatMap(contentResponse -> Observable.just(contentResponse.getItemContent().getImageUrl()))
-                .subscribe(imageUrl -> {
-                    stringEmitter.onNext(imageUrl);
-                    stringEmitter.onCompleted();
-                }, throwable -> Log.e("utils/getUrlImage-error", throwable.getMessage())), Emitter.BackpressureMode.NONE);
-    }
-
 
     public static void initLoader(Context context) {
 

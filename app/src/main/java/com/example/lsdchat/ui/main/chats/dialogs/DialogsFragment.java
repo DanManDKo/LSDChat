@@ -1,7 +1,6 @@
 package com.example.lsdchat.ui.main.chats.dialogs;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -20,9 +19,7 @@ import android.view.ViewGroup;
 
 import com.example.lsdchat.App;
 import com.example.lsdchat.R;
-import com.example.lsdchat.model.DialogModel;
-import com.example.lsdchat.ui.main.conversation.ConversationFragment;
-import com.example.lsdchat.ui.main.editchat.EditchatFragment;
+import com.example.lsdchat.model.RealmDialogModel;
 import com.example.lsdchat.ui.main.fragment.BaseFragment;
 
 import java.util.List;
@@ -36,7 +33,7 @@ public class DialogsFragment extends BaseFragment implements DialogsContract.Vie
     private int mType;
     private RecyclerView mRecyclerView;
     private DialogsAdapter mDialogsAdapter;
-    private List<DialogModel> mList;
+    private List<RealmDialogModel> mList;
     private SwipeRefreshLayout mSwipeRefreshLayout;
 
 
@@ -69,15 +66,23 @@ public class DialogsFragment extends BaseFragment implements DialogsContract.Vie
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_dialogs, container, false);
-        mPresenter = new DialogsPresenter(this, App.getSharedPreferencesManager(getActivity()));
+        mPresenter = new DialogsPresenter(this, new DialogsModel(App.getSharedPreferencesManager(getActivity())));
         mType = getArguments().getInt(TYPE);
         initView(view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
+        mPresenter.getObservableUserAvatar()
+                .subscribe(contentModels -> mDialogsAdapter = new DialogsAdapter(mPresenter,contentModels));
+
+        mRecyclerView.setAdapter(mDialogsAdapter);
+
+        mPresenter.getObservableDialogsByType(mType)
+                .subscribe(this::setListDialog);
 
         mList = mPresenter.showDialogs(mType);
-        initAdapter(mList);
+        setListDialog(mList);
+
         mPresenter.setOnRefreshListener(mSwipeRefreshLayout);
 
 
@@ -85,6 +90,17 @@ public class DialogsFragment extends BaseFragment implements DialogsContract.Vie
 
 
         return view;
+    }
+
+
+    @Override
+    public void setListDialog(List<RealmDialogModel> list) {
+        clearListDialog();
+        mDialogsAdapter.addData(list);
+    }
+
+    private void clearListDialog() {
+        mDialogsAdapter.clearData();
     }
 
     private void initSwipeDelete() {
@@ -112,11 +128,11 @@ public class DialogsFragment extends BaseFragment implements DialogsContract.Vie
 
                 builder.setPositiveButton("Delete", (dialog, which) -> {
 //                    TODO: add delete dialog logic
-                    initAdapter(mList);
+                    setListDialog(mList);
                     mDialogsAdapter.notifyItemRemoved(viewHolder.getLayoutPosition());
 
                 }).setNegativeButton("Cancel", (dialog, which) -> {
-                    initAdapter(mList);
+                    setListDialog(mList);
                     dialog.dismiss();
 
                 }).setCancelable(false).show();
@@ -163,18 +179,6 @@ public class DialogsFragment extends BaseFragment implements DialogsContract.Vie
         mRecyclerView = (RecyclerView) view.findViewById(R.id.chats_recycler_view);
         mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipeRefreshLayout);
 
-    }
-
-    @Override
-    public void initAdapter(List<DialogModel> list) {
-        mDialogsAdapter = new DialogsAdapter(list, mPresenter);
-        mRecyclerView.setAdapter(mDialogsAdapter);
-        mDialogsAdapter.notifyDataSetChanged();
-    }
-
-    @Override
-    public void updateAdapter() {
-        mDialogsAdapter.notifyDataSetChanged();
     }
 
     @Override

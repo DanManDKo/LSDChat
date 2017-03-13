@@ -5,10 +5,9 @@ import android.content.Context;
 import android.util.Log;
 
 import com.example.lsdchat.App;
-import com.example.lsdchat.api.dialog.model.ItemDialog;
 import com.example.lsdchat.api.dialog.request.CreateDialogRequest;
 import com.example.lsdchat.manager.SharedPreferencesManager;
-import com.example.lsdchat.model.DialogModel;
+import com.example.lsdchat.model.RealmDialogModel;
 
 public class EditchatPresenter implements EditchatContract.Presenter {
     private EditchatContract.View mView;
@@ -42,7 +41,7 @@ public class EditchatPresenter implements EditchatContract.Presenter {
     @Override
     public void loadDialogCredentials(String dialogID) {
 
-        DialogModel dialog = App.getDataManager().getDialogByID(dialogID);
+        RealmDialogModel dialog = App.getDataManager().getDialogByID(dialogID);
         mView.fillDialogInformation(dialog.getName());
         Log.d("AAA", dialog.getName().toString());
 //        mModel.getDialogByID(mPreferencesManager.getToken(), dialogID)
@@ -55,7 +54,7 @@ public class EditchatPresenter implements EditchatContract.Presenter {
 //                });
     }
 
-    private void fillInformationInFields(DialogModel object) {
+    private void fillInformationInFields(RealmDialogModel object) {
 //        mView.fillDialogInformation(object.getName());
         CreateDialogRequest body = new CreateDialogRequest(object.getName());
 

@@ -2,6 +2,7 @@ package com.example.lsdchat.ui.main.chats.dialogs;
 
 
 import android.graphics.Color;
+import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,22 +11,47 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.lsdchat.R;
-import com.example.lsdchat.model.DialogModel;
+import com.example.lsdchat.model.ContentModel;
+import com.example.lsdchat.model.RealmDialogModel;
 import com.example.lsdchat.util.DateUtils;
 import com.example.lsdchat.util.UsersUtil;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class DialogsAdapter extends RecyclerView.Adapter<DialogsAdapter.ViewHolder> {
 
-    private List<DialogModel> mData;
+    private List<RealmDialogModel> mData;
     private DialogsContract.Presenter mPresenter;
 
-    public DialogsAdapter(List<DialogModel> mData, DialogsContract.Presenter mPresenter) {
-        this.mData = mData;
+    private List<ContentModel> mContentModelList;
+    private Map<String, String> mMapAvatar;
+
+    public DialogsAdapter(DialogsContract.Presenter mPresenter,List<ContentModel> mContentModelList) {
+        mData = new ArrayList<>();
         this.mPresenter = mPresenter;
+        this.mContentModelList = mContentModelList;
+
+        mMapAvatar = new HashMap<>();
+
+        for (ContentModel contentModel: mContentModelList) {
+            mMapAvatar.put(contentModel.getId(),contentModel.getImagePath());
+        }
+    }
+
+    public void addData(List<RealmDialogModel> loginUserList) {
+        mData.addAll(loginUserList);
+        notifyDataSetChanged();
+    }
+
+    public void clearData() {
+        mData.clear();
+        notifyDataSetChanged();
     }
 
     @Override
@@ -36,29 +62,37 @@ public class DialogsAdapter extends RecyclerView.Adapter<DialogsAdapter.ViewHold
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        DialogModel dialogModel = mData.get(position);
+        RealmDialogModel realmDialogModel = mData.get(position);
 
-        holder.mChatName.setText(dialogModel.getName());
-        holder.mChatDate.setText(DateUtils.millisecondsToDate(dialogModel.getLastMessageDateSent()));
-        if (dialogModel.getLastMessageUserId() != null) {
-            holder.mChatTitle.setText(UsersUtil.getUserById(dialogModel.getLastMessageUserId()).getFullName());
+        holder.mChatName.setText(realmDialogModel.getName());
+        holder.mChatDate.setText(DateUtils.millisecondsToDate(realmDialogModel.getLastMessageDateSent()));
+        if (realmDialogModel.getLastMessageUserId() != null) {
+            holder.mChatTitle.setText(UsersUtil.getUserById(realmDialogModel.getLastMessageUserId()).getFullName());
 
         }
-        holder.mChatLastMessage.setText(dialogModel.getLastMessage());
+        holder.mChatLastMessage.setText(realmDialogModel.getLastMessage());
 
-        if (dialogModel.getUnreadMessagesCount() != 0) {
+        if (realmDialogModel.getUnreadMessagesCount() != 0) {
             holder.mNewMessageCounter.setVisibility(View.VISIBLE);
             holder.mChatName.setTextColor(Color.parseColor("#327780"));
             holder.mChatDate.setTextColor(Color.BLACK);
-            holder.mNewMessageCounter.setText(String.valueOf(dialogModel.getUnreadMessagesCount()));
+            holder.mNewMessageCounter.setText(String.valueOf(realmDialogModel.getUnreadMessagesCount()));
         }
         else {
             holder.mNewMessageCounter.setVisibility(View.GONE);
         }
 
-        mPresenter.setImageDialog(holder.mDialogImage, dialogModel);
 
-        mPresenter.setOnClickListener(holder.mRl,dialogModel);
+        String path = mMapAvatar.get(realmDialogModel.getId());
+        if (path != null) {
+            holder.mDialogImage.setImageURI(Uri.fromFile(new File(path)));
+        }
+        else {
+            holder.mDialogImage.setImageResource(R.drawable.userpic_group);
+        }
+
+        holder.mRl.setOnClickListener(v -> mPresenter.setClickRl(realmDialogModel));
+
 
 
     }

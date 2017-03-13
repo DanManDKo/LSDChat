@@ -1,8 +1,6 @@
 package com.example.lsdchat.ui.main.chats;
 
 
-import android.util.Log;
-
 import com.example.lsdchat.App;
 import com.example.lsdchat.api.dialog.DialogService;
 import com.example.lsdchat.api.dialog.response.DialogsResponse;
@@ -10,9 +8,9 @@ import com.example.lsdchat.api.login.service.LoginService;
 import com.example.lsdchat.manager.DataManager;
 import com.example.lsdchat.manager.SharedPreferencesManager;
 import com.example.lsdchat.model.ContentModel;
-import com.example.lsdchat.model.DialogModel;
+import com.example.lsdchat.model.RealmDialogModel;
 import com.example.lsdchat.model.User;
-import com.example.lsdchat.util.Utils;
+import com.example.lsdchat.util.DialogUtil;
 
 import java.util.List;
 
@@ -67,30 +65,16 @@ public class ChatsModel implements ChatsContract.Model {
 
 
     @Override
-    public void saveDialog(List<DialogModel> dialogList) {
+    public void saveDialog(List<RealmDialogModel> dialogList) {
         Observable.from(dialogList)
                 .subscribe(itemDialog -> mDataManager.insertDialogToDB(itemDialog));
-        saveImageDialog(dialogList);
+        DialogUtil.saveImageDialog(dialogList,getToken());
     }
 
-    private void saveImageDialog(List<DialogModel> dialogList) {
-        Observable.from(dialogList)
-                .observeOn(AndroidSchedulers.mainThread())
-                .filter(dialogModel -> dialogModel.getPhoto() != null)
-                .filter(dialogModel -> !dialogModel.getPhoto().isEmpty())
-                .subscribe(dialogModel ->
-                        Utils.downloadImage(Long.parseLong(dialogModel.getPhoto()), getToken())
-                        .flatMap(file -> Observable.just(file.getAbsolutePath()))
-                        .subscribe(path -> {
-                            mDataManager.saveUserAvatar(new ContentModel(dialogModel.getId(), path));
-                        }, throwable -> {
-                            Log.e("getImage", throwable.getMessage());
-                        }));
 
-    }
 
     @Override
-    public List<DialogModel> getDialogsByType(int type) {
+    public List<RealmDialogModel> getDialogsByType(int type) {
         return mDataManager.getDialogsByType(type);
     }
 

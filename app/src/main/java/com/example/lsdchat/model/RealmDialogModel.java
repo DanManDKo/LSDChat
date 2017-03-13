@@ -8,7 +8,7 @@ import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 import rx.Observable;
 
-public class DialogModel extends RealmObject {
+public class RealmDialogModel extends RealmObject {
 
     @PrimaryKey
     private String id;
@@ -25,10 +25,10 @@ public class DialogModel extends RealmObject {
     private Integer unreadMessagesCount;
     private String xmppRoomJid;
 
-    public DialogModel() {
+    public RealmDialogModel() {
     }
 
-    public DialogModel(ItemDialog dialog) {
+    public RealmDialogModel(ItemDialog dialog) {
         this.id = dialog.getId();
         this.ownerId = dialog.getOwnerId();
         this.createdAt = dialog.getCreatedAt();
