@@ -45,6 +45,11 @@ public class DialogsModel implements DialogsContract.Model {
     }
 
     @Override
+    public Observable<List<RealmDialogModel>> getObservableDialogsByType(int type) {
+        return mDataManager.getObservableDialogsByType(type);
+    }
+
+    @Override
     public void saveDialog(List<RealmDialogModel> dialogList) {
         Observable.from(dialogList)
                 .subscribe(itemDialog -> mDataManager.insertDialogToDB(itemDialog));

@@ -77,6 +77,9 @@ public class DialogsFragment extends BaseFragment implements DialogsContract.Vie
 
         mRecyclerView.setAdapter(mDialogsAdapter);
 
+        mPresenter.getObservableDialogsByType(mType)
+                .subscribe(this::setListDialog);
+
         mList = mPresenter.showDialogs(mType);
         setListDialog(mList);
 

@@ -23,6 +23,7 @@ public class DialogsPresenter implements DialogsContract.Presenter {
     public DialogsPresenter(DialogsContract.View mView, DialogsContract.Model mModel) {
         this.mView = mView;
         this.mModel = mModel;
+
     }
 
     @Override
@@ -77,5 +78,10 @@ public class DialogsPresenter implements DialogsContract.Presenter {
     @Override
     public Observable<List<ContentModel>> getObservableUserAvatar() {
         return mModel.getObservableUserAvatar();
+    }
+
+    @Override
+    public Observable<List<RealmDialogModel>> getObservableDialogsByType(int type) {
+        return mModel.getObservableDialogsByType(type);
     }
 }

@@ -23,7 +23,7 @@ public interface DialogsContract {
         String getToken();
 
         Observable<List<ContentModel>> getObservableUserAvatar();
-
+        Observable<List<RealmDialogModel>> getObservableDialogsByType(int type);
     }
 
     interface View {
@@ -42,6 +42,8 @@ public interface DialogsContract {
         void setClickRl(RealmDialogModel realmDialogModel);
 
         Observable<List<ContentModel>> getObservableUserAvatar();
+
+        Observable<List<RealmDialogModel>> getObservableDialogsByType(int type);
     }
 
 }
