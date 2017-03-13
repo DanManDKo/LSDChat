@@ -40,7 +40,7 @@ public class ErrorsCode {
         }
     }
 
-    public static void showErrorDialog(Context context,String message) {
+    public static void showErrorDialog(Context context, String message) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder
                 .setMessage(message)
@@ -48,7 +48,6 @@ public class ErrorsCode {
                 .setCancelable(false).create().show();
 
     }
-
 
 
 }

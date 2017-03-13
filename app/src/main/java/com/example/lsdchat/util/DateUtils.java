@@ -8,10 +8,9 @@ import java.util.Calendar;
 public class DateUtils {
 
     public static String millisecondsToDate(String mill) {
-        if (mill==null) {
+        if (mill == null) {
             return "";
-        }
-        else {
+        } else {
             long milliseconds = Long.parseLong(mill) * 1000;
 
             DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");

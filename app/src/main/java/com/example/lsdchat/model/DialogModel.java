@@ -12,6 +12,7 @@ public class DialogModel extends RealmObject {
 
     @PrimaryKey
     private String id;
+    private Integer ownerId;
     private String createdAt;
     private String updatedAt;
     private String lastMessage;
@@ -29,6 +30,7 @@ public class DialogModel extends RealmObject {
 
     public DialogModel(ItemDialog dialog) {
         this.id = dialog.getId();
+        this.ownerId = dialog.getOwnerId();
         this.createdAt = dialog.getCreatedAt();
         this.updatedAt = dialog.getUpdatedAt();
         this.lastMessage = dialog.getLastMessage();
@@ -46,6 +48,14 @@ public class DialogModel extends RealmObject {
         this.type = dialog.getType();
         this.unreadMessagesCount = dialog.getUnreadMessagesCount();
         this.xmppRoomJid = dialog.getXmppRoomJid();
+    }
+
+    public Integer getOwnerId() {
+        return ownerId;
+    }
+
+    public void setOwnerId(Integer ownerId) {
+        this.ownerId = ownerId;
     }
 
     public String getId() {

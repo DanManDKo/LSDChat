@@ -12,6 +12,8 @@ public class ItemDialog {
     @PrimaryKey
     @SerializedName("_id")
     private String id;
+    @SerializedName("user_id")
+    private Integer ownerId;
     @SerializedName("created_at")
     private String createdAt;
     @SerializedName("updated_at")
@@ -34,6 +36,14 @@ public class ItemDialog {
     private Integer unreadMessagesCount;
     @SerializedName("xmpp_room_jid")
     private String xmppRoomJid;
+
+    public Integer getOwnerId() {
+        return ownerId;
+    }
+
+    public void setOwnerId(Integer ownerId) {
+        this.ownerId = ownerId;
+    }
 
     public String getId() {
         return id;

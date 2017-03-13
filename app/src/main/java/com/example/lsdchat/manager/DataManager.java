@@ -1,12 +1,10 @@
 package com.example.lsdchat.manager;
 
 
-import android.content.Context;
-
-import com.example.lsdchat.App;
 import com.example.lsdchat.api.dialog.model.ItemMessage;
 import com.example.lsdchat.api.login.model.LoginUser;
 import com.example.lsdchat.constant.ApiConstant;
+import com.example.lsdchat.model.ContentModel;
 import com.example.lsdchat.model.DialogModel;
 import com.example.lsdchat.model.User;
 import com.example.lsdchat.model.UserQuick;
@@ -16,7 +14,10 @@ import java.util.List;
 import io.realm.Realm;
 import io.realm.RealmResults;
 import io.realm.Sort;
+import rx.Observable;
 
+// TODO: 3/9/17 [Code Review] make sure all your code related to work with db runs on working thread
+// (create Observable wrappers maybe)
 public class DataManager {
     private Realm mRealm;
 
@@ -53,31 +54,44 @@ public class DataManager {
     }
 
     public void insertUserQuickToDB(LoginUser user) {
-
-        mRealm.executeTransaction(realm -> realm.copyToRealmOrUpdate(user));
+        mRealm.executeTransaction(realm -> {
+            realm.copyToRealmOrUpdate(user);
+        });
     }
 
-
-    public List<LoginUser> getUsersQuickList(String sort) {
-        switch (sort) {
-            case ApiConstant.SORT_CREATE_AT:
-                return mRealm.where(LoginUser.class).findAll();
-            case ApiConstant.SORT_NAME_ACS:
-                return mRealm.where(LoginUser.class).findAllSorted("fullName", Sort.ASCENDING);
-            case ApiConstant.SORT_NAME_DESC:
-                return mRealm.where(LoginUser.class).findAllSorted("fullName", Sort.DESCENDING);
-            default:
-                return mRealm.where(LoginUser.class).findAll();
-        }
-
-    }
 
     public List<LoginUser> getUsersQuickList() {
         return mRealm.where(LoginUser.class).findAll();
     }
 
+
+    public Observable<List<LoginUser>> getUserObservable() {
+        return Observable.fromCallable(() -> mRealm.where(LoginUser.class).findAll());
+    }
+
+
+    public Observable<List<LoginUser>> getUserObservable(String sort) {
+        return Observable.fromCallable(() -> {
+            switch (sort) {
+                case ApiConstant.SORT_CREATE_AT:
+                    return mRealm.where(LoginUser.class).findAll();
+                case ApiConstant.SORT_NAME_ACS:
+                    return mRealm.where(LoginUser.class).findAllSorted("fullName", Sort.ASCENDING);
+                case ApiConstant.SORT_NAME_DESC:
+                    return mRealm.where(LoginUser.class).findAllSorted("fullName", Sort.DESCENDING);
+                default:
+                    return mRealm.where(LoginUser.class).findAll();
+            }
+        });
+    }
+
+
     public LoginUser getUserById(int id) {
         return mRealm.where(LoginUser.class).equalTo("id", id).findFirst();
+    }
+
+    public DialogModel getDialogByID(String dialogID) {
+        return mRealm.where(DialogModel.class).equalTo("id", dialogID).findFirst();
     }
 
     public RealmResults<LoginUser> getUsersQuick() {
@@ -102,9 +116,12 @@ public class DataManager {
         return mRealm.where(DialogModel.class).equalTo("type", type).findAllSorted("updatedAt", Sort.DESCENDING);
     }
 
-    public DialogModel getDialogByID(String dialogID) {
-        return mRealm.where(DialogModel.class).equalTo("id", dialogID).findFirst();
+    public Observable<List<DialogModel>> getObservableDialogsByType(int type) {
+        return Observable.fromCallable(() ->
+            mRealm.where(DialogModel.class).equalTo("type", type).findAllSorted("updatedAt", Sort.DESCENDING));
     }
+
+
 
     //handle messages
     public ItemMessage retrieveMessageById(String messageId) {
@@ -122,5 +139,13 @@ public class DataManager {
     public void saveUserToRealm(User user) {
         deleteAllUserDb();
         mRealm.executeTransaction(realm -> realm.copyToRealmOrUpdate(user));
+    }
+
+    public void saveUserAvatar(ContentModel contentModel) {
+        mRealm.executeTransaction(realm -> realm.copyToRealmOrUpdate(contentModel));
+    }
+
+    public Observable<List<ContentModel>> getObservableUserAvatar() {
+        return Observable.fromCallable(() -> mRealm.where(ContentModel.class).findAll());
     }
 }

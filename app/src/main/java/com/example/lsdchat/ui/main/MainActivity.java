@@ -29,7 +29,7 @@ public class MainActivity extends AppCompatActivity implements ConversationFragm
         mFrameLayout = (FrameLayout) findViewById(R.id.fragment);
 
 //        get user list and save to db
-        UsersUtil.getUserListAndSave(new SharedPreferencesManager(this).getToken());
+        UsersUtil.getUserListAndSave(new SharedPreferencesManager(this).getToken(), this);
 
         replaceFragment(new ChatsFragment());
     }

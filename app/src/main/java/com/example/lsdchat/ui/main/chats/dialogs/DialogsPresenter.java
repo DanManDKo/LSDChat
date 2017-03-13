@@ -68,7 +68,7 @@ public class DialogsPresenter implements DialogsContract.Presenter {
             long blobId = Long.parseLong(dialogModel.getPhoto());
             Utils.downloadContent(blobId, mSharedPreferencesManager.getToken())
                     .flatMap(contentResponse -> Observable.just(contentResponse.getItemContent().getImageUrl()))
-                    .subscribe(imageUrl -> Utils.downloadImageToView(imageUrl, imageView), throwable -> {
+                    .subscribe(imageUrl -> Utils.setImageByUrl(imageUrl, imageView), throwable -> {
                         Log.e("IMAGE-error", throwable.getMessage());
                     });
 

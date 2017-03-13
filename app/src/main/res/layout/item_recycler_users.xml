@@ -10,12 +10,11 @@
 
 
     <de.hdodenhof.circleimageview.CircleImageView
+        android:src="@drawable/userpic"
         android:id="@+id/users_image"
         android:layout_width="@dimen/usericon_size"
         android:layout_height="@dimen/usericon_size"
-        android:scaleType="centerCrop"
-        android:src="@drawable/userpic"
-      />
+        fresco:roundAsCircle="true"/>
 
     <TextView
         android:id="@+id/users_name"
