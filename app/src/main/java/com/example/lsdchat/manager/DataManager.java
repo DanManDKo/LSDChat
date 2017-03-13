@@ -85,6 +85,24 @@ public class DataManager {
             loginUserEmitter.onCompleted();
         }, Emitter.BackpressureMode.NONE);
     }
+    public Observable<List<LoginUser>> getUserObservable(String sort) {
+        return Observable.fromEmitter(loginUserEmitter -> {
+            switch (sort) {
+                case ApiConstant.SORT_CREATE_AT:
+                    loginUserEmitter.onNext(mRealm.where(LoginUser.class).findAll());
+                    break;
+                case ApiConstant.SORT_NAME_ACS:
+                    loginUserEmitter.onNext(mRealm.where(LoginUser.class).findAllSortedAsync("fullName", Sort.ASCENDING));
+                    break;
+                case ApiConstant.SORT_NAME_DESC:
+                    loginUserEmitter.onNext(mRealm.where(LoginUser.class).findAllSortedAsync("fullName", Sort.DESCENDING));
+                    break;
+            }
+            loginUserEmitter.onCompleted();
+
+
+        }, Emitter.BackpressureMode.NONE);
+    }
 
 
     public LoginUser getUserById(int id) {

@@ -66,13 +66,11 @@ public class UsersModel implements UsersContract.Model {
     }
 
     @Override
-    public List<LoginUser> getUsersQuickList(String sort) {
-        return mDataManager.getUsersQuickList(sort);
+    public Observable<List<LoginUser>> getUserObservable(String sort) {
+        return mDataManager.getUserObservable(sort);
     }
-    @Override
-    public List<LoginUser> getUsersQuickList() {
-        return mDataManager.getUsersQuickList();
-    }
+
+
 
     @Override
     public void deleteAllUSerQuick() {

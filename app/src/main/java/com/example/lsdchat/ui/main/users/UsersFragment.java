@@ -14,7 +14,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.example.lsdchat.App;
 import com.example.lsdchat.R;
@@ -25,13 +24,15 @@ import com.example.lsdchat.ui.main.fragment.BaseFragment;
 import java.util.ArrayList;
 import java.util.List;
 
+import rx.android.schedulers.AndroidSchedulers;
+
 
 public class UsersFragment extends BaseFragment implements UsersContract.View {
     private UsersContract.Presenter mPresenter;
     private Toolbar mToolbar;
-    private RecyclerView mRealmRecyclerView;
+    private RecyclerView mRecyclerView;
     private UsersRvAdapter mUsersRvAdapter;
-
+    private LinearLayoutManager mLayoutManager;
 
     public UsersFragment() {
         // Required empty public constructor
@@ -49,14 +50,16 @@ public class UsersFragment extends BaseFragment implements UsersContract.View {
         View view = inflater.inflate(R.layout.fragment_users, container, false);
         mPresenter = new UsersPresenter(this, new UsersModel(App.getSharedPreferencesManager(getActivity())));
         mToolbar = (Toolbar) view.findViewById(R.id.chats_toolbar);
-        mRealmRecyclerView = (RecyclerView) view.findViewById(R.id.realm_recycler_view);
+        mRecyclerView = (RecyclerView) view.findViewById(R.id.realm_recycler_view);
         mToolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
         initToolbar(mToolbar, "Friends");
         mToolbar.setNavigationOnClickListener(v -> onBackPressed());
-        mRealmRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mLayoutManager = new LinearLayoutManager(getActivity());
+        mRecyclerView.setLayoutManager(mLayoutManager);
 
 
-        setListUsers(mPresenter.getUsersQuickList());
+        mPresenter.getUserObservable()
+                .subscribe(this::setListUsers);
 
         return view;
     }
@@ -65,7 +68,7 @@ public class UsersFragment extends BaseFragment implements UsersContract.View {
     public void setListUsers(List<LoginUser> list) {
         mUsersRvAdapter = new UsersRvAdapter(list, mPresenter, App.getDataManager().getListUserAvatar());
 
-        mRealmRecyclerView.setAdapter(mUsersRvAdapter);
+        mRecyclerView.setAdapter(mUsersRvAdapter);
         mUsersRvAdapter.notifyDataSetChanged();
     }
 
@@ -87,7 +90,8 @@ public class UsersFragment extends BaseFragment implements UsersContract.View {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                getFilterList(mPresenter.getUsersQuickList(), newText);
+                mPresenter.getUserObservable()
+                        .subscribe(loginUsers -> getFilterList(loginUsers,newText));
                 return false;
 
             }
@@ -113,22 +117,16 @@ public class UsersFragment extends BaseFragment implements UsersContract.View {
 
 
     @Override
-    public void showMessageError(Throwable throwable) {
-        dialogError(throwable);
-    }
-
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.sort_clear:
-                setListUsers(mPresenter.getUsersQuickList(ApiConstant.SORT_CREATE_AT));
+                mPresenter.setSortedList(ApiConstant.SORT_CREATE_AT);
                 break;
             case R.id.sort_name_asc:
-                setListUsers(mPresenter.getUsersQuickList(ApiConstant.SORT_NAME_ACS));
+                mPresenter.setSortedList(ApiConstant.SORT_NAME_ACS);
                 break;
             case R.id.sort_name_desc:
-                setListUsers(mPresenter.getUsersQuickList(ApiConstant.SORT_NAME_DESC));
+                mPresenter.setSortedList(ApiConstant.SORT_NAME_DESC);
                 break;
         }
 

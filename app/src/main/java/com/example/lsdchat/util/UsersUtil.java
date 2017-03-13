@@ -48,7 +48,6 @@ public class UsersUtil {
                 .flatMap(user -> Observable.just(user.getUser()))
                 .filter(user -> user.getBlobId() != 0)
                 .subscribe(user -> {
-
                     Utils.downloadImage(user.getBlobId(), token)
                             .flatMap(file -> Observable.just(file.getAbsolutePath()))
                             .subscribe(path -> {

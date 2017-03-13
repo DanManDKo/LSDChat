@@ -27,21 +27,16 @@ public interface UsersContract {
 
         void insetUsersQuick(LoginUser userQuick);
 
-
         void deleteAllUSerQuick();
 
 
-        List<LoginUser> getUsersQuickList(String sort);
-        List<LoginUser> getUsersQuickList();
-
         Observable<List<LoginUser>> getUserObservable();
+
+        Observable<List<LoginUser>> getUserObservable(String sort);
 
     }
 
     interface View {
-
-
-        void showMessageError(Throwable throwable);
 
         void setListUsers(List<LoginUser> list);
 
@@ -51,12 +46,10 @@ public interface UsersContract {
     interface Presenter {
         void setClickUser(LoginUser loginUser);
 
-        List<LoginUser> getUsersQuickList(String sort);
-        List<LoginUser> getUsersQuickList();
 
-        Observable<String> getImageUrl(long blobId);
+        Observable<List<LoginUser>> getUserObservable();
 
-
+        void setSortedList(String sort);
     }
 
 }

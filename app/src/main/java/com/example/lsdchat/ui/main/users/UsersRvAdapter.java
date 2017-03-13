@@ -57,7 +57,6 @@ public class UsersRvAdapter extends RecyclerView.Adapter<UsersRvAdapter.ViewHold
         viewHolder.mRlUser.setOnClickListener(v -> mPresenter.setClickUser(userQuick));
 
 
-//        mPresenter.getImageUrl(userQuick.getBlobId()).subscribe(imageUrl -> viewHolder.mImageView.setImageURI(Uri.parse(imageUrl)));
 
     }
 
