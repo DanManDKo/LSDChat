@@ -2,7 +2,7 @@ package com.example.lsdchat.ui.main.chats;
 
 
 import com.example.lsdchat.api.dialog.response.DialogsResponse;
-import com.example.lsdchat.model.DialogModel;
+import com.example.lsdchat.model.RealmDialogModel;
 import com.example.lsdchat.model.User;
 import com.example.lsdchat.model.ContentModel;
 
@@ -43,9 +43,9 @@ public interface ChatsContract {
 
         Observable<DialogsResponse> getAllDialogs(String token);
 
-        void saveDialog(List<DialogModel> dialogList);
+        void saveDialog(List<RealmDialogModel> dialogList);
 
-        List<DialogModel> getDialogsByType(int type);
+        List<RealmDialogModel> getDialogsByType(int type);
 
         String getToken();
 

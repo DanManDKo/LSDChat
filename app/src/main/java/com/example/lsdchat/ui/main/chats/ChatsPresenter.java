@@ -1,7 +1,7 @@
 package com.example.lsdchat.ui.main.chats;
 
 
-import com.example.lsdchat.model.DialogModel;
+import com.example.lsdchat.model.RealmDialogModel;
 import com.example.lsdchat.model.User;
 import com.example.lsdchat.model.ContentModel;
 
@@ -58,12 +58,12 @@ public class ChatsPresenter implements ChatsContract.Presenter {
     }
 
     private void getAllDialogAndSave() {
-        List<DialogModel> list = new ArrayList<>();
+        List<RealmDialogModel> list = new ArrayList<>();
         mModel.getAllDialogs(mModel.getToken())
                 .flatMap(dialogsResponse -> Observable.just(dialogsResponse.getItemDialogList()))
                 .subscribe(dialogList -> {
                     Observable.from(dialogList)
-                            .subscribe(dialog -> list.add(new DialogModel(dialog)));
+                            .subscribe(dialog -> list.add(new RealmDialogModel(dialog)));
                     mModel.saveDialog(list);
 
                 }, throwable -> mView.showMessageError(throwable));

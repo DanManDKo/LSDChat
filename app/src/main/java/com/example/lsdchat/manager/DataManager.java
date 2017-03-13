@@ -5,7 +5,7 @@ import com.example.lsdchat.api.dialog.model.ItemMessage;
 import com.example.lsdchat.api.login.model.LoginUser;
 import com.example.lsdchat.constant.ApiConstant;
 import com.example.lsdchat.model.ContentModel;
-import com.example.lsdchat.model.DialogModel;
+import com.example.lsdchat.model.RealmDialogModel;
 import com.example.lsdchat.model.User;
 import com.example.lsdchat.model.UserQuick;
 
@@ -104,17 +104,17 @@ public class DataManager {
     }
 
 
-    public void insertDialogToDB(DialogModel dialog) {
+    public void insertDialogToDB(RealmDialogModel dialog) {
         mRealm.executeTransaction(realm -> realm.copyToRealmOrUpdate(dialog));
     }
 
-    public List<DialogModel> getDialogsByType(int type) {
-        return mRealm.where(DialogModel.class).equalTo("type", type).findAllSorted("updatedAt", Sort.DESCENDING);
+    public List<RealmDialogModel> getDialogsByType(int type) {
+        return mRealm.where(RealmDialogModel.class).equalTo("type", type).findAllSorted("updatedAt", Sort.DESCENDING);
     }
 
-    public Observable<List<DialogModel>> getObservableDialogsByType(int type) {
+    public Observable<List<RealmDialogModel>> getObservableDialogsByType(int type) {
         return Observable.fromCallable(() ->
-            mRealm.where(DialogModel.class).equalTo("type", type).findAllSorted("updatedAt", Sort.DESCENDING));
+            mRealm.where(RealmDialogModel.class).equalTo("type", type).findAllSorted("updatedAt", Sort.DESCENDING));
     }
 
 

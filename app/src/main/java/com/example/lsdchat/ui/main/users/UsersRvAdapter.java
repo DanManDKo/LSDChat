@@ -25,16 +25,16 @@ public class UsersRvAdapter extends RecyclerView.Adapter<UsersRvAdapter.ViewHold
     private List<LoginUser> mLoginUserList;
     private List<ContentModel> mContentModelList;
     private UsersContract.Presenter mPresenter;
-    private Map<String, String> mapAvatar;
+    private Map<String, String> mMapAvatar;
 
     public UsersRvAdapter(UsersContract.Presenter presenter, List<ContentModel> mContentModelList) {
         this.mContentModelList = mContentModelList;
         mLoginUserList = new ArrayList<>();
         this.mPresenter = presenter;
-        mapAvatar = new HashMap<>();
+        mMapAvatar = new HashMap<>();
 
         for (ContentModel user: mContentModelList) {
-            mapAvatar.put(user.getId(),user.getImagePath());
+            mMapAvatar.put(user.getId(),user.getImagePath());
         }
 
     }
@@ -60,7 +60,7 @@ public class UsersRvAdapter extends RecyclerView.Adapter<UsersRvAdapter.ViewHold
     public void onBindViewHolder(ViewHolder viewHolder, int i) {
         LoginUser userQuick = mLoginUserList.get(i);
 
-        String path = mapAvatar.get(String.valueOf(userQuick.getId()));
+        String path = mMapAvatar.get(String.valueOf(userQuick.getId()));
         if (path != null) {
             viewHolder.mImageView.setImageURI(Uri.fromFile(new File(path)));
         }
