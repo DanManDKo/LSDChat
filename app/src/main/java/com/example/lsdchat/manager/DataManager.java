@@ -79,32 +79,25 @@ public class DataManager {
         return mRealm.where(LoginUser.class).findAll();
     }
 
+
     public Observable<List<LoginUser>> getUserObservable() {
-        return Observable.fromEmitter(loginUserEmitter -> {
-            loginUserEmitter.onNext(mRealm.where(LoginUser.class).findAll());
-            loginUserEmitter.onCompleted();
-        }, Emitter.BackpressureMode.NONE);
+        return Observable.fromCallable(() -> mRealm.where(LoginUser.class).findAll());
     }
+
+
     public Observable<List<LoginUser>> getUserObservable(String sort) {
-        return Observable.fromEmitter(loginUserEmitter -> {
+        return Observable.fromCallable(() -> {
             switch (sort) {
                 case ApiConstant.SORT_CREATE_AT:
-                    loginUserEmitter.onNext(mRealm.where(LoginUser.class).findAll());
-                    loginUserEmitter.onCompleted();
-                    break;
+                    return mRealm.where(LoginUser.class).findAll();
                 case ApiConstant.SORT_NAME_ACS:
-                    loginUserEmitter.onNext(mRealm.where(LoginUser.class).findAllSorted("fullName", Sort.ASCENDING));
-                    loginUserEmitter.onCompleted();
-                    break;
+                    return mRealm.where(LoginUser.class).findAllSorted("fullName", Sort.ASCENDING);
                 case ApiConstant.SORT_NAME_DESC:
-                    loginUserEmitter.onNext(mRealm.where(LoginUser.class).findAllSorted("fullName", Sort.DESCENDING));
-                    loginUserEmitter.onCompleted();
-                    break;
+                    return mRealm.where(LoginUser.class).findAllSorted("fullName", Sort.DESCENDING);
+                default:
+                    return mRealm.where(LoginUser.class).findAll();
             }
-
-
-
-        }, Emitter.BackpressureMode.NONE);
+        });
     }
 
 
@@ -162,9 +155,6 @@ public class DataManager {
     }
 
     public Observable<List<UserAvatar>> getObservableUserAvatar() {
-        return Observable.fromEmitter(userAvatarEmitter -> {
-            userAvatarEmitter.onNext(mRealm.where(UserAvatar.class).findAll());
-            userAvatarEmitter.onCompleted();
-        }, Emitter.BackpressureMode.NONE);
+        return Observable.fromCallable(() -> mRealm.where(UserAvatar.class).findAll());
     }
 }

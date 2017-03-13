@@ -64,6 +64,9 @@ public class UsersRvAdapter extends RecyclerView.Adapter<UsersRvAdapter.ViewHold
         if (path != null) {
             viewHolder.mImageView.setImageURI(Uri.fromFile(new File(path)));
         }
+        else {
+            viewHolder.mImageView.setImageResource(R.drawable.userpic);
+        }
         viewHolder.mName.setText(userQuick.getFullName());
 
         viewHolder.mRlUser.setOnClickListener(v -> mPresenter.setClickUser(userQuick));

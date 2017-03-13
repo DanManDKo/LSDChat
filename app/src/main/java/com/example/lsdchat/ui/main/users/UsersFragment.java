@@ -8,6 +8,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -64,6 +65,7 @@ public class UsersFragment extends BaseFragment implements UsersContract.View {
 
         mPresenter.getUserObservable()
                 .subscribe(this::setListUsers);
+
 
         return view;
     }

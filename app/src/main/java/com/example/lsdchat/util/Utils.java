@@ -20,7 +20,6 @@ import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 import java.io.File;
 
 import de.hdodenhof.circleimageview.CircleImageView;
-import io.realm.internal.IOException;
 import okhttp3.ResponseBody;
 import okio.BufferedSink;
 import okio.Okio;
@@ -97,23 +96,16 @@ public class Utils {
 
 
     private static Observable<File> saveImage(Response<ResponseBody> response, long blobId) {
-        return Observable.fromEmitter(subscriber -> {
-            try {
+        return Observable.fromCallable(() -> {
 
-                String fileName = String.valueOf(blobId) + ".jpg";
-                File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getAbsoluteFile(), fileName);
-                BufferedSink sink = Okio.buffer(Okio.sink(file));
-                sink.writeAll(response.body().source());
-                sink.close();
-                subscriber.onNext(file);
-                subscriber.onCompleted();
-            } catch (IOException e) {
-                e.printStackTrace();
-                subscriber.onError(e);
-            } catch (java.io.IOException e) {
-                e.printStackTrace();
-            }
-        }, Emitter.BackpressureMode.NONE);
+            String fileName = String.valueOf(blobId) + ".jpg";
+            File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getAbsoluteFile(), fileName);
+            BufferedSink sink = Okio.buffer(Okio.sink(file));
+            sink.writeAll(response.body().source());
+            sink.close();
+            return file;
+
+        });
     }
 
 }
