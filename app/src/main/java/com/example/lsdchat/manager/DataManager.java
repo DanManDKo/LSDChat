@@ -4,9 +4,9 @@ package com.example.lsdchat.manager;
 import com.example.lsdchat.api.dialog.model.ItemMessage;
 import com.example.lsdchat.api.login.model.LoginUser;
 import com.example.lsdchat.constant.ApiConstant;
+import com.example.lsdchat.model.ContentModel;
 import com.example.lsdchat.model.DialogModel;
 import com.example.lsdchat.model.User;
-import com.example.lsdchat.model.UserAvatar;
 import com.example.lsdchat.model.UserQuick;
 
 import java.util.List;
@@ -14,7 +14,6 @@ import java.util.List;
 import io.realm.Realm;
 import io.realm.RealmResults;
 import io.realm.Sort;
-import rx.Emitter;
 import rx.Observable;
 
 // TODO: 3/9/17 [Code Review] make sure all your code related to work with db runs on working thread
@@ -138,11 +137,11 @@ public class DataManager {
         mRealm.executeTransaction(realm -> realm.copyToRealmOrUpdate(user));
     }
 
-    public void saveUserAvatar(UserAvatar userAvatar) {
-        mRealm.executeTransaction(realm -> realm.copyToRealmOrUpdate(userAvatar));
+    public void saveUserAvatar(ContentModel contentModel) {
+        mRealm.executeTransaction(realm -> realm.copyToRealmOrUpdate(contentModel));
     }
 
-    public Observable<List<UserAvatar>> getObservableUserAvatar() {
-        return Observable.fromCallable(() -> mRealm.where(UserAvatar.class).findAll());
+    public Observable<List<ContentModel>> getObservableUserAvatar() {
+        return Observable.fromCallable(() -> mRealm.where(ContentModel.class).findAll());
     }
 }

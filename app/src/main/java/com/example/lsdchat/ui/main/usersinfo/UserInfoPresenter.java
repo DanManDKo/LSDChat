@@ -2,11 +2,9 @@ package com.example.lsdchat.ui.main.usersinfo;
 
 
 import com.example.lsdchat.App;
-import com.example.lsdchat.manager.SharedPreferencesManager;
-import com.example.lsdchat.model.UserAvatar;
+import com.example.lsdchat.model.ContentModel;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import rx.Observable;
@@ -27,8 +25,8 @@ public class UserInfoPresenter implements UserInfoContract.Presenter {
         return Observable.fromCallable(() -> {
             App.getDataManager().getObservableUserAvatar()
                     .subscribe(userAvatars -> {
-                        for (UserAvatar user : userAvatars) {
-                            mapAvatar.put(user.getUserId(), user.getImagePath());
+                        for (ContentModel user : userAvatars) {
+                            mapAvatar.put(user.getId(), user.getImagePath());
                         }
                     });
             return mapAvatar.get(String.valueOf(userId));

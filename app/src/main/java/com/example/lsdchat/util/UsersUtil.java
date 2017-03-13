@@ -8,7 +8,7 @@ import com.example.lsdchat.App;
 import com.example.lsdchat.api.dialog.model.ItemUser;
 import com.example.lsdchat.api.login.model.LoginUser;
 import com.example.lsdchat.manager.DataManager;
-import com.example.lsdchat.model.UserAvatar;
+import com.example.lsdchat.model.ContentModel;
 import com.example.lsdchat.ui.main.users.UsersContract;
 import com.example.lsdchat.ui.main.users.UsersModel;
 
@@ -52,7 +52,7 @@ public class UsersUtil {
                         .flatMap(file -> Observable.just(file.getAbsolutePath()))
                         .subscribe(path -> {
                             Log.e("getImage", path);
-                            dataManager.saveUserAvatar(new UserAvatar(String.valueOf(user.getId()),path));
+                            dataManager.saveUserAvatar(new ContentModel(String.valueOf(user.getId()),path));
                         }, throwable -> {
                             Log.e("getImage", throwable.getMessage());
                         }));

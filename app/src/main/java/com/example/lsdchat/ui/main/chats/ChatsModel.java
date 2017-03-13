@@ -9,9 +9,9 @@ import com.example.lsdchat.api.dialog.response.DialogsResponse;
 import com.example.lsdchat.api.login.service.LoginService;
 import com.example.lsdchat.manager.DataManager;
 import com.example.lsdchat.manager.SharedPreferencesManager;
+import com.example.lsdchat.model.ContentModel;
 import com.example.lsdchat.model.DialogModel;
 import com.example.lsdchat.model.User;
-import com.example.lsdchat.model.UserAvatar;
 import com.example.lsdchat.util.Utils;
 
 import java.util.List;
@@ -77,11 +77,12 @@ public class ChatsModel implements ChatsContract.Model {
         Observable.from(dialogList)
                 .observeOn(AndroidSchedulers.mainThread())
                 .filter(dialogModel -> dialogModel.getPhoto() != null)
+                .filter(dialogModel -> !dialogModel.getPhoto().isEmpty())
                 .subscribe(dialogModel ->
                         Utils.downloadImage(Long.parseLong(dialogModel.getPhoto()), getToken())
                         .flatMap(file -> Observable.just(file.getAbsolutePath()))
                         .subscribe(path -> {
-                            mDataManager.saveUserAvatar(new UserAvatar(dialogModel.getId(), path));
+                            mDataManager.saveUserAvatar(new ContentModel(dialogModel.getId(), path));
                         }, throwable -> {
                             Log.e("getImage", throwable.getMessage());
                         }));
@@ -94,7 +95,7 @@ public class ChatsModel implements ChatsContract.Model {
     }
 
     @Override
-    public Observable<List<UserAvatar>> getObservableUserAvatar() {
+    public Observable<List<ContentModel>> getObservableUserAvatar() {
         return mDataManager.getObservableUserAvatar();
     }
 }

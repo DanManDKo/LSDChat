@@ -4,22 +4,22 @@ import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
 
-public class UserAvatar extends RealmObject {
+public class ContentModel extends RealmObject {
 
     @PrimaryKey
-    private String userId;
+    private String id;
     private String imagePath;
 
-    public UserAvatar() {
+    public ContentModel() {
     }
 
-    public UserAvatar(String userId, String imagePath) {
-        this.userId = userId;
+    public ContentModel(String id, String imagePath) {
+        this.id = id;
         this.imagePath = imagePath;
     }
 
-    public String getUserId() {
-        return userId;
+    public String getId() {
+        return id;
     }
 
     public String getImagePath() {

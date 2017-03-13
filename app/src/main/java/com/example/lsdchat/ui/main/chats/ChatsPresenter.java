@@ -3,7 +3,7 @@ package com.example.lsdchat.ui.main.chats;
 
 import com.example.lsdchat.model.DialogModel;
 import com.example.lsdchat.model.User;
-import com.example.lsdchat.model.UserAvatar;
+import com.example.lsdchat.model.ContentModel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,8 +33,8 @@ public class ChatsPresenter implements ChatsContract.Presenter {
         return Observable.fromCallable(() -> {
             mModel.getObservableUserAvatar()
                     .subscribe(userAvatars -> {
-                        for (UserAvatar user : userAvatars) {
-                            mapAvatar.put(user.getUserId(), user.getImagePath());
+                        for (ContentModel user : userAvatars) {
+                            mapAvatar.put(user.getId(), user.getImagePath());
                         }
                     });
             return mapAvatar.get(String.valueOf(mUser.getId()));

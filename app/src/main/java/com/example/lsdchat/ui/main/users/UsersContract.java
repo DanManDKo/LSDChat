@@ -5,7 +5,7 @@ import android.support.v4.app.Fragment;
 
 import com.example.lsdchat.api.dialog.response.UserListResponse;
 import com.example.lsdchat.api.login.model.LoginUser;
-import com.example.lsdchat.model.UserAvatar;
+import com.example.lsdchat.model.ContentModel;
 
 import java.util.List;
 
@@ -31,7 +31,7 @@ public interface UsersContract {
 
         Observable<List<LoginUser>> getUserObservable(String sort);
 
-        Observable<List<UserAvatar>> getObservableUserAvatar();
+        Observable<List<ContentModel>> getObservableUserAvatar();
 
     }
 
@@ -49,7 +49,7 @@ public interface UsersContract {
 
         void setSortedList(String sort);
 
-        Observable<List<UserAvatar>> getObservableUserAvatar();
+        Observable<List<ContentModel>> getObservableUserAvatar();
     }
 
 }

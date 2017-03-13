@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 import com.example.lsdchat.R;
 import com.example.lsdchat.api.login.model.LoginUser;
-import com.example.lsdchat.model.UserAvatar;
+import com.example.lsdchat.model.ContentModel;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -23,18 +23,18 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class UsersRvAdapter extends RecyclerView.Adapter<UsersRvAdapter.ViewHolder> {
     private List<LoginUser> mLoginUserList;
-    private List<UserAvatar> mUserAvatarList;
+    private List<ContentModel> mContentModelList;
     private UsersContract.Presenter mPresenter;
     private Map<String, String> mapAvatar;
 
-    public UsersRvAdapter(UsersContract.Presenter presenter, List<UserAvatar> mUserAvatarList) {
-        this.mUserAvatarList = mUserAvatarList;
+    public UsersRvAdapter(UsersContract.Presenter presenter, List<ContentModel> mContentModelList) {
+        this.mContentModelList = mContentModelList;
         mLoginUserList = new ArrayList<>();
         this.mPresenter = presenter;
         mapAvatar = new HashMap<>();
 
-        for (UserAvatar user: mUserAvatarList) {
-            mapAvatar.put(user.getUserId(),user.getImagePath());
+        for (ContentModel user: mContentModelList) {
+            mapAvatar.put(user.getId(),user.getImagePath());
         }
 
     }

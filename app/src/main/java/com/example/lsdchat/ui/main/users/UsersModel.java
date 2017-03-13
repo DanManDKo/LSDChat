@@ -1,26 +1,18 @@
 package com.example.lsdchat.ui.main.users;
 
 
-import android.os.Environment;
-
 import com.example.lsdchat.App;
 import com.example.lsdchat.api.dialog.DialogService;
 import com.example.lsdchat.api.dialog.response.UserListResponse;
 import com.example.lsdchat.api.login.model.LoginUser;
 import com.example.lsdchat.manager.DataManager;
 import com.example.lsdchat.manager.SharedPreferencesManager;
-import com.example.lsdchat.model.UserAvatar;
+import com.example.lsdchat.model.ContentModel;
 
-import java.io.File;
 import java.util.List;
 import java.util.Objects;
 
 import io.realm.RealmResults;
-import io.realm.internal.IOException;
-import okhttp3.ResponseBody;
-import okio.BufferedSink;
-import okio.Okio;
-import retrofit2.Response;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -72,7 +64,7 @@ public class UsersModel implements UsersContract.Model {
     }
 
     @Override
-    public Observable<List<UserAvatar>> getObservableUserAvatar() {
+    public Observable<List<ContentModel>> getObservableUserAvatar() {
         return mDataManager.getObservableUserAvatar();
     }
 
