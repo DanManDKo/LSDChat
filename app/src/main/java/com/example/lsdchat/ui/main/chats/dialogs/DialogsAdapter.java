@@ -32,9 +32,10 @@ public class DialogsAdapter extends RecyclerView.Adapter<DialogsAdapter.ViewHold
     private List<ContentModel> mContentModelList;
     private Map<String, String> mMapAvatar;
 
-    public DialogsAdapter(DialogsContract.Presenter mPresenter) {
+    public DialogsAdapter(DialogsContract.Presenter mPresenter,List<ContentModel> mContentModelList) {
         mData = new ArrayList<>();
         this.mPresenter = mPresenter;
+        this.mContentModelList = mContentModelList;
 
         mMapAvatar = new HashMap<>();
 

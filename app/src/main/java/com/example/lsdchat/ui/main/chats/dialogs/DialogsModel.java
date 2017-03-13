@@ -6,6 +6,7 @@ import com.example.lsdchat.api.dialog.DialogService;
 import com.example.lsdchat.api.dialog.response.DialogsResponse;
 import com.example.lsdchat.manager.DataManager;
 import com.example.lsdchat.manager.SharedPreferencesManager;
+import com.example.lsdchat.model.ContentModel;
 import com.example.lsdchat.model.RealmDialogModel;
 import com.example.lsdchat.util.DialogUtil;
 
@@ -51,4 +52,8 @@ public class DialogsModel implements DialogsContract.Model {
         DialogUtil.saveImageDialog(dialogList,getToken());
     }
 
+    @Override
+    public Observable<List<ContentModel>> getObservableUserAvatar() {
+        return mDataManager.getObservableUserAvatar();
+    }
 }

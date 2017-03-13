@@ -5,6 +5,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 
 import com.example.lsdchat.api.dialog.response.DialogsResponse;
+import com.example.lsdchat.model.ContentModel;
 import com.example.lsdchat.model.RealmDialogModel;
 
 import java.util.List;
@@ -20,6 +21,8 @@ public interface DialogsContract {
         void saveDialog(List<RealmDialogModel> dialogList);
 
         String getToken();
+
+        Observable<List<ContentModel>> getObservableUserAvatar();
 
     }
 
@@ -37,6 +40,8 @@ public interface DialogsContract {
         void setOnRefreshListener(SwipeRefreshLayout swipeRefreshLayout);
 
         void setClickRl(RealmDialogModel realmDialogModel);
+
+        Observable<List<ContentModel>> getObservableUserAvatar();
     }
 
 }

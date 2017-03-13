@@ -71,7 +71,10 @@ public class DialogsFragment extends BaseFragment implements DialogsContract.Vie
         initView(view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
-        mDialogsAdapter = new DialogsAdapter(mPresenter);
+
+        mPresenter.getObservableUserAvatar()
+                .subscribe(contentModels -> mDialogsAdapter = new DialogsAdapter(mPresenter,contentModels));
+
         mRecyclerView.setAdapter(mDialogsAdapter);
 
         mList = mPresenter.showDialogs(mType);

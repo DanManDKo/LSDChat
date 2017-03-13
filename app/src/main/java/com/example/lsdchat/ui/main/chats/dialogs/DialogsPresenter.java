@@ -5,6 +5,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 
 import com.example.lsdchat.constant.ApiConstant;
+import com.example.lsdchat.model.ContentModel;
 import com.example.lsdchat.model.RealmDialogModel;
 import com.example.lsdchat.ui.main.conversation.ConversationFragment;
 
@@ -71,6 +72,10 @@ public class DialogsPresenter implements DialogsContract.Presenter {
         mView.navigateToChat(ConversationFragment
                 .newInstance(realmDialogModel.getId(), realmDialogModel.getType(), realmDialogModel.getName()));
 
+    }
 
+    @Override
+    public Observable<List<ContentModel>> getObservableUserAvatar() {
+        return mModel.getObservableUserAvatar();
     }
 }
