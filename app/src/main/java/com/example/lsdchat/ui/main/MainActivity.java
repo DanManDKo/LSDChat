@@ -9,6 +9,7 @@ import android.widget.Toast;
 import com.example.lsdchat.R;
 import com.example.lsdchat.manager.SharedPreferencesManager;
 import com.example.lsdchat.ui.main.chats.ChatsFragment;
+import com.example.lsdchat.ui.main.chats.dialogs.DialogsFragment;
 import com.example.lsdchat.ui.main.conversation.ConversationFragment;
 import com.example.lsdchat.ui.main.editchat.EditchatFragment;
 import com.example.lsdchat.ui.main.fragment.BaseFragment;
@@ -61,10 +62,8 @@ public class MainActivity extends AppCompatActivity implements ConversationFragm
             super.onBackPressed();
         }
     }
-
     @Override
     public void onEditchatSelected(String dialogID) {
-        //replaceFragment(EditchatFragment.newInstance("589f6bfda0eb47ea8400026a"));
-        Toast.makeText(this, dialogID, Toast.LENGTH_SHORT).show();
+        replaceFragment(EditchatFragment.newInstance(dialogID));
     }
 }

@@ -102,6 +102,10 @@ public class DataManager {
         return mRealm.where(DialogModel.class).equalTo("type", type).findAllSorted("updatedAt", Sort.DESCENDING);
     }
 
+    public DialogModel getDialogByID(String dialogID) {
+        return mRealm.where(DialogModel.class).equalTo("id", dialogID).findFirst();
+    }
+
     //handle messages
     public ItemMessage retrieveMessageById(String messageId) {
         return mRealm.where(ItemMessage.class).equalTo(ItemMessage.MESSAGE_ID, messageId).findFirst();

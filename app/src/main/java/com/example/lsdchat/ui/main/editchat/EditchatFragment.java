@@ -9,12 +9,14 @@ import android.support.v4.content.Loader;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.lsdchat.App;
 import com.example.lsdchat.R;
 import com.example.lsdchat.ui.main.fragment.BaseFragment;
 import com.facebook.drawee.view.SimpleDraweeView;
@@ -30,6 +32,12 @@ public class EditchatFragment extends BaseFragment implements EditchatContract.V
     private EditText mEditChatName;
     private SimpleDraweeView mDialogImage;
     private Button mSaveButton;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
 
     @Nullable
     @Override
@@ -49,7 +57,7 @@ public class EditchatFragment extends BaseFragment implements EditchatContract.V
             @Override
             public Loader<EditchatPresenter> onCreateLoader(int id, Bundle args) {
                 Log.i(TAG, "onCreateLoader");
-                return new PresenterLoader<>(getContext(), getFactory(), TAG);
+                return new PresenterLoader<EditchatPresenter>(getContext(), getFactory(), TAG);
             }
 
             @Override
@@ -64,13 +72,16 @@ public class EditchatFragment extends BaseFragment implements EditchatContract.V
                 EditchatFragment.this.mPresenter = null;
             }
         });
+
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        Log.i(TAG, "onResume");
-        Toast.makeText(getContext(), getArguments().getString(DIALOG_ID).toString(), Toast.LENGTH_SHORT).show();
+        Log.i(TAG, "onResume " + mPresenter.toString());
+        mPresenter.loadDialogCredentials(getArguments().getString(DIALOG_ID));
+
+        Toast.makeText(getContext(), getArguments().getString(DIALOG_ID), Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -80,22 +91,32 @@ public class EditchatFragment extends BaseFragment implements EditchatContract.V
     }
 
     @Override
-    public Context getViewContext() {
-        return getContext();
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                getActivity().onBackPressed();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void fillDialogInformation(String dialogName) {
+        mEditChatName.setText(dialogName);
     }
 
     private void initView(View view) {
         mEditChatName = (EditText) view.findViewById(R.id.editchat_et_chatname);
         mSaveButton = (Button) view.findViewById(R.id.editchat_button);
         mDialogImage = (SimpleDraweeView) view.findViewById(R.id.editchat_groupeimage);
-        mToolbar = (Toolbar) view.findViewById(R.id.editchat_toolbar);
+        mToolbar = (Toolbar) view.findViewById(R.id.chats_toolbar);
 
         initToolbar(mToolbar, getString(R.string.edit_chat_title));
     }
 
     private EditchatPresenterFactory getFactory() {
         EditchatContract.Model model = new EditchatModel();
-        return new EditchatPresenterFactory(model, this);
+        return new EditchatPresenterFactory(model, this, App.getSharedPreferencesManager(getContext()));
     }
 
     public static EditchatFragment newInstance(String dialogID) {

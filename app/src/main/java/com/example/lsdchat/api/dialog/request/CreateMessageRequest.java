@@ -24,6 +24,8 @@ public class CreateMessageRequest {
         this.message = message;
     }
 
+
+
     public CreateMessageRequest() {
     }
 

@@ -37,6 +37,7 @@ public class ConversationFragment extends BaseFragment implements ConversationCo
     private static final String DIALOG_ID = "dialog_id";
     private static final String DIALOG_TYPE = "dialog_type";
     private static final String DIALOG_NAME = "dialog_name";
+    private static final int DIALOG_PRIVATE = 3;
 
     private ConversationPresenter mConversationPresenter;
     private OnEditchatButtonClicked mEditListener;
@@ -51,9 +52,9 @@ public class ConversationFragment extends BaseFragment implements ConversationCo
     private ConversationRecyclerAdapter mAdapter;
     private RecyclerView mRecyclerView;
 
-    //    private String ownerJID = "23163511-52350@chat.quickblox.com";
     private String mucToJID;
     private String dialogID;
+    private int dialogType;
     private String mNameDialog;
 
     private ArrayList<ItemMessage> mMessageList = new ArrayList<>();
@@ -76,7 +77,6 @@ public class ConversationFragment extends BaseFragment implements ConversationCo
         } catch (ClassCastException e) {
             throw new ClassCastException("Activity should implement " + OnEditchatButtonClicked.class.getSimpleName());
         }
-
     }
 
     @Override
@@ -90,6 +90,7 @@ public class ConversationFragment extends BaseFragment implements ConversationCo
         View view = inflater.inflate(R.layout.fragment_conversation, container, false);
         mConversationPresenter = new ConversationPresenter(this, App.getSharedPreferencesManager(getActivity()));
         dialogID = getArguments().getString(DIALOG_ID);
+        dialogType = getArguments().getInt(DIALOG_TYPE);
         mucToJID = ApiConstant.APP_ID + "_" + dialogID + ApiConstant.MessageRequestParams.MULTI_USER_CHAT;
         mNameDialog = getArguments().getString(DIALOG_NAME);
 
@@ -148,17 +149,11 @@ public class ConversationFragment extends BaseFragment implements ConversationCo
                 getActivity().onBackPressed();
                 break;
             case R.id.toolbar_edit:
-                //check up dialog_type
-                if (true) {
-                    //navigate to Edit Chat Screen
-//                    Toast.makeText(getActivity(), "edit", Toast.LENGTH_SHORT).show();
-                    mEditListener.onEditchatSelected("589f6bfda0eb47ea8400026a");
-//                    Intent intent = new Intent(this, EditChatActivity.class);
-//                    startActivity(intent);
+                if (dialogType != DIALOG_PRIVATE) {
+                    mEditListener.onEditchatSelected(dialogID);
                 } else {
-                    Toast.makeText(getActivity(), "You can not edit current chat", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "You can`t edit private dialog", Toast.LENGTH_SHORT).show();
                 }
-                break;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -187,11 +182,6 @@ public class ConversationFragment extends BaseFragment implements ConversationCo
         mProgressBar = (ProgressBar) view.findViewById(R.id.conversation_progress_bar);
 
         initToolbar(mToolbar, mNameDialog);
-    }
-
-    @Override
-    public Context getViewContext() {
-        return getContext();
     }
 
     @Override

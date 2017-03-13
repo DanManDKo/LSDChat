@@ -17,6 +17,7 @@ import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 import rx.Observable;
@@ -29,6 +30,14 @@ public interface DialogService {
     Observable<DialogsResponse> getDialog(@Header(ApiConstant.QB_TOKEN) String token);
 
     @Headers(ApiConstant.HEADER_CONTENT_TYPE)
+    @GET(ApiConstant.DIALOGS_REQUEST)
+    Observable<DialogsResponse> getDialog(@Header(ApiConstant.QB_TOKEN) String token, @Query(ApiConstant.MessageRequestParams.DIALOG_ID) String dialogID);
+
+    @Headers(ApiConstant.HEADER_CONTENT_TYPE)
+    @PUT(ApiConstant.UPDATE_DIALOG)
+    Observable<ItemDialog> updateDialog(@Header(ApiConstant.QB_TOKEN) String token, @Path(ApiConstant.MessageRequestParams.DIALOG_ID) String dialogID, @Body CreateDialogRequest createDialogRequest);
+
+    @Headers(ApiConstant.HEADER_CONTENT_TYPE)
     @POST(ApiConstant.DIALOGS_REQUEST)
     Observable<ItemDialog> createDialog(@Header(ApiConstant.QB_TOKEN) String token, @Body CreateDialogRequest createDialogRequest);
 
@@ -38,17 +47,15 @@ public interface DialogService {
 
     @Headers(ApiConstant.HEADER_CONTENT_TYPE)
     @GET(ApiConstant.MESSAGES_REQUEST)
-    Observable<MessagesResponse> getMessageById(@Header(ApiConstant.QB_TOKEN) String token, @Query("chat_dialog_id") String chatDialogId, @Query("_id") String messageID);
+    Observable<MessagesResponse> getMessageById(@Header(ApiConstant.QB_TOKEN) String token, @Query(ApiConstant.MessageRequestParams.CHAT_DIALOG_ID) String chatDialogId, @Query(ApiConstant.MessageRequestParams.MESSAGE_ID) String messageID);
 
     @Headers(ApiConstant.HEADER_CONTENT_TYPE)
     @POST(ApiConstant.MESSAGES_REQUEST)
     Observable<ItemMessage> createMessages(@Header(ApiConstant.QB_TOKEN) String token, @Body CreateMessageRequest createMessageRequest);
 
-
     @Headers(ApiConstant.HEADER_CONTENT_TYPE)
     @GET(ApiConstant.USER_LIST_REQUEST)
     Observable<UserListResponse> getUserList(@Header(ApiConstant.QB_TOKEN) String token, @Query("per_page") int perPage);
-
 
     @Headers(ApiConstant.HEADER_CONTENT_TYPE)
     @GET(ApiConstant.GET_FILE_REQUEST)

@@ -21,6 +21,10 @@ public class CreateDialogRequest {
 
     }
 
+    public CreateDialogRequest(String name) {
+        this.name = name;
+    }
+
     public void setOccupantsIdsList(List<String> occupantsIdsList) {
         this.occupantsIdsList = occupantsIdsList;
     }

@@ -26,7 +26,7 @@ public class ConversationPresenter implements ConversationContract.Presenter {
 
     public ConversationPresenter(ConversationContract.View view, SharedPreferencesManager manager) {
         mView = view;
-        mContext = view.getViewContext();
+        mContext = view.getContext();
         mModel = new ConversationModel();
         mPreferencesManager = manager;
 
@@ -37,6 +37,8 @@ public class ConversationPresenter implements ConversationContract.Presenter {
     public void onDestroy() {
         mView = null;
         mModel = null;
+        mContext = null;
+        mPreferencesManager = null;
     }
 
     @Override
@@ -54,8 +56,8 @@ public class ConversationPresenter implements ConversationContract.Presenter {
                 String action = intent.getAction();
                 switch (action) {
                     case XMPPService.NEW_MESSAGE:
-                        String fromJID = intent.getStringExtra(XMPPService.BUNDLE_FROM_JID);
-                        String body = intent.getStringExtra(XMPPService.BUNDLE_MESSAGE_BODY);
+//                        String fromJID = intent.getStringExtra(XMPPService.BUNDLE_FROM_JID);
+//                        String body = intent.getStringExtra(XMPPService.BUNDLE_MESSAGE_BODY);
                         String messageID = intent.getStringExtra(XMPPService.MESSAGE_ID);
 //                        String from = fromJID.split("-")[0];
 
@@ -122,16 +124,6 @@ public class ConversationPresenter implements ConversationContract.Presenter {
 
             if (!message.equalsIgnoreCase("")) {
                 Log.e("AAA", "The client is connected to the server, sending Message");
-
-                //mPreferencesManager.getToken();
-//                mModel.createDialogMessage(token, dialogId, message)
-//                        .subscribe(itemMessage -> {
-//                            saveMessagesToDataBase(itemMessage);
-//                            addNewMessageToAdapterList(itemMessage.getId());
-//                        }, throwable -> {
-//
-//                        });
-
                 //Send the message to the server
                 Intent intent = new Intent(XMPPService.SEND_MESSAGE);
                 intent.putExtra(XMPPService.BUNDLE_MESSAGE_BODY, message);

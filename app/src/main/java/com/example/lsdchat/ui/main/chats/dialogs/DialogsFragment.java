@@ -1,6 +1,7 @@
 package com.example.lsdchat.ui.main.chats.dialogs;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -20,6 +21,8 @@ import android.view.ViewGroup;
 import com.example.lsdchat.App;
 import com.example.lsdchat.R;
 import com.example.lsdchat.model.DialogModel;
+import com.example.lsdchat.ui.main.conversation.ConversationFragment;
+import com.example.lsdchat.ui.main.editchat.EditchatFragment;
 import com.example.lsdchat.ui.main.fragment.BaseFragment;
 
 import java.util.List;
