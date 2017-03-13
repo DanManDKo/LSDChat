@@ -5,7 +5,6 @@ import android.util.Log;
 
 import com.example.lsdchat.App;
 import com.example.lsdchat.api.dialog.DialogService;
-import com.example.lsdchat.api.dialog.model.ItemDialog;
 import com.example.lsdchat.api.dialog.response.DialogsResponse;
 import com.example.lsdchat.api.login.service.LoginService;
 import com.example.lsdchat.manager.DataManager;
@@ -37,7 +36,7 @@ public class ChatsModel implements ChatsContract.Model {
 
     @Override
     public String getToken() {
-       return mSharedPreferencesManager.getToken();
+        return mSharedPreferencesManager.getToken();
     }
 
     @Override
@@ -67,29 +66,27 @@ public class ChatsModel implements ChatsContract.Model {
     }
 
 
-
     @Override
     public void saveDialog(List<DialogModel> dialogList) {
         Observable.from(dialogList)
                 .subscribe(itemDialog -> mDataManager.insertDialogToDB(itemDialog));
+        saveImageDialog(dialogList);
     }
 
-   /* public void saveImageDialog(List<DialogModel> dialogList) {
+    private void saveImageDialog(List<DialogModel> dialogList) {
         Observable.from(dialogList)
                 .observeOn(AndroidSchedulers.mainThread())
-                .filter(dialogModel -> dialogModel.getPhoto()!=null)
-                .subscribe(dialogModel -> {
-                    Utils.downloadImage(dialogModel.getPhoto(), getToken())
-                            .flatMap(file -> Observable.just(file.getAbsolutePath()))
-                            .subscribe(path -> {
-                                Log.e("getImage", path);
-                                mDataManager.saveUserAvatar(new UserAvatar(dialogModel.getId(),path));
-                            }, throwable -> {
-                                Log.e("getImage", throwable.getMessage());
-                            });
-                });
+                .filter(dialogModel -> dialogModel.getPhoto() != null)
+                .subscribe(dialogModel ->
+                        Utils.downloadImage(Long.parseLong(dialogModel.getPhoto()), getToken())
+                        .flatMap(file -> Observable.just(file.getAbsolutePath()))
+                        .subscribe(path -> {
+                            mDataManager.saveUserAvatar(new UserAvatar(dialogModel.getId(), path));
+                        }, throwable -> {
+                            Log.e("getImage", throwable.getMessage());
+                        }));
 
-    }*/
+    }
 
     @Override
     public List<DialogModel> getDialogsByType(int type) {

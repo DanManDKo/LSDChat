@@ -23,7 +23,7 @@ public class UserInfoPresenter implements UserInfoContract.Presenter {
 
     @Override
     public Observable<String> getUserAvatar(int userId) {
-        Map<Integer, String> mapAvatar = new HashMap<>();
+        Map<String, String> mapAvatar = new HashMap<>();
         return Observable.fromCallable(() -> {
             App.getDataManager().getObservableUserAvatar()
                     .subscribe(userAvatars -> {
@@ -31,7 +31,7 @@ public class UserInfoPresenter implements UserInfoContract.Presenter {
                             mapAvatar.put(user.getUserId(), user.getImagePath());
                         }
                     });
-            return mapAvatar.get(userId);
+            return mapAvatar.get(String.valueOf(userId));
         });
 
     }

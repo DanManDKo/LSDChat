@@ -29,7 +29,7 @@ public class ChatsPresenter implements ChatsContract.Presenter {
 
     @Override
     public Observable<String> getUserAvatar() {
-        Map<Integer, String> mapAvatar = new HashMap<>();
+        Map<String, String> mapAvatar = new HashMap<>();
         return Observable.fromCallable(() -> {
             mModel.getObservableUserAvatar()
                     .subscribe(userAvatars -> {
@@ -37,7 +37,7 @@ public class ChatsPresenter implements ChatsContract.Presenter {
                             mapAvatar.put(user.getUserId(), user.getImagePath());
                         }
                     });
-            return mapAvatar.get(mUser.getId());
+            return mapAvatar.get(String.valueOf(mUser.getId()));
         });
 
     }

@@ -47,17 +47,15 @@ public class UsersUtil {
                 .observeOn(AndroidSchedulers.mainThread())
                 .flatMap(user -> Observable.just(user.getUser()))
                 .filter(user -> user.getBlobId() != 0)
-                .subscribe(user -> {
-                    Utils.downloadImage(user.getBlobId(), token)
-                            .flatMap(file -> Observable.just(file.getAbsolutePath()))
-                            .subscribe(path -> {
-                                Log.e("getImage", path);
-                                dataManager.saveUserAvatar(new UserAvatar(user.getId(),path));
-                            }, throwable -> {
-                                Log.e("getImage", throwable.getMessage());
-                            });
-
-                });
+                .subscribe(user ->
+                        Utils.downloadImage(user.getBlobId(), token)
+                        .flatMap(file -> Observable.just(file.getAbsolutePath()))
+                        .subscribe(path -> {
+                            Log.e("getImage", path);
+                            dataManager.saveUserAvatar(new UserAvatar(String.valueOf(user.getId()),path));
+                        }, throwable -> {
+                            Log.e("getImage", throwable.getMessage());
+                        }));
 
 
     }
