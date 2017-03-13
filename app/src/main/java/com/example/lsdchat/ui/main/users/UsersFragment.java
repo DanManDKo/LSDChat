@@ -24,8 +24,6 @@ import com.example.lsdchat.ui.main.fragment.BaseFragment;
 import java.util.ArrayList;
 import java.util.List;
 
-import rx.android.schedulers.AndroidSchedulers;
-
 
 public class UsersFragment extends BaseFragment implements UsersContract.View {
     private UsersContract.Presenter mPresenter;
@@ -33,6 +31,7 @@ public class UsersFragment extends BaseFragment implements UsersContract.View {
     private RecyclerView mRecyclerView;
     private UsersRvAdapter mUsersRvAdapter;
     private LinearLayoutManager mLayoutManager;
+    private List<LoginUser> mLoginUserList;
 
     public UsersFragment() {
         // Required empty public constructor
@@ -48,6 +47,7 @@ public class UsersFragment extends BaseFragment implements UsersContract.View {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_users, container, false);
+        mLoginUserList = new ArrayList<>();
         mPresenter = new UsersPresenter(this, new UsersModel(App.getSharedPreferencesManager(getActivity())));
         mToolbar = (Toolbar) view.findViewById(R.id.chats_toolbar);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.realm_recycler_view);
@@ -57,6 +57,10 @@ public class UsersFragment extends BaseFragment implements UsersContract.View {
         mLayoutManager = new LinearLayoutManager(getActivity());
         mRecyclerView.setLayoutManager(mLayoutManager);
 
+        mPresenter.getObservableUserAvatar()
+                .subscribe(userAvatars -> mUsersRvAdapter = new UsersRvAdapter(mPresenter, userAvatars));
+
+        mRecyclerView.setAdapter(mUsersRvAdapter);
 
         mPresenter.getUserObservable()
                 .subscribe(this::setListUsers);
@@ -66,12 +70,14 @@ public class UsersFragment extends BaseFragment implements UsersContract.View {
 
     @Override
     public void setListUsers(List<LoginUser> list) {
-        mUsersRvAdapter = new UsersRvAdapter(list, mPresenter, App.getDataManager().getListUserAvatar());
+        clearList();
+        mUsersRvAdapter.addData(list);
 
-        mRecyclerView.setAdapter(mUsersRvAdapter);
-        mUsersRvAdapter.notifyDataSetChanged();
     }
 
+    private void clearList() {
+        mUsersRvAdapter.clearData();
+    }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -91,7 +97,7 @@ public class UsersFragment extends BaseFragment implements UsersContract.View {
             @Override
             public boolean onQueryTextChange(String newText) {
                 mPresenter.getUserObservable()
-                        .subscribe(loginUsers -> getFilterList(loginUsers,newText));
+                        .subscribe(loginUsers -> getFilterList(loginUsers, newText));
                 return false;
 
             }

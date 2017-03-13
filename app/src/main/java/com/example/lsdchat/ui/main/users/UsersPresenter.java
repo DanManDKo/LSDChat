@@ -2,6 +2,7 @@ package com.example.lsdchat.ui.main.users;
 
 
 import com.example.lsdchat.api.login.model.LoginUser;
+import com.example.lsdchat.model.UserAvatar;
 import com.example.lsdchat.ui.main.usersinfo.UserInfoFragment;
 
 import java.util.List;
@@ -41,5 +42,8 @@ public class UsersPresenter implements UsersContract.Presenter {
 
     }
 
-
+    @Override
+    public Observable<List<UserAvatar>> getObservableUserAvatar() {
+        return mModel.getObservableUserAvatar();
+    }
 }

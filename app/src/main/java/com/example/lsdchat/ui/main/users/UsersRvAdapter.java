@@ -11,30 +11,42 @@ import android.widget.TextView;
 import com.example.lsdchat.R;
 import com.example.lsdchat.api.login.model.LoginUser;
 import com.example.lsdchat.model.UserAvatar;
-import com.facebook.drawee.view.SimpleDraweeView;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 
 public class UsersRvAdapter extends RecyclerView.Adapter<UsersRvAdapter.ViewHolder> {
-    private List<LoginUser> data;
-    private List<UserAvatar> userAvatars;
+    private List<LoginUser> mLoginUserList;
+    private List<UserAvatar> mUserAvatarList;
     private UsersContract.Presenter mPresenter;
     private Map<Integer, String> mapAvatar;
 
-    public UsersRvAdapter(List<LoginUser> data, UsersContract.Presenter presenter, List<UserAvatar> userAvatars) {
-        this.userAvatars = userAvatars;
-        this.data = data;
+    public UsersRvAdapter(UsersContract.Presenter presenter, List<UserAvatar> mUserAvatarList) {
+        this.mUserAvatarList = mUserAvatarList;
+        mLoginUserList = new ArrayList<>();
         this.mPresenter = presenter;
         mapAvatar = new HashMap<>();
 
-        for (UserAvatar user: userAvatars) {
+        for (UserAvatar user: mUserAvatarList) {
             mapAvatar.put(user.getUserId(),user.getImagePath());
         }
 
+    }
+
+    public void addData(List<LoginUser> loginUserList) {
+        mLoginUserList.addAll(loginUserList);
+        notifyDataSetChanged();
+    }
+
+    public void clearData() {
+        mLoginUserList.clear();
+        notifyDataSetChanged();
     }
 
     @Override
@@ -46,9 +58,9 @@ public class UsersRvAdapter extends RecyclerView.Adapter<UsersRvAdapter.ViewHold
 
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, int i) {
-        LoginUser userQuick = data.get(i);
-        String path = mapAvatar.get(userQuick.getId());
+        LoginUser userQuick = mLoginUserList.get(i);
 
+        String path = mapAvatar.get(userQuick.getId());
         if (path != null) {
             viewHolder.mImageView.setImageURI(Uri.fromFile(new File(path)));
         }
@@ -62,19 +74,19 @@ public class UsersRvAdapter extends RecyclerView.Adapter<UsersRvAdapter.ViewHold
 
     @Override
     public int getItemCount() {
-        return data.size();
+        return mLoginUserList.size();
     }
 
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
-        SimpleDraweeView mImageView;
+        CircleImageView mImageView;
         TextView mName;
         RelativeLayout mRlUser;
 
         public ViewHolder(View itemView) {
             super(itemView);
-            mImageView = (SimpleDraweeView) itemView.findViewById(R.id.users_image);
+            mImageView = (CircleImageView) itemView.findViewById(R.id.users_image);
             mName = (TextView) itemView.findViewById(R.id.users_name);
             mRlUser = (RelativeLayout) itemView.findViewById(R.id.rl_user);
 

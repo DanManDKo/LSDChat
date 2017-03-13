@@ -9,6 +9,7 @@ import com.example.lsdchat.api.dialog.response.UserListResponse;
 import com.example.lsdchat.api.login.model.LoginUser;
 import com.example.lsdchat.manager.DataManager;
 import com.example.lsdchat.manager.SharedPreferencesManager;
+import com.example.lsdchat.model.UserAvatar;
 
 import java.io.File;
 import java.util.List;
@@ -70,7 +71,10 @@ public class UsersModel implements UsersContract.Model {
         return mDataManager.getUserObservable(sort);
     }
 
-
+    @Override
+    public Observable<List<UserAvatar>> getObservableUserAvatar() {
+        return mDataManager.getObservableUserAvatar();
+    }
 
     @Override
     public void deleteAllUSerQuick() {

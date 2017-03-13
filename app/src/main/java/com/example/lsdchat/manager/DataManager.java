@@ -90,15 +90,18 @@ public class DataManager {
             switch (sort) {
                 case ApiConstant.SORT_CREATE_AT:
                     loginUserEmitter.onNext(mRealm.where(LoginUser.class).findAll());
+                    loginUserEmitter.onCompleted();
                     break;
                 case ApiConstant.SORT_NAME_ACS:
-                    loginUserEmitter.onNext(mRealm.where(LoginUser.class).findAllSortedAsync("fullName", Sort.ASCENDING));
+                    loginUserEmitter.onNext(mRealm.where(LoginUser.class).findAllSorted("fullName", Sort.ASCENDING));
+                    loginUserEmitter.onCompleted();
                     break;
                 case ApiConstant.SORT_NAME_DESC:
-                    loginUserEmitter.onNext(mRealm.where(LoginUser.class).findAllSortedAsync("fullName", Sort.DESCENDING));
+                    loginUserEmitter.onNext(mRealm.where(LoginUser.class).findAllSorted("fullName", Sort.DESCENDING));
+                    loginUserEmitter.onCompleted();
                     break;
             }
-            loginUserEmitter.onCompleted();
+
 
 
         }, Emitter.BackpressureMode.NONE);

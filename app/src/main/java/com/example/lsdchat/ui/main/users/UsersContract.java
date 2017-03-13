@@ -1,18 +1,14 @@
 package com.example.lsdchat.ui.main.users;
 
 
-import android.content.Context;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.SearchView;
-import android.widget.RelativeLayout;
 
 import com.example.lsdchat.api.dialog.response.UserListResponse;
 import com.example.lsdchat.api.login.model.LoginUser;
+import com.example.lsdchat.model.UserAvatar;
 
-import java.io.File;
 import java.util.List;
 
-import de.hdodenhof.circleimageview.CircleImageView;
 import io.realm.RealmResults;
 import rx.Observable;
 
@@ -25,6 +21,7 @@ public interface UsersContract {
 
         RealmResults<LoginUser> getUsersQuick();
 
+
         void insetUsersQuick(LoginUser userQuick);
 
         void deleteAllUSerQuick();
@@ -33,6 +30,8 @@ public interface UsersContract {
         Observable<List<LoginUser>> getUserObservable();
 
         Observable<List<LoginUser>> getUserObservable(String sort);
+
+        Observable<List<UserAvatar>> getObservableUserAvatar();
 
     }
 
@@ -46,10 +45,11 @@ public interface UsersContract {
     interface Presenter {
         void setClickUser(LoginUser loginUser);
 
-
         Observable<List<LoginUser>> getUserObservable();
 
         void setSortedList(String sort);
+
+        Observable<List<UserAvatar>> getObservableUserAvatar();
     }
 
 }
