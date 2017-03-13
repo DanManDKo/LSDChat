@@ -1,5 +1,6 @@
 package com.example.lsdchat.ui.main.users;
 
+import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,22 +10,30 @@ import android.widget.TextView;
 
 import com.example.lsdchat.R;
 import com.example.lsdchat.api.login.model.LoginUser;
+import com.example.lsdchat.model.UserAvatar;
+import com.facebook.drawee.view.SimpleDraweeView;
 
-import java.util.ArrayList;
+import java.io.File;
+import java.util.HashMap;
 import java.util.List;
-
-import de.hdodenhof.circleimageview.CircleImageView;
+import java.util.Map;
 
 
 public class UsersRvAdapter extends RecyclerView.Adapter<UsersRvAdapter.ViewHolder> {
     private List<LoginUser> data;
-    private List<LoginUser> filterData;
-    private UsersContract.Presenter presenter;
+    private List<UserAvatar> userAvatars;
+    private UsersContract.Presenter mPresenter;
+    private Map<Integer, String> mapAvatar;
 
-    public UsersRvAdapter(List<LoginUser> data, UsersContract.Presenter presenter) {
-
+    public UsersRvAdapter(List<LoginUser> data, UsersContract.Presenter presenter, List<UserAvatar> userAvatars) {
+        this.userAvatars = userAvatars;
         this.data = data;
-        this.presenter = presenter;
+        this.mPresenter = presenter;
+        mapAvatar = new HashMap<>();
+
+        for (UserAvatar user: userAvatars) {
+            mapAvatar.put(user.getUserId(),user.getImagePath());
+        }
 
     }
 
@@ -38,11 +47,17 @@ public class UsersRvAdapter extends RecyclerView.Adapter<UsersRvAdapter.ViewHold
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, int i) {
         LoginUser userQuick = data.get(i);
+        String path = mapAvatar.get(userQuick.getId());
 
-        presenter.setImageView(viewHolder.mImageView,userQuick);
-
+        if (path != null) {
+            viewHolder.mImageView.setImageURI(Uri.fromFile(new File(path)));
+        }
         viewHolder.mName.setText(userQuick.getFullName());
-        presenter.setOnClickListenerRl(viewHolder.mRlUser,userQuick);
+
+        viewHolder.mRlUser.setOnClickListener(v -> mPresenter.setClickUser(userQuick));
+
+
+//        mPresenter.getImageUrl(userQuick.getBlobId()).subscribe(imageUrl -> viewHolder.mImageView.setImageURI(Uri.parse(imageUrl)));
 
     }
 
@@ -52,21 +67,15 @@ public class UsersRvAdapter extends RecyclerView.Adapter<UsersRvAdapter.ViewHold
     }
 
 
-    public void setFilter(List<LoginUser> loginUsers) {
-        filterData = new ArrayList<>();
-        filterData.addAll(loginUsers);
-        notifyDataSetChanged();
-    }
-
     public class ViewHolder extends RecyclerView.ViewHolder {
 
-        CircleImageView mImageView;
+        SimpleDraweeView mImageView;
         TextView mName;
         RelativeLayout mRlUser;
 
         public ViewHolder(View itemView) {
             super(itemView);
-            mImageView = (CircleImageView) itemView.findViewById(R.id.users_image);
+            mImageView = (SimpleDraweeView) itemView.findViewById(R.id.users_image);
             mName = (TextView) itemView.findViewById(R.id.users_name);
             mRlUser = (RelativeLayout) itemView.findViewById(R.id.rl_user);
 

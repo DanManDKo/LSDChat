@@ -1,14 +1,12 @@
 package com.example.lsdchat.manager;
 
 
-import android.content.Context;
-
-import com.example.lsdchat.App;
 import com.example.lsdchat.api.dialog.model.ItemMessage;
 import com.example.lsdchat.api.login.model.LoginUser;
 import com.example.lsdchat.constant.ApiConstant;
 import com.example.lsdchat.model.DialogModel;
 import com.example.lsdchat.model.User;
+import com.example.lsdchat.model.UserAvatar;
 import com.example.lsdchat.model.UserQuick;
 
 import java.util.List;
@@ -16,6 +14,8 @@ import java.util.List;
 import io.realm.Realm;
 import io.realm.RealmResults;
 import io.realm.Sort;
+import rx.Emitter;
+import rx.Observable;
 
 // TODO: 3/9/17 [Code Review] make sure all your code related to work with db runs on working thread
 // (create Observable wrappers maybe)
@@ -55,8 +55,9 @@ public class DataManager {
     }
 
     public void insertUserQuickToDB(LoginUser user) {
-
-        mRealm.executeTransaction(realm -> realm.copyToRealmOrUpdate(user));
+        mRealm.executeTransaction(realm -> {
+            realm.copyToRealmOrUpdate(user);
+        });
     }
 
 
@@ -77,6 +78,14 @@ public class DataManager {
     public List<LoginUser> getUsersQuickList() {
         return mRealm.where(LoginUser.class).findAll();
     }
+
+    public Observable<List<LoginUser>> getUserObservable() {
+        return Observable.fromEmitter(loginUserEmitter -> {
+            loginUserEmitter.onNext(mRealm.where(LoginUser.class).findAll());
+            loginUserEmitter.onCompleted();
+        }, Emitter.BackpressureMode.NONE);
+    }
+
 
     public LoginUser getUserById(int id) {
         return mRealm.where(LoginUser.class).equalTo("id", id).findFirst();
@@ -120,5 +129,21 @@ public class DataManager {
     public void saveUserToRealm(User user) {
         deleteAllUserDb();
         mRealm.executeTransaction(realm -> realm.copyToRealmOrUpdate(user));
+    }
+
+
+    public void saveUserAvatar(UserAvatar userAvatar) {
+        mRealm.executeTransaction(realm -> realm.copyToRealmOrUpdate(userAvatar));
+    }
+
+    public List<UserAvatar> getListUserAvatar() {
+        return mRealm.where(UserAvatar.class).findAll();
+    }
+
+    public Observable<List<UserAvatar>> getObservableUserAvatar() {
+        return Observable.fromEmitter(userAvatarEmitter -> {
+            userAvatarEmitter.onNext(mRealm.where(UserAvatar.class).findAll());
+            userAvatarEmitter.onCompleted();
+        }, Emitter.BackpressureMode.NONE);
     }
 }

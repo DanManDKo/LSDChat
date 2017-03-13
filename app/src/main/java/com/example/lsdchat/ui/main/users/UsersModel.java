@@ -8,6 +8,7 @@ import com.example.lsdchat.api.dialog.DialogService;
 import com.example.lsdchat.api.dialog.response.UserListResponse;
 import com.example.lsdchat.api.login.model.LoginUser;
 import com.example.lsdchat.manager.DataManager;
+import com.example.lsdchat.manager.SharedPreferencesManager;
 
 import java.io.File;
 import java.util.List;
@@ -26,10 +27,16 @@ import rx.schedulers.Schedulers;
 public class UsersModel implements UsersContract.Model {
     private DialogService mDialogService;
     private DataManager mDataManager;
+    private SharedPreferencesManager mSharedPreferencesManager;
 
-    public UsersModel() {
+    public UsersModel(SharedPreferencesManager sharedPreferencesManager) {
         mDataManager = App.getDataManager();
         mDialogService = App.getApiManager().getDialogService();
+        this.mSharedPreferencesManager = sharedPreferencesManager;
+    }
+    @Override
+    public String getToken() {
+        return mSharedPreferencesManager.getToken();
     }
 
     @Override
@@ -43,7 +50,6 @@ public class UsersModel implements UsersContract.Model {
 
     @Override
     public void insetUsersQuick(LoginUser userQuick) {
-//         && !Objects.equals(userQuick.getEmail(), mDataManager.getUser().getEmail())
         if (!Objects.equals(userQuick.getLogin(), "eroy"))
             mDataManager.insertUserQuickToDB(userQuick);
     }
@@ -55,10 +61,9 @@ public class UsersModel implements UsersContract.Model {
     }
 
     @Override
-    public LoginUser getUserById(int id) {
-        return mDataManager.getUserById(id);
+    public Observable<List<LoginUser>> getUserObservable() {
+        return mDataManager.getUserObservable();
     }
-
 
     @Override
     public List<LoginUser> getUsersQuickList(String sort) {
@@ -70,41 +75,8 @@ public class UsersModel implements UsersContract.Model {
     }
 
     @Override
-    public void deleteAllUSerQiuck() {
+    public void deleteAllUSerQuick() {
         mDataManager.deleteAllUsersQuick();
     }
 
-
-
-    @Override
-    public Observable<File> downloadImage(LoginUser loginUser, String token) {
-        DialogService mDialogService = App.getApiManager().getDialogService();
-
-        return mDialogService.downloadImage(loginUser.getBlobId(), token)
-                .flatMap(responseBodyResponse -> saveImage(responseBodyResponse, loginUser))
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
-    }
-
-
-    private Observable<File> saveImage(Response<ResponseBody> response, LoginUser loginUser) {
-        return Observable.create(subscriber -> {
-            try {
-
-                String fileName = String.valueOf(loginUser.getBlobId()) + ".jpg";
-                File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getAbsoluteFile(), fileName);
-                BufferedSink sink = Okio.buffer(Okio.sink(file));
-                sink.writeAll(response.body().source());
-                sink.close();
-                subscriber.onNext(file);
-                subscriber.onCompleted();
-
-            } catch (IOException e) {
-                e.printStackTrace();
-                subscriber.onError(e);
-            } catch (java.io.IOException e) {
-                e.printStackTrace();
-            }
-        });
-    }
 }

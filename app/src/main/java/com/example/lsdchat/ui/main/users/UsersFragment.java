@@ -1,7 +1,6 @@
 package com.example.lsdchat.ui.main.users;
 
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
@@ -23,6 +22,7 @@ import com.example.lsdchat.api.login.model.LoginUser;
 import com.example.lsdchat.constant.ApiConstant;
 import com.example.lsdchat.ui.main.fragment.BaseFragment;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -47,37 +47,28 @@ public class UsersFragment extends BaseFragment implements UsersContract.View {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_users, container, false);
-        mPresenter = new UsersPresenter(this, App.getSharedPreferencesManager(getActivity()));
+        mPresenter = new UsersPresenter(this, new UsersModel(App.getSharedPreferencesManager(getActivity())));
         mToolbar = (Toolbar) view.findViewById(R.id.chats_toolbar);
         mRealmRecyclerView = (RecyclerView) view.findViewById(R.id.realm_recycler_view);
         mToolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
         initToolbar(mToolbar, "Friends");
-        mToolbar.setNavigationOnClickListener(v -> getActivity().onBackPressed());
-        mPresenter.getUserList();
-
+        mToolbar.setNavigationOnClickListener(v -> onBackPressed());
         mRealmRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        initAdapter(mPresenter.getUsersQuickList(ApiConstant.SORT_CREATE_AT));
+
+
+        setListUsers(mPresenter.getUsersQuickList());
 
         return view;
     }
 
     @Override
-    public void initAdapter(List<LoginUser> list) {
-        mUsersRvAdapter = new UsersRvAdapter(list, mPresenter);
+    public void setListUsers(List<LoginUser> list) {
+        mUsersRvAdapter = new UsersRvAdapter(list, mPresenter, App.getDataManager().getListUserAvatar());
 
         mRealmRecyclerView.setAdapter(mUsersRvAdapter);
         mUsersRvAdapter.notifyDataSetChanged();
     }
 
-    @Override
-    public void updateAdapter() {
-        mUsersRvAdapter.notifyDataSetChanged();
-    }
-
-    @Override
-    public Context getContext() {
-        return getActivity();
-    }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -86,26 +77,58 @@ public class UsersFragment extends BaseFragment implements UsersContract.View {
 
         MenuItem items = menu.findItem(R.id.action_search);
         SearchView searchView = (SearchView) MenuItemCompat.getActionView(items);
-        mPresenter.setOnQueryTextListener(searchView,mUsersRvAdapter);
+
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                getFilterList(mPresenter.getUsersQuickList(), newText);
+                return false;
+
+            }
+        });
+
 
     }
+
+    private List<LoginUser> getFilterList(List<LoginUser> list, String query) {
+        query = query.toLowerCase();
+        List<LoginUser> filterList = new ArrayList<>();
+        for (LoginUser user : list) {
+            String name = user.getFullName().toLowerCase();
+            if (name.contains(query)) {
+                filterList.add(user);
+            }
+        }
+
+        setListUsers(filterList);
+
+        return filterList;
+    }
+
 
     @Override
-    public void showToast(String text) {
-        Toast.makeText(getActivity(), text, Toast.LENGTH_SHORT).show();
+    public void showMessageError(Throwable throwable) {
+        dialogError(throwable);
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.sort_clear:
-                initAdapter(mPresenter.getUsersQuickList(ApiConstant.SORT_CREATE_AT));
+                setListUsers(mPresenter.getUsersQuickList(ApiConstant.SORT_CREATE_AT));
                 break;
             case R.id.sort_name_asc:
-                initAdapter(mPresenter.getUsersQuickList(ApiConstant.SORT_NAME_ACS));
+                setListUsers(mPresenter.getUsersQuickList(ApiConstant.SORT_NAME_ACS));
                 break;
             case R.id.sort_name_desc:
-                initAdapter(mPresenter.getUsersQuickList(ApiConstant.SORT_NAME_DESC));
+                setListUsers(mPresenter.getUsersQuickList(ApiConstant.SORT_NAME_DESC));
                 break;
         }
 

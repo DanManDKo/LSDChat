@@ -19,45 +19,42 @@ import rx.Observable;
 public interface UsersContract {
 
     interface Model {
+        String getToken();
+
         Observable<UserListResponse> getUserList(String token);
 
         RealmResults<LoginUser> getUsersQuick();
 
         void insetUsersQuick(LoginUser userQuick);
 
-        LoginUser getUserById(int id);
 
-        void deleteAllUSerQiuck();
+        void deleteAllUSerQuick();
 
-        Observable<File> downloadImage(LoginUser loginUser, String token);
 
         List<LoginUser> getUsersQuickList(String sort);
         List<LoginUser> getUsersQuickList();
 
+        Observable<List<LoginUser>> getUserObservable();
+
     }
 
     interface View {
-        void updateAdapter();
-        Context getContext();
-        void showToast(String text);
 
-        void initAdapter(List<LoginUser> list);
+
+        void showMessageError(Throwable throwable);
+
+        void setListUsers(List<LoginUser> list);
 
         void navigateToInfoUser(Fragment fragment);
     }
 
     interface Presenter {
-        void setOnClickListenerRl(RelativeLayout relativeLayout, LoginUser loginUser);
-
-        void setOnQueryTextListener(SearchView searchView, UsersRvAdapter adapter);
-
-        String getToken();
+        void setClickUser(LoginUser loginUser);
 
         List<LoginUser> getUsersQuickList(String sort);
+        List<LoginUser> getUsersQuickList();
 
-        void getUserList();
-
-        void setImageView(CircleImageView imageView, LoginUser loginUser);
+        Observable<String> getImageUrl(long blobId);
 
 
     }

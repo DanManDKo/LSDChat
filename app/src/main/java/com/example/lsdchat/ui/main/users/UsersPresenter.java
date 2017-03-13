@@ -1,58 +1,47 @@
 package com.example.lsdchat.ui.main.users;
 
 
-import android.support.v7.widget.SearchView;
 import android.util.Log;
-import android.widget.RelativeLayout;
 
+import com.example.lsdchat.App;
 import com.example.lsdchat.api.dialog.model.ItemUser;
 import com.example.lsdchat.api.login.model.LoginUser;
-import com.example.lsdchat.constant.ApiConstant;
-import com.example.lsdchat.manager.SharedPreferencesManager;
+import com.example.lsdchat.model.UserAvatar;
 import com.example.lsdchat.ui.main.usersinfo.UserInfoFragment;
 import com.example.lsdchat.util.Utils;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import de.hdodenhof.circleimageview.CircleImageView;
 import rx.Observable;
 
 public class UsersPresenter implements UsersContract.Presenter {
     private UsersContract.View mView;
-    private SharedPreferencesManager mSharedPreferencesManager;
+    private String mToken;
     private UsersContract.Model mModel;
 
 
-    public UsersPresenter(UsersContract.View mView, SharedPreferencesManager sharedPreferencesManager) {
+    public UsersPresenter(UsersContract.View mView, UsersContract.Model mModel) {
         this.mView = mView;
-        this.mSharedPreferencesManager = sharedPreferencesManager;
-        mModel = new UsersModel();
+        this.mModel = mModel;
+        this.mToken = mModel.getToken();
+//        getUserList();
 
     }
 
 
-    @Override
-    public String getToken() {
-        return mSharedPreferencesManager.getToken();
-    }
 
-    @Override
-    public void getUserList() {
-        mModel.getUserList(getToken())
+    private void getUserList() {
+        mModel.getUserList(mToken)
                 .subscribe(userListResponse -> {
                     List<ItemUser> itemUsers = userListResponse.getItemUserList();
                     if (userListResponse.getTotalEntries() < (mModel.getUsersQuick().size() + 2)) {
-                        mModel.deleteAllUSerQiuck();
+                        mModel.deleteAllUSerQuick();
                         saveUserToDb(itemUsers);
                     } else {
                         saveUserToDb(itemUsers);
                     }
-
-                }, throwable -> {
-
-                    Log.e("getUserList-error", throwable.getMessage());
-                });
+//                    getImage(itemUsers);
+                }, throwable -> mView.showMessageError(throwable));
 
     }
 
@@ -60,74 +49,53 @@ public class UsersPresenter implements UsersContract.Presenter {
     private void saveUserToDb(List<ItemUser> itemUsers) {
         Observable.from(itemUsers)
                 .flatMap(user -> Observable.just(user.getUser()))
-                .subscribe(loginUser -> mModel.insetUsersQuick(loginUser));
+                .subscribe(loginUser -> {
+                    mModel.insetUsersQuick(loginUser);
+                });
+    }
+
+    private void getImage(List<ItemUser> itemUsers) {
+        Observable.from(itemUsers)
+                .flatMap(user -> Observable.just(user.getUser()))
+                .filter(loginUser -> loginUser.getBlobId() != 0)
+                .filter(loginUser -> loginUser.getImagePath() == null)
+                .subscribe(loginUser -> {
+                    Utils.downloadImage(loginUser.getBlobId(), mToken)
+                            .flatMap(file -> Observable.just(file.getAbsolutePath()))
+                            .subscribe(path -> {
+                                LoginUser loginUser1 = new LoginUser(loginUser, path);
+                                Log.e("getImage", loginUser1.getImagePath());
+                                mModel.insetUsersQuick(loginUser1);
+                            }, throwable -> {
+                                Log.e("getImage", throwable.getMessage());
+                            });
+
+                });
+
     }
 
 
     @Override
-    public void setImageView(CircleImageView imageView, LoginUser loginUser) {
-        if (loginUser.getBlobId() != 0) {
-            Utils.downloadContent(loginUser.getBlobId(), getToken())
-                    .flatMap(contentResponse -> Observable.just(contentResponse.getItemContent().getImageUrl()))
-                    .subscribe(imageUrl -> Utils.setImageByUrl(imageUrl, imageView), throwable -> {
-                        Log.e("IMAGE-error", throwable.getMessage());
-                    });
-
-        }
-
-
+    public Observable<String> getImageUrl(long blobId) {
+        return Utils.getUrlImage(blobId, mToken);
     }
 
 
     @Override
-    public void setOnQueryTextListener(SearchView searchView, UsersRvAdapter adapter) {
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-
-
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String query) {
-
-                List<LoginUser> loginUserList = filter(getUsersQuickList(ApiConstant.SORT_CREATE_AT), query);
-                if (loginUserList.size() > 0) {
-                    adapter.setFilter(loginUserList);
-                    return true;
-                } else {
-                    mView.showToast("Not Found");
-                    return false;
-                }
-            }
-        });
-    }
-
-    private List<LoginUser> filter(List<LoginUser> list, String query) {
-        query = query.toLowerCase();
-        List<LoginUser> filterList = new ArrayList<>();
-        for (LoginUser user : list) {
-            String name = user.getFullName().toLowerCase();
-            if (name.contains(query)) {
-                filterList.add(user);
-            }
-        }
-
-        mView.initAdapter(filterList);
-
-        return filterList;
-    }
-
-    @Override
-    public void setOnClickListenerRl(RelativeLayout relativeLayout, LoginUser loginUser) {
-        relativeLayout.setOnClickListener(v -> {
-            mView.navigateToInfoUser(new UserInfoFragment().newInstance(loginUser));
-        });
+    public void setClickUser(LoginUser loginUser) {
+        mView.navigateToInfoUser(new UserInfoFragment().newInstance(loginUser));
     }
 
     @Override
     public List<LoginUser> getUsersQuickList(String sort) {
         return mModel.getUsersQuickList(sort);
     }
+
+    @Override
+    public List<LoginUser> getUsersQuickList() {
+        return mModel.getUsersQuickList();
+    }
+
+
+
 }

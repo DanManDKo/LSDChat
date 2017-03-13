@@ -23,6 +23,8 @@ import com.example.lsdchat.api.login.model.LoginUser;
 import com.example.lsdchat.ui.main.fragment.BaseFragment;
 import com.example.lsdchat.util.ErrorsCode;
 
+import java.io.File;
+
 
 public class UserInfoFragment extends BaseFragment implements UserInfoContract.View {
     private static final String LIST = "list";
@@ -70,7 +72,8 @@ public class UserInfoFragment extends BaseFragment implements UserInfoContract.V
         mEmail.setText(mLoginUser.getEmail());
         mPhone.setText(mLoginUser.getPhone());
         mWebsite.setText(mLoginUser.getWebsite());
-        mPresenter.setImageView(mImageUser, mLoginUser.getBlobId());
+        mImageUser.setImageURI(Uri.fromFile(new File(mLoginUser.getImagePath())));
+//        mPresenter.setImageView(mImageUser, mLoginUser.getBlobId());
 
         onClick();
 
@@ -100,7 +103,7 @@ public class UserInfoFragment extends BaseFragment implements UserInfoContract.V
         mRlWebsite = (RelativeLayout) view.findViewById(R.id.user_info_website_rl);
 
         initToolbar(mToolbar, mLoginUser.getFullName());
-        mToolbar.setNavigationOnClickListener(v -> getActivity().onBackPressed());
+        mToolbar.setNavigationOnClickListener(v -> onBackPressed());
     }
 
 

@@ -51,7 +51,7 @@ public class Utils {
     }
 
 
-    public static  void initLoader(Context context){
+    public static void initLoader(Context context) {
 
         DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
                 .cacheOnDisc(true).cacheInMemory(true)
@@ -73,14 +73,16 @@ public class Utils {
         imageLoader = ImageLoader.getInstance();
 
     }
-    public static void setImageByUrl(String url, CircleImageView imageView){
-        imageLoader.displayImage(url, imageView);
-    }
-    public static void setImageByUrl(String url, SimpleDraweeView imageView){
+
+    public static void setImageByUrl(String url, CircleImageView imageView) {
         imageLoader.displayImage(url, imageView);
     }
 
-    public static void setImageByUrl(String url, ImageView imageView){
+    public static void setImageByUrl(String url, SimpleDraweeView imageView) {
+        imageLoader.displayImage(url, imageView);
+    }
+
+    public static void setImageByUrl(String url, ImageView imageView) {
         imageLoader.displayImage(url, imageView);
     }
 
@@ -95,8 +97,7 @@ public class Utils {
 
 
     private static Observable<File> saveImage(Response<ResponseBody> response, long blobId) {
-        // TODO: 3/9/17 [Code Review] Use Observable.fromCallable to avoid backpressure errors
-        return Observable.create(subscriber -> {
+        return Observable.fromEmitter(subscriber -> {
             try {
 
                 String fileName = String.valueOf(blobId) + ".jpg";
@@ -112,7 +113,7 @@ public class Utils {
             } catch (java.io.IOException e) {
                 e.printStackTrace();
             }
-        });
+        }, Emitter.BackpressureMode.NONE);
     }
 
 }

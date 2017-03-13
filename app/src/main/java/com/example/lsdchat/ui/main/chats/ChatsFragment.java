@@ -39,6 +39,7 @@ import com.example.lsdchat.ui.main.chats.dialogs.DialogsFragment;
 import com.example.lsdchat.ui.main.createchat.CreateChatFragment;
 import com.example.lsdchat.ui.main.fragment.BaseFragment;
 import com.example.lsdchat.ui.main.users.UsersFragment;
+import com.example.lsdchat.util.UsersUtil;
 import com.example.lsdchat.util.Utils;
 import com.facebook.common.util.UriUtil;
 
@@ -46,6 +47,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import rx.Observable;
 
 
 public class ChatsFragment extends BaseFragment implements ChatsContract.View {
@@ -165,6 +167,13 @@ public class ChatsFragment extends BaseFragment implements ChatsContract.View {
         setHeaderImage();
         mHeaderName.setText(mPresenter.getUserModel().getFullName());
         mHeaderEmail.setText(mPresenter.getUserModel().getEmail());
+
+
+//        Observable.from(UsersUtil.getAllUser())
+//                .filter(user -> user.getBlobId()!=0)
+//                .subscribe(user -> {
+//                   Log.e("MY TETS",user.getImagePath());
+//                });
     }
 
 

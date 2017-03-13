@@ -124,6 +124,7 @@ public class LoginPresenter implements LoginContract.Presenter {
 
     private void getLoginWithToken(String email, String password, String token) {
         mModel.getLogin(email, password, token)
+                .retry(3)
                 .doOnNext(loginResponse -> mView.navigateToMainScreen())
                 .subscribe(loginUser -> {
                     String fullName = loginUser.getLoginUser().getFullName();
