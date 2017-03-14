@@ -239,6 +239,7 @@ public class ChatsFragment extends BaseFragment implements ChatsContract.View {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+//        inflater.inflate(R.menu.toolbar_options_menu, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
 

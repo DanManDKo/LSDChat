@@ -76,6 +76,10 @@ public class UsersUtil {
         return App.getDataManager().getUsersQuickList();
     }
 
+    public static Observable<List<LoginUser>> getUserObservable() {
+        return App.getDataManager().getUserObservable();
+    }
+
     public static LoginUser getUserById(int id) {
         return App.getDataManager().getUserById(id);
     }

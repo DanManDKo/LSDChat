@@ -24,7 +24,6 @@ public class BaseFragment extends Fragment {
 
     public void dialogError(String throwable) {
 
-
         new AlertDialog.Builder(getActivity())
                 .setMessage(throwable)
                 .setPositiveButton("OK", (dialogInterface, i) -> dialogInterface.dismiss())
