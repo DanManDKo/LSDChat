@@ -5,6 +5,8 @@ import android.content.Context;
 
 import com.example.lsdchat.api.dialog.model.ItemMessage;
 import com.example.lsdchat.api.dialog.response.MessagesResponse;
+import com.example.lsdchat.model.RealmDialogModel;
+import com.example.lsdchat.model.User;
 
 import java.util.List;
 
@@ -33,10 +35,14 @@ public interface ConversationContract {
 
         void loadMoreFromDataBase(String dialogId, int page);
 
+        void navigateToEditchatFragment(String dialogId);
+
 //        void onNewMessageReceive();
     }
 
     interface View {
+        void replaceFragment(String dialogId);
+
         Context getContext();
 
         String getCurrentDialogID();
@@ -58,5 +64,9 @@ public interface ConversationContract {
         Observable<ItemMessage> createDialogMessage(String token, String dialogId, String message);
 
         Observable<MessagesResponse> getMessageByMessageID(String token, String dialogID, String messageID);
+
+        Observable<RealmDialogModel> getDialogFromDatabase(String dialogID);
+
+        Observable<User> getCurrentUserFromDatabase();
     }
 }

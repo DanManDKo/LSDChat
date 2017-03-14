@@ -28,9 +28,6 @@ public class EditchatPresenter implements EditchatContract.Presenter {
     @Override
     public void onDetach() {
         mView = null;
-        mModel = null;
-        mContext = null;
-        mPreferencesManager = null;
     }
 
     @Override
@@ -40,10 +37,18 @@ public class EditchatPresenter implements EditchatContract.Presenter {
 
     @Override
     public void loadDialogCredentials(String dialogID) {
+        mModel.getDialogFromDatabase(dialogID)
+                .subscribe(realmDialogModel -> {
+//                    mView.fillDialogInformation(realmDialogModel.getName());
+                    Log.e("AAA - photo =", realmDialogModel.getPhoto().toString());
+                    Log.e("AAA - dialog name =", realmDialogModel.getName().toString());
+                }, throwable -> {
+                    Log.e("AAA", throwable.getMessage().toString());
+                });
 
-        RealmDialogModel dialog = App.getDataManager().getDialogByID(dialogID);
-        mView.fillDialogInformation(dialog.getName());
-        Log.d("AAA", dialog.getName().toString());
+//        RealmDialogModel dialog = App.getDataManager().getDialogByID(dialogID);
+//        mView.fillDialogInformation(dialog.getName());
+//        Log.d("AAA", dialog.getName().toString());
 //        mModel.getDialogByID(mPreferencesManager.getToken(), dialogID)
 //                .map(dialogsResponse -> dialogsResponse.getItemDialogList().get(0))
 //                .doOnNext(itemDialog -> mDialogType = itemDialog.getType())

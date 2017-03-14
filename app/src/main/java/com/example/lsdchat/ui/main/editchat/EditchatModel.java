@@ -6,6 +6,8 @@ import com.example.lsdchat.api.dialog.model.ItemDialog;
 import com.example.lsdchat.api.dialog.request.CreateDialogRequest;
 import com.example.lsdchat.api.dialog.response.DialogsResponse;
 import com.example.lsdchat.api.dialog.response.MessagesResponse;
+import com.example.lsdchat.manager.DataManager;
+import com.example.lsdchat.model.RealmDialogModel;
 
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
@@ -13,9 +15,11 @@ import rx.schedulers.Schedulers;
 
 public class EditchatModel implements EditchatContract.Model {
     private DialogService mDialogService;
+    private DataManager mDataManager;
 
     public EditchatModel() {
         mDialogService = App.getApiManager().getDialogService();
+        mDataManager = App.getDataManager();
     }
 
     @Override
@@ -29,6 +33,12 @@ public class EditchatModel implements EditchatContract.Model {
     public Observable<ItemDialog> updateDialog(String dialogID, String token, CreateDialogRequest body) {
         return mDialogService.updateDialog(dialogID, token, body)
                 .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    @Override
+    public Observable<RealmDialogModel> getDialogFromDatabase(String dialogID) {
+        return mDataManager.getDialogByID(dialogID)
                 .observeOn(AndroidSchedulers.mainThread());
     }
 }

@@ -149,11 +149,7 @@ public class ConversationFragment extends BaseFragment implements ConversationCo
                 getActivity().onBackPressed();
                 break;
             case R.id.toolbar_edit:
-                if (dialogType != DIALOG_PRIVATE) {
-                    mEditListener.onEditchatSelected(dialogID);
-                } else {
-                    Toast.makeText(getContext(), "You can`t edit private dialog", Toast.LENGTH_SHORT).show();
-                }
+                mConversationPresenter.navigateToEditchatFragment(dialogID);
         }
         return super.onOptionsItemSelected(item);
     }
@@ -214,6 +210,11 @@ public class ConversationFragment extends BaseFragment implements ConversationCo
     @Override
     public void loadMoreData(List<ItemMessage> list) {
         mAdapter.addMore(list);
+    }
+
+    @Override
+    public void replaceFragment(String dialogId) {
+        mEditListener.onEditchatSelected(dialogId);
     }
 
     public interface OnEditchatButtonClicked {

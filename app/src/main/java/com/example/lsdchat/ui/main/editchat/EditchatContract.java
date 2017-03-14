@@ -7,6 +7,7 @@ import com.example.lsdchat.api.dialog.model.ItemDialog;
 import com.example.lsdchat.api.dialog.request.CreateDialogRequest;
 import com.example.lsdchat.api.dialog.response.DialogsResponse;
 import com.example.lsdchat.api.dialog.response.MessagesResponse;
+import com.example.lsdchat.model.RealmDialogModel;
 
 import rx.Observable;
 
@@ -26,5 +27,7 @@ public interface EditchatContract {
         Observable<DialogsResponse> getDialogByID(String token, String dialogID);
 
         Observable<ItemDialog> updateDialog(String dialogID, String token, CreateDialogRequest body);
+
+        Observable<RealmDialogModel> getDialogFromDatabase(String dialogID);
     }
 }

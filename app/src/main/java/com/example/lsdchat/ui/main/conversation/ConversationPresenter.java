@@ -10,9 +10,15 @@ import android.widget.Toast;
 import com.example.lsdchat.App;
 import com.example.lsdchat.api.dialog.model.ItemMessage;
 import com.example.lsdchat.manager.SharedPreferencesManager;
+import com.example.lsdchat.model.IdsListInteger;
+import com.example.lsdchat.model.RealmDialogModel;
+import com.example.lsdchat.model.User;
 import com.example.lsdchat.util.Network;
 
 import java.util.List;
+
+import io.realm.RealmList;
+import rx.Observable;
 
 import static com.facebook.FacebookSdk.getApplicationContext;
 
@@ -58,21 +64,11 @@ public class ConversationPresenter implements ConversationContract.Presenter {
                     case XMPPService.NEW_MESSAGE:
 //                        String fromJID = intent.getStringExtra(XMPPService.BUNDLE_FROM_JID);
 //                        String body = intent.getStringExtra(XMPPService.BUNDLE_MESSAGE_BODY);
-                        String messageID = intent.getStringExtra(XMPPService.MESSAGE_ID);
 //                        String from = fromJID.split("-")[0];
+                        String messageID = intent.getStringExtra(XMPPService.MESSAGE_ID);
 
                         retrieveNewMessage(mView.getCurrentDialogID(), messageID);
 
-//                        if (fromJID.equals(ownerJID)) {
-//                            Log.e("AAA", "Got a message from myself");
-////                            mAdapter.addFirst(item);
-////                            mRecyclerView.scrollToPosition(0);
-//                        } else {
-//                            Log.e("AAA", "Got a message from friend");
-//
-////                            mAdapter.addFirst(item);
-////                            mRecyclerView.scrollToPosition(0);
-//                        }
                         return;
                 }
             }
@@ -158,6 +154,46 @@ public class ConversationPresenter implements ConversationContract.Presenter {
 
     private void saveMessagesToDataBase(ItemMessage item) {
         App.getDataManager().insertRealmMessage(item);
+    }
+
+    @Override
+    public void navigateToEditchatFragment(String dialogId) {
+        Observable<Integer> observableUserID =
+                mModel.getCurrentUserFromDatabase()
+                        .map(User::getId);
+
+        Observable<RealmDialogModel> observableDialogModel =
+                mModel.getDialogFromDatabase(dialogId);
+
+        Observable.combineLatest(observableUserID, observableDialogModel, ((value, dialogModel) -> {
+            boolean result = chooseStrategy(dialogModel, value);
+            return result;
+        })).subscribe(aBoolean -> {
+            if (aBoolean) {
+                mView.replaceFragment(dialogId);
+            } else {
+                Toast.makeText(mContext, "You can`t edit private dialog", Toast.LENGTH_SHORT).show();
+            }
+        }, throwable -> {
+            Log.e("AAA", throwable.getMessage());
+        });
+    }
+
+    private boolean chooseStrategy(RealmDialogModel dialog, int value) {
+        switch (dialog.getType()) {
+            case 1:
+                if ((int) dialog.getOwnerId() == value) return true;
+            case 2:
+                RealmList<IdsListInteger> list = dialog.getOccupantsIdsList();
+                for (IdsListInteger item : list) {
+                    if ((int) item.getValue() == value) return true;
+                }
+                return false;
+            case 3:
+                return true;
+            default:
+                return false;
+        }
     }
 
     @Override
