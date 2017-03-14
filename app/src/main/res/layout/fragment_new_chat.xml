@@ -80,8 +80,7 @@
                     android:id="@+id/radio_public"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/chat_public"
-                    android:textColor="@color/colorNewChatText" />
+                    android:text="@string/chat_public" />
 
                 <RadioButton
                     android:id="@+id/radio_private"
@@ -89,8 +88,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="32dp"
-                    android:text="@string/chat_private"
-                    android:textColor="@color/colorNewChatText" />
+                    android:text="@string/chat_private" />
             </RadioGroup>
 
             <LinearLayout

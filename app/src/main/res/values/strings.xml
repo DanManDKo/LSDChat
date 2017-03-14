@@ -158,18 +158,16 @@
 
 
     <!--new chat screen -->
-    <string name="chat_name">Chat name</string>
-    <string name="chat_privacy">Privacy</string>
+    <string name="chat_name">CHAT NAME</string>
+    <string name="chat_privacy">PRIVACY</string>
     <string name="chat_public">Public</string>
     <string name="chat_private">Private</string>
-    <string name="chat_select_members">Select members</string>
+    <string name="chat_select_members">SELECT MEMBERS</string>
     <string name="chat_button_create">Create</string>
     <string name="chat_error_name">Enter name chat</string>
     <string name="chat_error_users">Select users from mData</string>
     <string name="chat_error_type">Select type dialog (public or private)</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="seems_like_you_are_the_only_user">Seems like you are the only User :)</string>
 
     <!--user-->
