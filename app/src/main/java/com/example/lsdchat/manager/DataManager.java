@@ -17,8 +17,7 @@ import io.realm.Sort;
 import rx.Emitter;
 import rx.Observable;
 
-// TODO: 3/9/17 [Code Review] make sure all your code related to work with db runs on working thread
-// (create Observable wrappers maybe)
+
 public class DataManager {
     private static final String ID = "id";
 
@@ -122,9 +121,6 @@ public class DataManager {
         mRealm.executeTransaction(realm -> realm.copyToRealmOrUpdate(dialog));
     }
 
-    public List<RealmDialogModel> getDialogsByType(int type) {
-        return mRealm.where(RealmDialogModel.class).equalTo("type", type).findAllSorted("updatedAt", Sort.DESCENDING);
-    }
 
     public Observable<List<RealmDialogModel>> getObservableDialogsByType(int type) {
         return Observable.fromCallable(() ->

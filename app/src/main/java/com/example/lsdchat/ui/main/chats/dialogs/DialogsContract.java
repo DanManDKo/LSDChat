@@ -15,7 +15,6 @@ import rx.Observable;
 public interface DialogsContract {
 
     interface Model {
-        List<RealmDialogModel> getDialogsByType(int type);
         Observable<DialogsResponse> getAllDialogs(String token);
 
         void saveDialog(List<RealmDialogModel> dialogList);
