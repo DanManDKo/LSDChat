@@ -1,9 +1,6 @@
 package com.example.lsdchat.ui.main.chats.dialogs;
 
 
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.util.Log;
-
 import com.example.lsdchat.constant.ApiConstant;
 import com.example.lsdchat.model.ContentModel;
 import com.example.lsdchat.model.RealmDialogModel;
@@ -27,44 +24,17 @@ public class DialogsPresenter implements DialogsContract.Presenter {
     }
 
     @Override
-    public List<RealmDialogModel> showDialogs(int type) {
+    public Observable<List<RealmDialogModel>> getObservableDialogByType(int type) {
         if (type == ApiConstant.TYPE_DIALOG_PUBLIC) {
-            return mModel.getDialogsByType(ApiConstant.TYPE_DIALOG_PUBLIC);
-
+            return getObservableDialogsByType(ApiConstant.TYPE_DIALOG_PUBLIC);
         } else {
             List<RealmDialogModel> list = new ArrayList<>();
-            list.addAll(mModel.getDialogsByType(ApiConstant.TYPE_DIALOG_GROUP));
-            list.addAll(mModel.getDialogsByType(ApiConstant.TYPE_DIALOG_PRIVATE));
-            return list;
+
+            getObservableDialogsByType(ApiConstant.TYPE_DIALOG_GROUP).subscribe(list::addAll);
+            getObservableDialogsByType(ApiConstant.TYPE_DIALOG_PRIVATE).subscribe(list::addAll);
+            return Observable.just(list);
+
         }
-    }
-
-    @Override
-    public void getAllDialogAndSave() {
-        List<RealmDialogModel> list = new ArrayList<>();
-        mModel.getAllDialogs(mModel.getToken())
-                .flatMap(dialogsResponse -> Observable.just(dialogsResponse.getItemDialogList()))
-                .subscribe(dialogList -> {
-
-                    Observable.from(dialogList)
-                            .subscribe(dialog -> list.add(new RealmDialogModel(dialog)));
-
-                    mModel.saveDialog(list);
-
-                    mView.setListDialog(showDialogs(mView.getType()));
-                }, throwable -> {
-                    Log.e("getAllDialogAndSave", throwable.getMessage());
-                });
-
-    }
-
-
-    @Override
-    public void setOnRefreshListener(SwipeRefreshLayout swipeRefreshLayout) {
-        swipeRefreshLayout.setOnRefreshListener(() -> {
-            getAllDialogAndSave();
-            swipeRefreshLayout.setRefreshing(false);
-        });
     }
 
 
@@ -80,8 +50,7 @@ public class DialogsPresenter implements DialogsContract.Presenter {
         return mModel.getObservableUserAvatar();
     }
 
-    @Override
-    public Observable<List<RealmDialogModel>> getObservableDialogsByType(int type) {
+   private Observable<List<RealmDialogModel>> getObservableDialogsByType(int type) {
         return mModel.getObservableDialogsByType(type);
     }
 }
