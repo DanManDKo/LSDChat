@@ -34,16 +34,15 @@ public interface DialogsContract {
     }
 
     interface Presenter {
-        List<RealmDialogModel> showDialogs(int type);
-        void getAllDialogAndSave();
 
-        void setOnRefreshListener(SwipeRefreshLayout swipeRefreshLayout);
+
+        Observable<List<RealmDialogModel>> getObservableDialogByType(int type);
 
         void setClickRl(RealmDialogModel realmDialogModel);
 
         Observable<List<ContentModel>> getObservableUserAvatar();
 
-        Observable<List<RealmDialogModel>> getObservableDialogsByType(int type);
+
     }
 
 }

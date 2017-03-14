@@ -21,6 +21,7 @@ import com.example.lsdchat.App;
 import com.example.lsdchat.R;
 import com.example.lsdchat.model.RealmDialogModel;
 import com.example.lsdchat.ui.main.fragment.BaseFragment;
+import com.example.lsdchat.util.DialogUtil;
 
 import java.util.List;
 
@@ -73,23 +74,27 @@ public class DialogsFragment extends BaseFragment implements DialogsContract.Vie
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
         mPresenter.getObservableUserAvatar()
-                .subscribe(contentModels -> mDialogsAdapter = new DialogsAdapter(mPresenter,contentModels));
+                .subscribe(contentModels -> mDialogsAdapter = new DialogsAdapter(mPresenter, contentModels));
 
         mRecyclerView.setAdapter(mDialogsAdapter);
 
-        mPresenter.getObservableDialogsByType(mType)
-                .subscribe(this::setListDialog);
+        mPresenter.getObservableDialogByType(mType).subscribe(this::setListDialog);
 
-        mList = mPresenter.showDialogs(mType);
-        setListDialog(mList);
-
-        mPresenter.setOnRefreshListener(mSwipeRefreshLayout);
-
+        setRefreshLayout();
 
         initSwipeDelete();
 
 
         return view;
+    }
+
+    private void setRefreshLayout() {
+        mSwipeRefreshLayout.setOnRefreshListener(() -> {
+            DialogUtil.getAllDialogAndSave(App.getSharedPreferencesManager(getActivity()));
+
+            mPresenter.getObservableDialogByType(mType).subscribe(this::setListDialog);
+            mSwipeRefreshLayout.setRefreshing(false);
+        });
     }
 
 
@@ -124,14 +129,14 @@ public class DialogsFragment extends BaseFragment implements DialogsContract.Vie
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                builder.setMessage("Are you sure you want to delete this chat?");
+                builder.setMessage(R.string.alert_delete_chat);
 
-                builder.setPositiveButton("Delete", (dialog, which) -> {
+                builder.setPositiveButton(R.string.alert_delete_chat_delete, (dialog, which) -> {
 //                    TODO: add delete dialog logic
                     setListDialog(mList);
                     mDialogsAdapter.notifyItemRemoved(viewHolder.getLayoutPosition());
 
-                }).setNegativeButton("Cancel", (dialog, which) -> {
+                }).setNegativeButton(R.string.alert_delete_chat_cancel, (dialog, which) -> {
                     setListDialog(mList);
                     dialog.dismiss();
 
