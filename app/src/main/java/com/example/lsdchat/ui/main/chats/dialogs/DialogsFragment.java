@@ -8,21 +8,28 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.lsdchat.App;
 import com.example.lsdchat.R;
+import com.example.lsdchat.api.login.model.LoginUser;
 import com.example.lsdchat.model.RealmDialogModel;
 import com.example.lsdchat.ui.main.fragment.BaseFragment;
 import com.example.lsdchat.util.DialogUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -56,6 +63,45 @@ public class DialogsFragment extends BaseFragment implements DialogsContract.Vie
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.toolbar_options_menu, menu);
+
+        MenuItem items = menu.findItem(R.id.toolbar_search);
+        SearchView searchView = (SearchView) MenuItemCompat.getActionView(items);
+
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                mPresenter.getObservableDialogByType(mType)
+                        .subscribe(dialogModels -> getFilterList(dialogModels, newText));
+                return false;
+
+            }
+        });
+    }
+
+    private List<RealmDialogModel> getFilterList(List<RealmDialogModel> list, String query) {
+        query = query.toLowerCase();
+        List<RealmDialogModel> filterList = new ArrayList<>();
+        for (RealmDialogModel dialogModel : list) {
+            String name = dialogModel.getName().toLowerCase();
+            if (name.contains(query)) {
+                filterList.add(dialogModel);
+            }
+        }
+
+        setListDialog(filterList);
+
+        return filterList;
     }
 
     @Override
