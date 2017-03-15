@@ -1,11 +1,14 @@
 package com.example.lsdchat.ui.main.editchat;
 
 
-import android.content.Context;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,8 +21,12 @@ import android.widget.Toast;
 
 import com.example.lsdchat.App;
 import com.example.lsdchat.R;
+import com.example.lsdchat.api.login.model.LoginUser;
 import com.example.lsdchat.ui.main.fragment.BaseFragment;
 import com.facebook.drawee.view.SimpleDraweeView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class EditchatFragment extends BaseFragment implements EditchatContract.View {
     private static final String DIALOG_ID = "dialog_id";
@@ -27,6 +34,8 @@ public class EditchatFragment extends BaseFragment implements EditchatContract.V
     private static final String TAG = "AAA_LOADER";
 
     private EditchatPresenter mPresenter;
+    private EditchatAdapter mAdapter;
+    private RecyclerView mRecyclerView;
 
     private Toolbar mToolbar;
     private EditText mEditChatName;
@@ -72,22 +81,35 @@ public class EditchatFragment extends BaseFragment implements EditchatContract.V
                 EditchatFragment.this.mPresenter = null;
             }
         });
-
     }
 
     @Override
     public void onResume() {
         super.onResume();
         Log.i(TAG, "onResume " + mPresenter.toString());
+        mAdapter = new EditchatAdapter(mPresenter, mPresenter.getAvatarsFromDatabase());
+        mRecyclerView.setItemAnimator(new DefaultItemAnimator());
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        mRecyclerView.setAdapter(mAdapter);
+
         mPresenter.loadDialogCredentials(getArguments().getString(DIALOG_ID));
+
+        mSaveButton.setOnClickListener(v -> {
+        });
 
         Toast.makeText(getContext(), getArguments().getString(DIALOG_ID), Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onPause() {
-        mPresenter.onDetach();
+//        mPresenter.onDetach();
         super.onPause();
+    }
+
+    @Override
+    public void onDestroyView() {
+        mPresenter.onDetach();
+        super.onDestroyView();
     }
 
     @Override
@@ -101,8 +123,21 @@ public class EditchatFragment extends BaseFragment implements EditchatContract.V
     }
 
     @Override
-    public void fillDialogInformation(String dialogName) {
-        mEditChatName.setText(dialogName);
+    public void fillDialogNameField(String name) {
+        mEditChatName.setText(name);
+    }
+
+    @Override
+    public void showDialogAvatar(Uri path) {
+        mDialogImage.setImageURI(path);
+    }
+
+    @Override
+    public void fillDialogAdapter(List<Integer> occupantIDs, List<LoginUser> appUsers, int type) {
+        mAdapter.setOccupantsList(occupantIDs);
+        mAdapter.setUsersList(appUsers);
+        mAdapter.setDialogType(type);
+        mAdapter.notifyDataSetChanged();
     }
 
     private void initView(View view) {
@@ -110,6 +145,7 @@ public class EditchatFragment extends BaseFragment implements EditchatContract.V
         mSaveButton = (Button) view.findViewById(R.id.editchat_button);
         mDialogImage = (SimpleDraweeView) view.findViewById(R.id.editchat_groupeimage);
         mToolbar = (Toolbar) view.findViewById(R.id.chats_toolbar);
+        mRecyclerView = (RecyclerView) view.findViewById(R.id.editchat_recycler);
 
         initToolbar(mToolbar, getString(R.string.edit_chat_title));
     }

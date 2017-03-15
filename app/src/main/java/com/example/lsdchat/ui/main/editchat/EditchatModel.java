@@ -6,8 +6,12 @@ import com.example.lsdchat.api.dialog.model.ItemDialog;
 import com.example.lsdchat.api.dialog.request.CreateDialogRequest;
 import com.example.lsdchat.api.dialog.response.DialogsResponse;
 import com.example.lsdchat.api.dialog.response.MessagesResponse;
+import com.example.lsdchat.api.login.model.LoginUser;
 import com.example.lsdchat.manager.DataManager;
+import com.example.lsdchat.model.ContentModel;
 import com.example.lsdchat.model.RealmDialogModel;
+
+import java.util.List;
 
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
@@ -39,6 +43,24 @@ public class EditchatModel implements EditchatContract.Model {
     @Override
     public Observable<RealmDialogModel> getDialogFromDatabase(String dialogID) {
         return mDataManager.getDialogByID(dialogID)
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    @Override
+    public Observable<ContentModel> getDialogAvatarFromDatabase(String dialogID) {
+        return mDataManager.getObservableUserAvatar(dialogID)
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    @Override
+    public Observable<List<ContentModel>> getAllAvatarsFromDatabase() {
+        return mDataManager.getObservableUserAvatar()
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    @Override
+    public Observable<List<LoginUser>> getAppUsersFromDatabase() {
+        return mDataManager.getUserObservable()
                 .observeOn(AndroidSchedulers.mainThread());
     }
 }

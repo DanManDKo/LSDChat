@@ -14,6 +14,7 @@ import java.util.List;
 import io.realm.Realm;
 import io.realm.RealmResults;
 import io.realm.Sort;
+import rx.Emitter;
 import rx.Observable;
 
 // TODO: 3/9/17 [Code Review] make sure all your code related to work with db runs on working thread
@@ -71,6 +72,11 @@ public class DataManager {
         return Observable.fromCallable(() -> mRealm.where(LoginUser.class).findAll());
     }
 
+    public Observable<List<LoginUser>> getAppUsers() {
+        return  Observable.fromEmitter(listEmitter ->
+                listEmitter.onNext(mRealm.where(LoginUser.class).findAll()),
+                Emitter.BackpressureMode.BUFFER);
+    }
 
     public Observable<List<LoginUser>> getUserObservable(String sort) {
         return Observable.fromCallable(() -> {
@@ -93,11 +99,15 @@ public class DataManager {
     }
 
     public Observable<RealmDialogModel> getDialogByID(String dialogID) {
-        return Observable.fromCallable(() -> mRealm.where(RealmDialogModel.class).equalTo(ID, dialogID).findFirst());
+        return Observable.fromEmitter(realmDialogModelEmitter ->
+                        realmDialogModelEmitter.onNext(mRealm.where(RealmDialogModel.class).equalTo(ID, dialogID).findFirst()),
+                Emitter.BackpressureMode.BUFFER);
     }
 
     public Observable<User> getCurrentUser() {
-        return Observable.fromCallable(() -> mRealm.where(User.class).findFirst());
+        return Observable.fromEmitter(userEmitter ->
+                        userEmitter.onNext(mRealm.where(User.class).findFirst()),
+                Emitter.BackpressureMode.BUFFER);
     }
 
     public RealmResults<LoginUser> getUsersQuick() {
@@ -124,9 +134,8 @@ public class DataManager {
 
     public Observable<List<RealmDialogModel>> getObservableDialogsByType(int type) {
         return Observable.fromCallable(() ->
-            mRealm.where(RealmDialogModel.class).equalTo("type", type).findAllSorted("updatedAt", Sort.DESCENDING));
+                mRealm.where(RealmDialogModel.class).equalTo("type", type).findAllSorted("updatedAt", Sort.DESCENDING));
     }
-
 
 
     //handle messages
@@ -153,5 +162,13 @@ public class DataManager {
 
     public Observable<List<ContentModel>> getObservableUserAvatar() {
         return Observable.fromCallable(() -> mRealm.where(ContentModel.class).findAll());
+    }
+
+    public Observable<ContentModel> getObservableUserAvatar(String dialogID) {
+        return Observable.fromCallable(() -> mRealm.where(ContentModel.class).equalTo(ID, dialogID).findFirst());
+    }
+
+    public List<ContentModel> getUserAvatars() {
+        return mRealm.where(ContentModel.class).findAll();
     }
 }

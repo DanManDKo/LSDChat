@@ -23,6 +23,10 @@ import rx.Observable;
 import static com.facebook.FacebookSdk.getApplicationContext;
 
 public class ConversationPresenter implements ConversationContract.Presenter {
+    private static final int PUBLIC_GROUP_TYPE = 1;
+    private static final int PRIVATE_GROUP_TYPE = 2;
+    private static final int PRIVATE_TYPE = 3;
+
     private ConversationContract.View mView;
     private ConversationContract.Model mModel;
     private Context mContext;
@@ -166,7 +170,7 @@ public class ConversationPresenter implements ConversationContract.Presenter {
                 mModel.getDialogFromDatabase(dialogId);
 
         Observable.combineLatest(observableUserID, observableDialogModel, ((value, dialogModel) -> {
-            boolean result = chooseStrategy(dialogModel, value);
+            boolean result = checkAccessLevel(dialogModel, value);
             return result;
         })).subscribe(aBoolean -> {
             if (aBoolean) {
@@ -179,17 +183,17 @@ public class ConversationPresenter implements ConversationContract.Presenter {
         });
     }
 
-    private boolean chooseStrategy(RealmDialogModel dialog, int value) {
+    private boolean checkAccessLevel(RealmDialogModel dialog, int value) {
         switch (dialog.getType()) {
-            case 1:
+            case PUBLIC_GROUP_TYPE:
                 if ((int) dialog.getOwnerId() == value) return true;
-            case 2:
+            case PRIVATE_GROUP_TYPE:
                 RealmList<IdsListInteger> list = dialog.getOccupantsIdsList();
                 for (IdsListInteger item : list) {
                     if ((int) item.getValue() == value) return true;
                 }
                 return false;
-            case 3:
+            case PRIVATE_TYPE:
                 return true;
             default:
                 return false;
