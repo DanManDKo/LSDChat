@@ -73,9 +73,7 @@ public class DataManager {
     }
 
     public Observable<List<LoginUser>> getAppUsers() {
-        return  Observable.fromEmitter(listEmitter ->
-                listEmitter.onNext(mRealm.where(LoginUser.class).findAll()),
-                Emitter.BackpressureMode.BUFFER);
+        return  Observable.fromCallable(() -> mRealm.where(LoginUser.class).findAll());
     }
 
     public Observable<List<LoginUser>> getUserObservable(String sort) {
@@ -99,15 +97,11 @@ public class DataManager {
     }
 
     public Observable<RealmDialogModel> getDialogByID(String dialogID) {
-        return Observable.fromEmitter(realmDialogModelEmitter ->
-                        realmDialogModelEmitter.onNext(mRealm.where(RealmDialogModel.class).equalTo(ID, dialogID).findFirst()),
-                Emitter.BackpressureMode.BUFFER);
+        return Observable.fromCallable(() -> mRealm.where(RealmDialogModel.class).equalTo(ID, dialogID).findFirst());
     }
 
     public Observable<User> getCurrentUser() {
-        return Observable.fromEmitter(userEmitter ->
-                        userEmitter.onNext(mRealm.where(User.class).findFirst()),
-                Emitter.BackpressureMode.BUFFER);
+        return Observable.fromCallable(() -> mRealm.where(User.class).findFirst());
     }
 
     public RealmResults<LoginUser> getUsersQuick() {
