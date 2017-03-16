@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.view.View;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 
 import com.example.lsdchat.api.dialog.model.ItemDialog;
 import com.example.lsdchat.api.dialog.request.CreateDialogRequest;
@@ -23,7 +24,7 @@ public interface EditchatContract {
     interface Presenter extends BasePresenter {
         void loadDialogCredentials(String dialogID);
 
-        List<ContentModel> getAvatarsFromDatabase();
+        void getAvatarsFromDatabase();
 
         void getPhotoFromGallery();
 
@@ -31,7 +32,7 @@ public interface EditchatContract {
 
         void onActivityResult(int requestCode, int resultCode, Intent data);
 
-        void setOnCheckedChangeListener(CheckBox view, int userID);
+        void setOnCheckedChangeListener(CompoundButton view, Integer userID);
 
     }
 
@@ -43,6 +44,8 @@ public interface EditchatContract {
         void showDialogAvatar(Uri path);
 
         void fillDialogAdapter(List<Integer> occupantIDs, List<LoginUser> appUsers, int type);
+
+        void fillAdapterContentModelsList(List<ContentModel> contentModels);
 
     }
 

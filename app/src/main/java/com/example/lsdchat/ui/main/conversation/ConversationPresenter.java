@@ -194,7 +194,7 @@ public class ConversationPresenter implements ConversationContract.Presenter {
                 }
                 return false;
             case PRIVATE_TYPE:
-                return true;
+                return false;
             default:
                 return false;
         }

@@ -88,6 +88,7 @@ public class ConversationFragment extends BaseFragment implements ConversationCo
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        Log.e("AAA", "ConversationPresenterFragment - onCreateView");
         View view = inflater.inflate(R.layout.fragment_conversation, container, false);
         mConversationPresenter = new ConversationPresenter(this, App.getSharedPreferencesManager(getActivity()));
         dialogID = getArguments().getString(DIALOG_ID);
@@ -164,6 +165,7 @@ public class ConversationFragment extends BaseFragment implements ConversationCo
 
     @Override
     public void onDestroyView() {
+        Log.e("AAA", "ConversationPresenterFragment - onDestroyView");
         mConversationPresenter.onDestroy();
         mEditListener = null;
         super.onDestroyView();

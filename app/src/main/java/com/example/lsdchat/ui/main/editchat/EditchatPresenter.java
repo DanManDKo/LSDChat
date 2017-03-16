@@ -5,13 +5,12 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
-import android.view.View;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.Toast;
 
 import com.example.lsdchat.App;
@@ -113,6 +112,7 @@ public class EditchatPresenter implements EditchatContract.Presenter {
                 });
 
         int dialogType = dialogModel.getType();
+        mDialogType = dialogType;
         List<Integer> dialogOccupantsIDs = new ArrayList<>();
         for (IdsListInteger id : dialogModel.getOccupantsIdsList()) {
             dialogOccupantsIDs.add(id.getValue());
@@ -132,8 +132,11 @@ public class EditchatPresenter implements EditchatContract.Presenter {
     }
 
     @Override
-    public List<ContentModel> getAvatarsFromDatabase() {
-        return App.getDataManager().getUserAvatars();
+    public void getAvatarsFromDatabase() {
+        mModel.getAllAvatarsFromDatabase()
+                .subscribe(contentModelList -> {
+                    mView.fillAdapterContentModelsList(contentModelList);
+                });
     }
 
     private void fillInformationInFields(RealmDialogModel object) {
@@ -148,21 +151,20 @@ public class EditchatPresenter implements EditchatContract.Presenter {
     }
 
     @Override
-    public void setOnCheckedChangeListener(CheckBox view, int userID) {
-        view.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (!buttonView.isChecked()) {
-                mCheckedOccupantsList.remove(userID);
-            } else {
-                mCheckedOccupantsList.add(userID);
-            }
+    public void setOnCheckedChangeListener(CompoundButton view, Integer userID) {
+        view.setOnCheckedChangeListener((compoundButton, isChecked) -> {
+            Log.e("AAA-before", String.valueOf(mCheckedOccupantsList.size()));
 
-//            if (idChecked.size() == 1) {
-//                mView.setEnableName(false);
-//                mView.setEnableImage(false);
-//            } else {
-//                mView.setEnableName(true);
-//                mView.setEnableImage(true);
-//            }
+            if (mCheckedOccupantsList.size() > 1) {
+                if (!compoundButton.isChecked()) {
+                    mCheckedOccupantsList.remove(userID);
+                } else {
+                    mCheckedOccupantsList.add(userID);
+                }
+            } else {
+                Toast.makeText(mContext, "The dialog must have at least one friend", Toast.LENGTH_SHORT).show();
+            }
+            Log.e("AAA-after", String.valueOf(mCheckedOccupantsList.size()));
         });
     }
 

@@ -24,6 +24,7 @@ import android.widget.Toast;
 import com.example.lsdchat.App;
 import com.example.lsdchat.R;
 import com.example.lsdchat.api.login.model.LoginUser;
+import com.example.lsdchat.model.ContentModel;
 import com.example.lsdchat.ui.main.fragment.BaseFragment;
 import com.facebook.drawee.view.SimpleDraweeView;
 
@@ -89,11 +90,12 @@ public class EditchatFragment extends BaseFragment implements EditchatContract.V
 
     void onPresenterPrepared(EditchatPresenter presenter) {
         Toast.makeText(getContext(), getArguments().getString(DIALOG_ID), Toast.LENGTH_SHORT).show();
-        mAdapter = new EditchatAdapter(presenter, presenter.getAvatarsFromDatabase());
+        mAdapter = new EditchatAdapter(presenter);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mRecyclerView.setAdapter(mAdapter);
 
+        presenter.getAvatarsFromDatabase();
         presenter.loadDialogCredentials(getArguments().getString(DIALOG_ID));
 
         mDialogImage.setOnClickListener(v -> showImageChooser());
@@ -132,6 +134,12 @@ public class EditchatFragment extends BaseFragment implements EditchatContract.V
     @Override
     public void fillDialogNameField(String name) {
         mEditChatName.setText(name);
+    }
+
+    @Override
+    public void fillAdapterContentModelsList(List<ContentModel> contentModels) {
+        mAdapter.setContentModelList(contentModels);
+        mAdapter.notifyDataSetChanged();
     }
 
     @Override
