@@ -186,11 +186,11 @@ public class ConversationPresenter implements ConversationContract.Presenter {
     private boolean checkAccessLevel(RealmDialogModel dialog, int value) {
         switch (dialog.getType()) {
             case PUBLIC_GROUP_TYPE:
-                if ((int) dialog.getOwnerId() == value) return true;
+                if (dialog.getOwnerId() == value) return true;
             case PRIVATE_GROUP_TYPE:
                 RealmList<IdsListInteger> list = dialog.getOccupantsIdsList();
                 for (IdsListInteger item : list) {
-                    if ((int) item.getValue() == value) return true;
+                    if (item.getValue() == value) return true;
                 }
                 return false;
             case PRIVATE_TYPE:

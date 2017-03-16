@@ -71,10 +71,11 @@ public class EditchatAdapter extends RecyclerView.Adapter<EditchatAdapter.ViewHo
             switch (mDialogType) {
                 case PUBLIC_GROUP_TYPE:
                     holder.mCheckBox.setVisibility(View.GONE);
-//                holder.mCheckBox.setChecked(false);
                 case PRIVATE_GROUP_TYPE:
-//                holder.mCheckBox.setChecked(true);
                 case PRIVATE_TYPE:
+                    if (mOccupantsList.contains(user.getId())) holder.mCheckBox.setChecked(true);
+                    holder.mCheckBox.setOnClickListener(view ->
+                            mPresenter.setOnCheckedChangeListener((CheckBox)view, user.getId()));
 
             }
         }

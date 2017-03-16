@@ -1,5 +1,6 @@
 package com.example.lsdchat.ui.main;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
@@ -65,5 +66,13 @@ public class MainActivity extends AppCompatActivity implements ConversationFragm
     @Override
     public void onEditchatSelected(String dialogID) {
         replaceFragment(EditchatFragment.newInstance(dialogID));
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        for (Fragment fragment : getSupportFragmentManager().getFragments()) {
+            fragment.onActivityResult(requestCode, resultCode, data);
+        }
     }
 }
