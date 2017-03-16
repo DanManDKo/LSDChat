@@ -14,10 +14,13 @@ import java.util.List;
 import io.realm.Realm;
 import io.realm.RealmResults;
 import io.realm.Sort;
+import rx.Emitter;
 import rx.Observable;
 
 
 public class DataManager {
+    private static final String ID = "id";
+
     private Realm mRealm;
 
     public DataManager() {
@@ -68,6 +71,9 @@ public class DataManager {
         return Observable.fromCallable(() -> mRealm.where(LoginUser.class).findAll());
     }
 
+    public Observable<List<LoginUser>> getAppUsers() {
+        return  Observable.fromCallable(() -> mRealm.where(LoginUser.class).findAll());
+    }
 
     public Observable<List<LoginUser>> getUserObservable(String sort) {
         return Observable.fromCallable(() -> {
@@ -86,7 +92,15 @@ public class DataManager {
 
 
     public LoginUser getUserById(int id) {
-        return mRealm.where(LoginUser.class).equalTo("id", id).findFirst();
+        return mRealm.where(LoginUser.class).equalTo(ID, id).findFirst();
+    }
+
+    public Observable<RealmDialogModel> getDialogByID(String dialogID) {
+        return Observable.fromCallable(() -> mRealm.where(RealmDialogModel.class).equalTo(ID, dialogID).findFirst());
+    }
+
+    public Observable<User> getCurrentUser() {
+        return Observable.fromCallable(() -> mRealm.where(User.class).findFirst());
     }
 
     public RealmResults<LoginUser> getUsersQuick() {
@@ -110,9 +124,8 @@ public class DataManager {
 
     public Observable<List<RealmDialogModel>> getObservableDialogsByType(int type) {
         return Observable.fromCallable(() ->
-            mRealm.where(RealmDialogModel.class).equalTo("type", type).findAllSorted("updatedAt", Sort.DESCENDING));
+                mRealm.where(RealmDialogModel.class).equalTo("type", type).findAllSorted("updatedAt", Sort.DESCENDING));
     }
-
 
 
     //handle messages
@@ -139,5 +152,13 @@ public class DataManager {
 
     public Observable<List<ContentModel>> getObservableUserAvatar() {
         return Observable.fromCallable(() -> mRealm.where(ContentModel.class).findAll());
+    }
+
+    public Observable<ContentModel> getObservableUserAvatar(String dialogID) {
+        return Observable.fromCallable(() -> mRealm.where(ContentModel.class).equalTo(ID, dialogID).findFirst());
+    }
+
+    public List<ContentModel> getUserAvatars() {
+        return mRealm.where(ContentModel.class).findAll();
     }
 }

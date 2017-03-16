@@ -1,5 +1,6 @@
 package com.example.lsdchat.ui.main;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
@@ -9,6 +10,7 @@ import android.widget.Toast;
 import com.example.lsdchat.R;
 import com.example.lsdchat.manager.SharedPreferencesManager;
 import com.example.lsdchat.ui.main.chats.ChatsFragment;
+import com.example.lsdchat.ui.main.chats.dialogs.DialogsFragment;
 import com.example.lsdchat.ui.main.conversation.ConversationFragment;
 import com.example.lsdchat.ui.main.editchat.EditchatFragment;
 import com.example.lsdchat.ui.main.fragment.BaseFragment;
@@ -28,7 +30,7 @@ public class MainActivity extends AppCompatActivity implements ConversationFragm
         mFrameLayout = (FrameLayout) findViewById(R.id.fragment);
 
 //        get user list and save to db
-        UsersUtil.getUserListAndSave(new SharedPreferencesManager(this).getToken(),this);
+        UsersUtil.getUserListAndSave(new SharedPreferencesManager(this).getToken(), this);
 
         replaceFragment(new ChatsFragment());
     }
@@ -61,10 +63,16 @@ public class MainActivity extends AppCompatActivity implements ConversationFragm
             super.onBackPressed();
         }
     }
-
     @Override
     public void onEditchatSelected(String dialogID) {
-        //replaceFragment(EditchatFragment.newInstance("589f6bfda0eb47ea8400026a"));
-        Toast.makeText(this, dialogID, Toast.LENGTH_SHORT).show();
+        replaceFragment(EditchatFragment.newInstance(dialogID));
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        for (Fragment fragment : getSupportFragmentManager().getFragments()) {
+            fragment.onActivityResult(requestCode, resultCode, data);
+        }
     }
 }

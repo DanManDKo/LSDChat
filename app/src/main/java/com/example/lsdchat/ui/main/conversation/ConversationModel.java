@@ -6,6 +6,9 @@ import com.example.lsdchat.api.dialog.model.ItemMessage;
 import com.example.lsdchat.api.dialog.request.CreateMessageRequest;
 import com.example.lsdchat.api.dialog.response.MessagesResponse;
 import com.example.lsdchat.constant.ApiConstant;
+import com.example.lsdchat.manager.DataManager;
+import com.example.lsdchat.model.RealmDialogModel;
+import com.example.lsdchat.model.User;
 
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
@@ -13,9 +16,11 @@ import rx.schedulers.Schedulers;
 
 public class ConversationModel implements ConversationContract.Model {
     private DialogService mDialogService;
+    private DataManager mDataManager;
 
     public ConversationModel() {
         mDialogService = App.getApiManager().getDialogService();
+        mDataManager = App.getDataManager();
     }
 
     @Override
@@ -38,6 +43,18 @@ public class ConversationModel implements ConversationContract.Model {
 
         return mDialogService.createMessages(token, body)
                 .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    @Override
+    public Observable<RealmDialogModel> getDialogFromDatabase(String dialogID) {
+        return mDataManager.getDialogByID(dialogID)
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    @Override
+    public Observable<User> getCurrentUserFromDatabase() {
+        return mDataManager.getCurrentUser()
                 .observeOn(AndroidSchedulers.mainThread());
     }
 }
