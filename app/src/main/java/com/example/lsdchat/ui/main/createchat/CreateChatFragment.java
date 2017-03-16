@@ -132,7 +132,7 @@ public class CreateChatFragment extends BaseFragment implements CreateChatContra
     }
 
     private void initView(View view) {
-        mToolbar = (Toolbar) view.findViewById(R.id.toolbar_new);
+        mToolbar = (Toolbar) view.findViewById(R.id.chats_toolbar);
         mNameChat = (EditText) view.findViewById(R.id.input_chat_name);
         mIlName = (TextInputLayout) view.findViewById(R.id.input_layout_chat_name);
         mRbPublic = (RadioButton) view.findViewById(R.id.radio_public);

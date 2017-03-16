@@ -5,17 +5,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
+
     <de.hdodenhof.circleimageview.CircleImageView
+        android:layout_marginBottom="@dimen/activity_vertical_margin"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
         android:id="@+id/item_editchat_usericon"
         android:layout_width="@dimen/usericon_size"
         android:layout_height="@dimen/usericon_size"
-        android:layout_alignParentLeft="true"
-        android:layout_centerVertical="true"
-        android:layout_marginBottom="@dimen/activity_vertical_margin"
-        android:contentDescription="@string/cda_userpic_reg"
         android:scaleType="centerCrop"
-        tools:background="@color/colorBlack"/>
-
+        android:src="@drawable/userpic"
+        />
     <TextView
         android:id="@+id/item_editchat_username"
         android:layout_width="wrap_content"
