@@ -1,11 +1,13 @@
 package com.example.lsdchat.ui.main.editchat;
 
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -73,6 +75,8 @@ public class EditchatFragment extends BaseFragment implements EditchatContract.V
             public void onLoadFinished(Loader<EditchatPresenter> loader, EditchatPresenter data) {
                 Log.i(TAG, "onLoadFinished");
                 EditchatFragment.this.mPresenter = data;
+
+                onPresenterPrepared(mPresenter);
             }
 
             @Override
@@ -83,21 +87,24 @@ public class EditchatFragment extends BaseFragment implements EditchatContract.V
         });
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        Log.i(TAG, "onResume " + mPresenter.toString());
-        mAdapter = new EditchatAdapter(mPresenter, mPresenter.getAvatarsFromDatabase());
+    void onPresenterPrepared(EditchatPresenter presenter) {
+        Toast.makeText(getContext(), getArguments().getString(DIALOG_ID), Toast.LENGTH_SHORT).show();
+        mAdapter = new EditchatAdapter(presenter, presenter.getAvatarsFromDatabase());
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mRecyclerView.setAdapter(mAdapter);
 
-        mPresenter.loadDialogCredentials(getArguments().getString(DIALOG_ID));
+        presenter.loadDialogCredentials(getArguments().getString(DIALOG_ID));
 
+        mDialogImage.setOnClickListener(v -> showImageChooser());
         mSaveButton.setOnClickListener(v -> {
         });
+    }
 
-        Toast.makeText(getContext(), getArguments().getString(DIALOG_ID), Toast.LENGTH_SHORT).show();
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.i(TAG, "onResume " + mPresenter.toString());
     }
 
     @Override
@@ -138,6 +145,24 @@ public class EditchatFragment extends BaseFragment implements EditchatContract.V
         mAdapter.setUsersList(appUsers);
         mAdapter.setDialogType(type);
         mAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        mPresenter.onActivityResult(requestCode, resultCode, data);
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    void showImageChooser() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext())
+                .setTitle(getString(R.string.add_photo))
+                .setPositiveButton(getString(R.string.photo_gallery), (dialogInterface, i) -> {
+                    mPresenter.getPhotoFromGallery();
+                })
+                .setNegativeButton(getString(R.string.device_camera), (dialogInterface, i) -> {
+                    mPresenter.getPhotoFromCamera();
+                });
+        builder.create().show();
     }
 
     private void initView(View view) {
