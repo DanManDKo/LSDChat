@@ -74,11 +74,6 @@ public class ChatsModel implements ChatsContract.Model {
 
 
     @Override
-    public List<RealmDialogModel> getDialogsByType(int type) {
-        return mDataManager.getDialogsByType(type);
-    }
-
-    @Override
     public Observable<List<ContentModel>> getObservableUserAvatar() {
         return mDataManager.getObservableUserAvatar();
     }

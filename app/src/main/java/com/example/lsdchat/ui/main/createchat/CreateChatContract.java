@@ -1,67 +1,40 @@
 package com.example.lsdchat.ui.main.createchat;
 
 
-import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.support.v4.app.Fragment;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.EditText;
-import android.widget.RadioGroup;
-import android.widget.TextView;
 
 import com.example.lsdchat.api.dialog.model.ItemDialog;
 import com.example.lsdchat.api.dialog.request.CreateDialogRequest;
-import com.example.lsdchat.api.dialog.response.UserListResponse;
+import com.example.lsdchat.api.login.model.LoginUser;
 import com.example.lsdchat.api.registration.response.RegistrationCreateFileResponse;
-import com.example.lsdchat.model.ContactsModel;
-import com.facebook.drawee.view.SimpleDraweeView;
+import com.example.lsdchat.model.ContentModel;
 
 import java.io.File;
 import java.util.List;
 import java.util.Map;
 
-import de.hdodenhof.circleimageview.CircleImageView;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
-import okhttp3.ResponseBody;
-import retrofit2.Response;
 import rx.Observable;
 
 public interface CreateChatContract {
 
     interface View {
 
-        void showErrorDialog(String message);
+        void showErrorDialog(Throwable throwable);
+
+        void showErrorDialog(int messageId);
+
+        void setNameAccessibility(boolean enable);
+
+        void setImageAccessibility(boolean enable);
 
         boolean isRbPublic();
+
         boolean isRbPrivate();
 
-        void setNameError();
-        void hideNameError();
+        String getNameDialog();
 
-        void setEnableName(boolean enableName);
-        void setEnableImage(boolean enableImage);
-
-        // TODO: 3/9/17 [Code Review] pls use more abstract names like 'setUsersListAccessibility(boolean enabled)'
-        // or make 2 methods 'enableUsersList' and 'disableUsersList'
-        void setRecyclerEnableDisable(boolean enable);
-
-        void getUserpicUri(Uri uri);
-        // TODO: 3/9/17 [Code Review] pls use more abstract names
-        void showDialogImageSourceChooser();
-
-        Context getContext();
-
-        String getChatName();
-
-        // TODO: 3/9/17 [Code Review] pls use more abstract names, do not use 'Adapter' word
-        void initAdapter(List<ContactsModel> list);
-
-        // TODO: 3/9/17 [Code Review] ask someone to implement this method's logic. What should be in it?
-        // I don't know, for sure
-        void addModel(List<ContactsModel> list);
 
         void navigateToChat(Fragment fragment);
     }
@@ -69,28 +42,13 @@ public interface CreateChatContract {
     interface Presenter {
         void onDestroy();
 
-        void btnCreateClick(Button btnCreate, EditText etName);
-        void btnImageClick(SimpleDraweeView imageView);
+        Observable<List<LoginUser>> getUserListObservable();
 
-        void onActivityResult(int requestCode, int resultCode, Intent data);
+        void checkBoxSetOnChecked(int userId, boolean isChecked);
 
-        void getPhotoFromGallery();
-        void getPhotoFromCamera();
+        void setClickCreateNewDialog(File mUploadFile);
 
-        void createDialog(String token,CreateDialogRequest request);
-
-        CreateDialogRequest getTypeDialog(long imageId);
-
-        void getContactsModel();
-
-        void setOnCheckedChangeListener(RadioGroup radioGroup);
-
-        String getToken();
-
-        void setOnCheckedChangeListener(CheckBox checkBox, TextView textView,ContactsModel model);
-
-
-        void setImageViewUser(CircleImageView imageView,ContactsModel user);
+        Observable<List<ContentModel>> getObservableUserAvatar();
     }
 
     interface Model {
@@ -102,14 +60,11 @@ public interface CreateChatContract {
 
         Observable<Void> uploadFileMap(Map<String, RequestBody> map, MultipartBody.Part part);
 
-        Observable<UserListResponse> getUserList(String token);
+        String getToken();
 
+        Observable<List<ContentModel>> getObservableUserAvatar();
 
-
-
-        Observable<File> downloadImage(long blobId, String token);
-
-        Observable<File> saveImage(Response<ResponseBody> response,long blobId);
+        Observable<List<LoginUser>> getUserListObservable();
 
     }
 }

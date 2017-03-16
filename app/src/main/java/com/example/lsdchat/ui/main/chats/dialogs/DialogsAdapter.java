@@ -68,7 +68,9 @@ public class DialogsAdapter extends RecyclerView.Adapter<DialogsAdapter.ViewHold
         holder.mChatDate.setText(DateUtils.millisecondsToDate(realmDialogModel.getLastMessageDateSent()));
         if (realmDialogModel.getLastMessageUserId() != null) {
             holder.mChatTitle.setText(UsersUtil.getUserById(realmDialogModel.getLastMessageUserId()).getFullName());
-
+        }
+        else {
+            holder.mChatTitle.setText("");
         }
         holder.mChatLastMessage.setText(realmDialogModel.getLastMessage());
 
@@ -79,6 +81,7 @@ public class DialogsAdapter extends RecyclerView.Adapter<DialogsAdapter.ViewHold
             holder.mNewMessageCounter.setText(String.valueOf(realmDialogModel.getUnreadMessagesCount()));
         }
         else {
+            holder.mNewMessageCounter.setText("");
             holder.mNewMessageCounter.setVisibility(View.GONE);
         }
 

@@ -45,7 +45,6 @@ public interface ChatsContract {
 
         void saveDialog(List<RealmDialogModel> dialogList);
 
-        List<RealmDialogModel> getDialogsByType(int type);
 
         String getToken();
 
