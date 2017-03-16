@@ -50,7 +50,7 @@ public class UsersFragment extends BaseFragment implements UsersContract.View {
         View view = inflater.inflate(R.layout.fragment_users, container, false);
         mLoginUserList = new ArrayList<>();
         mPresenter = new UsersPresenter(this, new UsersModel(App.getSharedPreferencesManager(getActivity())));
-        mToolbar = (Toolbar) view.findViewById(R.id.chats_toolbar);
+        mToolbar = (Toolbar) view.findViewById(R.id.toolbar_new);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.realm_recycler_view);
         mToolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
         initToolbar(mToolbar, "Friends");
@@ -83,7 +83,7 @@ public class UsersFragment extends BaseFragment implements UsersContract.View {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
+//        super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.friends_option_menu, menu);
 
         MenuItem items = menu.findItem(R.id.action_search);

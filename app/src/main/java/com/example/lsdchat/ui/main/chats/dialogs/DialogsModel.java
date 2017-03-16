@@ -32,10 +32,7 @@ public class DialogsModel implements DialogsContract.Model {
         return mSharedPreferencesManager.getToken();
     }
 
-    @Override
-    public List<RealmDialogModel> getDialogsByType(int type) {
-        return mDataManager.getDialogsByType(type);
-    }
+
 
     @Override
     public Observable<DialogsResponse> getAllDialogs(String token) {

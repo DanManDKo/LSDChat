@@ -15,7 +15,6 @@ import rx.Observable;
 public interface DialogsContract {
 
     interface Model {
-        List<RealmDialogModel> getDialogsByType(int type);
         Observable<DialogsResponse> getAllDialogs(String token);
 
         void saveDialog(List<RealmDialogModel> dialogList);
@@ -34,16 +33,15 @@ public interface DialogsContract {
     }
 
     interface Presenter {
-        List<RealmDialogModel> showDialogs(int type);
-        void getAllDialogAndSave();
 
-        void setOnRefreshListener(SwipeRefreshLayout swipeRefreshLayout);
+
+        Observable<List<RealmDialogModel>> getObservableDialogByType(int type);
 
         void setClickRl(RealmDialogModel realmDialogModel);
 
         Observable<List<ContentModel>> getObservableUserAvatar();
 
-        Observable<List<RealmDialogModel>> getObservableDialogsByType(int type);
+
     }
 
 }
