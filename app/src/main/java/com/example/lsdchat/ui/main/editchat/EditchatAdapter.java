@@ -20,6 +20,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 public class EditchatAdapter extends RecyclerView.Adapter<EditchatAdapter.ViewHolder> {
     private static final int PUBLIC_GROUP_TYPE = 1;
     private static final int PRIVATE_GROUP_TYPE = 2;
@@ -61,11 +63,11 @@ public class EditchatAdapter extends RecyclerView.Adapter<EditchatAdapter.ViewHo
         if (user != null) {
             holder.mUserName.setText(user.getFullName());
 
-            String path = mMapAvatar.get(user.getId());
+            String path = mMapAvatar.get(String.valueOf(user.getId()));
             if (path != null) {
                 holder.mUserAvatar.setImageURI(Uri.fromFile(new File(path)));
             } else {
-                holder.mUserAvatar.setImageURI(EMPTY_STRING);
+                holder.mUserAvatar.setImageResource(R.drawable.userpic);
             }
 
             switch (mDialogType) {
@@ -87,13 +89,13 @@ public class EditchatAdapter extends RecyclerView.Adapter<EditchatAdapter.ViewHo
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
-        private SimpleDraweeView mUserAvatar;
+        private CircleImageView mUserAvatar;
         private TextView mUserName;
         private CheckBox mCheckBox;
 
         public ViewHolder(View itemView) {
             super(itemView);
-            mUserAvatar = (SimpleDraweeView) itemView.findViewById(R.id.item_editchat_usericon);
+            mUserAvatar = (CircleImageView) itemView.findViewById(R.id.item_editchat_usericon);
             mUserName = (TextView) itemView.findViewById(R.id.item_editchat_username);
             mCheckBox = (CheckBox) itemView.findViewById(R.id.item_editchat_checkbox);
         }
