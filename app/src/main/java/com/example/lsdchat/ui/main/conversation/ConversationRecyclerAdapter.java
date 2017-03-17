@@ -126,7 +126,7 @@ public class ConversationRecyclerAdapter extends RecyclerView.Adapter<RecyclerVi
     }
 
     public void addAll(List<ItemMessage> list, int startIndex, int lastIndex) {
-        if (list.size() != 0 && list.size() >= lastIndex) {
+        if (list.size() != 0 && list.size() - 1 >= lastIndex) {
             List<ItemMessage> temp = list.subList(startIndex, lastIndex);
             Log.e("AAA", String.valueOf(temp.size()));
             mList.addAll(temp);

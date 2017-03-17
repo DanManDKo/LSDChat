@@ -17,11 +17,12 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.example.lsdchat.App;
 import com.example.lsdchat.R;
 import com.example.lsdchat.api.login.model.LoginUser;
 import com.example.lsdchat.ui.main.fragment.BaseFragment;
 import com.example.lsdchat.util.ErrorsCode;
+
+import java.io.File;
 
 
 public class UserInfoFragment extends BaseFragment implements UserInfoContract.View {
@@ -62,7 +63,7 @@ public class UserInfoFragment extends BaseFragment implements UserInfoContract.V
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_users_info, container, false);
-        mPresenter = new UserInfoPresenter(this, App.getSharedPreferencesManager(getActivity()));
+        mPresenter = new UserInfoPresenter(this);
         mPackageManager = getActivity().getPackageManager();
         mLoginUser = getArguments().getParcelable(LIST);
         initView(view);
@@ -70,19 +71,28 @@ public class UserInfoFragment extends BaseFragment implements UserInfoContract.V
         mEmail.setText(mLoginUser.getEmail());
         mPhone.setText(mLoginUser.getPhone());
         mWebsite.setText(mLoginUser.getWebsite());
-        mPresenter.setImageView(mImageUser, mLoginUser.getBlobId());
 
-            onClick();
+
+        mPresenter.getUserAvatar(mLoginUser.getId())
+                .subscribe(path -> {
+                    if (path != null) {
+                        mImageUser.setImageURI(Uri.fromFile(new File(path)));
+                    }
+                });
+        onClick();
 
 
         return view;
     }
 
     private void onClick() {
-        mPresenter.setOnClickListenerFab(mFabMessage, mLoginUser);
-        mPresenter.setOnClickListenerRlEmail(mRlEmail, mLoginUser.getEmail());
-        mPresenter.setOnClickListenerRlPhone(mRlPhone, mLoginUser.getPhone());
-        mPresenter.setOnClickListenerRlWeb(mRlWebsite, mLoginUser.getWebsite());
+        mFabMessage.setOnClickListener(v -> {
+//        it work
+        });
+        mRlEmail.setOnClickListener(v -> navigateToSendEmail(mLoginUser.getEmail()));
+        mRlPhone.setOnClickListener(v -> navigateToDial(mLoginUser.getPhone()));
+        mRlWebsite.setOnClickListener(v -> navigateToWeb(mLoginUser.getWebsite()));
+
     }
 
     private void initView(View view) {
@@ -97,44 +107,47 @@ public class UserInfoFragment extends BaseFragment implements UserInfoContract.V
         mRlWebsite = (RelativeLayout) view.findViewById(R.id.user_info_website_rl);
 
         initToolbar(mToolbar, mLoginUser.getFullName());
-        mToolbar.setNavigationOnClickListener(v -> getActivity().onBackPressed());
+        mToolbar.setNavigationOnClickListener(v -> onBackPressed());
     }
 
 
-    @Override
-    public void navigateDial(String phone) {
-        Intent phoneIntent = new Intent(Intent.ACTION_DIAL, Uri.fromParts(
-                "tel", phone, null));
-        if (mPackageManager.hasSystemFeature(PackageManager.FEATURE_TELEPHONY)) {
-            if (((TelephonyManager) getContext().getSystemService(Context.TELEPHONY_SERVICE))
-                    .getSimState() == TelephonyManager.SIM_STATE_READY) {
-                if (Settings.Global.getInt(getContext().getContentResolver(),
-                        Settings.Global.AIRPLANE_MODE_ON, 0) == 0) {
-                    startActivity(phoneIntent);
-                    return;
+    private void navigateToDial(String phone) {
+        if (phone != null && !phone.isEmpty()) {
+            Intent phoneIntent = new Intent(Intent.ACTION_DIAL, Uri.fromParts(
+                    "tel", phone, null));
+            if (mPackageManager.hasSystemFeature(PackageManager.FEATURE_TELEPHONY)) {
+                if (((TelephonyManager) getContext().getSystemService(Context.TELEPHONY_SERVICE))
+                        .getSimState() == TelephonyManager.SIM_STATE_READY) {
+                    if (Settings.Global.getInt(getContext().getContentResolver(),
+                            Settings.Global.AIRPLANE_MODE_ON, 0) == 0) {
+                        startActivity(phoneIntent);
+                        return;
+                    }
                 }
+            } else {
+                ErrorsCode.showErrorDialog(getActivity(), getString(R.string.user_info_error_phone));
             }
-        } else {
-            ErrorsCode.showErrorDialog(getActivity(), getString(R.string.user_info_error_phone));
         }
     }
 
-    @Override
-    public void navigateSendEmail(String email) {
-        Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts(
-                "mailto", email, null));
-        if (emailIntent.resolveActivity(mPackageManager) != null) {
-            startActivity(emailIntent);
-        } else {
-            ErrorsCode.showErrorDialog(getActivity(), getString(R.string.user_info_error_email));
+    private void navigateToSendEmail(String email) {
+        if (email != null && !email.isEmpty()) {
+            Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts(
+                    "mailto", email, null));
+            if (emailIntent.resolveActivity(mPackageManager) != null) {
+                startActivity(emailIntent);
+            } else {
+                ErrorsCode.showErrorDialog(getActivity(), getString(R.string.user_info_error_email));
+            }
         }
     }
 
-    @Override
-    public void navigateWeb(String website) {
-        Intent websiteIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(website));
-        if (websiteIntent.resolveActivity(mPackageManager) != null) {
-            startActivity(websiteIntent);
+    private void navigateToWeb(String website) {
+        if (website != null && !website.isEmpty()) {
+            Intent websiteIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(website));
+            if (websiteIntent.resolveActivity(mPackageManager) != null) {
+                startActivity(websiteIntent);
+            }
         }
     }
 }

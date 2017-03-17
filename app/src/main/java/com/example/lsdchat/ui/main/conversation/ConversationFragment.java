@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -37,6 +38,7 @@ public class ConversationFragment extends BaseFragment implements ConversationCo
     private static final String DIALOG_ID = "dialog_id";
     private static final String DIALOG_TYPE = "dialog_type";
     private static final String DIALOG_NAME = "dialog_name";
+    private static final int DIALOG_PRIVATE = 3;
 
     private ConversationPresenter mConversationPresenter;
     private OnEditchatButtonClicked mEditListener;
@@ -51,9 +53,9 @@ public class ConversationFragment extends BaseFragment implements ConversationCo
     private ConversationRecyclerAdapter mAdapter;
     private RecyclerView mRecyclerView;
 
-    //    private String ownerJID = "23163511-52350@chat.quickblox.com";
     private String mucToJID;
     private String dialogID;
+    private int dialogType;
     private String mNameDialog;
 
     private ArrayList<ItemMessage> mMessageList = new ArrayList<>();
@@ -76,7 +78,6 @@ public class ConversationFragment extends BaseFragment implements ConversationCo
         } catch (ClassCastException e) {
             throw new ClassCastException("Activity should implement " + OnEditchatButtonClicked.class.getSimpleName());
         }
-
     }
 
     @Override
@@ -87,9 +88,11 @@ public class ConversationFragment extends BaseFragment implements ConversationCo
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        Log.e("AAA", "ConversationPresenterFragment - onCreateView");
         View view = inflater.inflate(R.layout.fragment_conversation, container, false);
         mConversationPresenter = new ConversationPresenter(this, App.getSharedPreferencesManager(getActivity()));
         dialogID = getArguments().getString(DIALOG_ID);
+        dialogType = getArguments().getInt(DIALOG_TYPE);
         mucToJID = ApiConstant.APP_ID + "_" + dialogID + ApiConstant.MessageRequestParams.MULTI_USER_CHAT;
         mNameDialog = getArguments().getString(DIALOG_NAME);
 
@@ -113,6 +116,7 @@ public class ConversationFragment extends BaseFragment implements ConversationCo
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
         linearLayoutManager.setReverseLayout(true);
         mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.setItemAnimator(new DefaultItemAnimator());
         mRecyclerView.setLayoutManager(linearLayoutManager);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.addOnScrollListener(new EndlessScrollListener(linearLayoutManager) {
@@ -148,17 +152,7 @@ public class ConversationFragment extends BaseFragment implements ConversationCo
                 getActivity().onBackPressed();
                 break;
             case R.id.toolbar_edit:
-                //check up dialog_type
-                if (true) {
-                    //navigate to Edit Chat Screen
-//                    Toast.makeText(getActivity(), "edit", Toast.LENGTH_SHORT).show();
-                    mEditListener.onEditchatSelected("589f6bfda0eb47ea8400026a");
-//                    Intent intent = new Intent(this, EditChatActivity.class);
-//                    startActivity(intent);
-                } else {
-                    Toast.makeText(getActivity(), "You can not edit current chat", Toast.LENGTH_SHORT).show();
-                }
-                break;
+                mConversationPresenter.navigateToEditchatFragment(dialogID);
         }
         return super.onOptionsItemSelected(item);
     }
@@ -171,6 +165,7 @@ public class ConversationFragment extends BaseFragment implements ConversationCo
 
     @Override
     public void onDestroyView() {
+        Log.e("AAA", "ConversationPresenterFragment - onDestroyView");
         mConversationPresenter.onDestroy();
         mEditListener = null;
         super.onDestroyView();
@@ -187,11 +182,6 @@ public class ConversationFragment extends BaseFragment implements ConversationCo
         mProgressBar = (ProgressBar) view.findViewById(R.id.conversation_progress_bar);
 
         initToolbar(mToolbar, mNameDialog);
-    }
-
-    @Override
-    public Context getViewContext() {
-        return getContext();
     }
 
     @Override
@@ -224,6 +214,11 @@ public class ConversationFragment extends BaseFragment implements ConversationCo
     @Override
     public void loadMoreData(List<ItemMessage> list) {
         mAdapter.addMore(list);
+    }
+
+    @Override
+    public void replaceFragment(String dialogId) {
+        mEditListener.onEditchatSelected(dialogId);
     }
 
     public interface OnEditchatButtonClicked {

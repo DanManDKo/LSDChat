@@ -2,6 +2,7 @@ package com.example.lsdchat.util;
 
 import android.content.Context;
 import android.os.Environment;
+import android.util.Log;
 import android.widget.ImageView;
 
 import com.example.lsdchat.App;
@@ -19,11 +20,11 @@ import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 import java.io.File;
 
 import de.hdodenhof.circleimageview.CircleImageView;
-import io.realm.internal.IOException;
 import okhttp3.ResponseBody;
 import okio.BufferedSink;
 import okio.Okio;
 import retrofit2.Response;
+import rx.Emitter;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -40,7 +41,7 @@ public class Utils {
     }
 
 
-    public static  void initLoader(Context context){
+    public static void initLoader(Context context) {
 
         DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
                 .cacheOnDisc(true).cacheInMemory(true)
@@ -62,16 +63,12 @@ public class Utils {
         imageLoader = ImageLoader.getInstance();
 
     }
-    public static void downloadImageToView(String url, CircleImageView imageView){
-        imageLoader.displayImage(url, imageView);
-    }
-    public static void downloadImageToView(String url, SimpleDraweeView imageView){
+
+    public static void setImageByUrl(String url, CircleImageView imageView) {
         imageLoader.displayImage(url, imageView);
     }
 
-    public static void downloadImageToView(String url, ImageView imageView){
-        imageLoader.displayImage(url, imageView);
-    }
+
 
     public static Observable<File> downloadImage(long blobId, String token) {
         DialogService mDialogService = App.getApiManager().getDialogService();
@@ -84,23 +81,15 @@ public class Utils {
 
 
     private static Observable<File> saveImage(Response<ResponseBody> response, long blobId) {
-        // TODO: 3/9/17 [Code Review] Use Observable.fromCallable to avoid backpressure errors
-        return Observable.create(subscriber -> {
-            try {
+        return Observable.fromCallable(() -> {
 
-                String fileName = String.valueOf(blobId) + ".jpg";
-                File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getAbsoluteFile(), fileName);
-                BufferedSink sink = Okio.buffer(Okio.sink(file));
-                sink.writeAll(response.body().source());
-                sink.close();
-                subscriber.onNext(file);
-                subscriber.onCompleted();
-            } catch (IOException e) {
-                e.printStackTrace();
-                subscriber.onError(e);
-            } catch (java.io.IOException e) {
-                e.printStackTrace();
-            }
+            String fileName = String.valueOf(blobId) + ".jpg";
+            File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getAbsoluteFile(), fileName);
+            BufferedSink sink = Okio.buffer(Okio.sink(file));
+            sink.writeAll(response.body().source());
+            sink.close();
+            return file;
+
         });
     }
 

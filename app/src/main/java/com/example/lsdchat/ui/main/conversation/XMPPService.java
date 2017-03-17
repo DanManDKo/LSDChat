@@ -57,7 +57,9 @@ public class XMPPService extends Service {
 
     private void initConnection(String userID, String password, String dialogID) {
         Log.d(TAG, "initConnection()");
+        Log.e("XMPP", "Service-start()-initConnection()");
         if (mConnection == null) {
+            Log.e("XMPP", "Service-start()-initConnection()-new XMPPConnection()");
             mConnection = new XMPPConnection(this, userID, password, dialogID);
         }
         try {
@@ -94,6 +96,7 @@ public class XMPPService extends Service {
 
                         Looper.prepare();
                         mTHandler = new Handler();
+                        Log.e("XMPP", "Service-start()");
                         initConnection(userID, password, dialogID);
                         //THE CODE HERE RUNS IN A BACKGROUND THREAD.
                         Looper.loop();
@@ -110,6 +113,7 @@ public class XMPPService extends Service {
         mTHandler.post(new Runnable() {
             @Override
             public void run() {
+                Log.e("XMPP", "Service-stop()");
                 if (mConnection != null) {
                     mConnection.disconnect();
                 }
@@ -120,7 +124,7 @@ public class XMPPService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.d(TAG, "onStartCommand()");
+        Log.e("XMPP", "Service-onStartCommand()");
         Bundle bundle = intent.getExtras();
 
         String userID = String.valueOf(bundle.get("userID"));
@@ -134,7 +138,7 @@ public class XMPPService extends Service {
     @Override
     public void onDestroy() {
         Log.d(TAG, "onDestroy()");
-        super.onDestroy();
         stop();
+        super.onDestroy();
     }
 }

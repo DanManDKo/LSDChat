@@ -1,23 +1,15 @@
 package com.example.lsdchat.ui.main.chats;
 
 
-import android.net.Uri;
-import android.support.v4.app.Fragment;
-import android.util.Log;
-import android.widget.TextView;
-
-import com.example.lsdchat.R;
-import com.example.lsdchat.constant.ApiConstant;
-import com.example.lsdchat.model.DialogModel;
+import com.example.lsdchat.model.RealmDialogModel;
 import com.example.lsdchat.model.User;
-import com.example.lsdchat.ui.main.chats.dialogs.DialogsFragment;
-import com.example.lsdchat.util.Utils;
-import com.facebook.common.util.UriUtil;
+import com.example.lsdchat.model.ContentModel;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import de.hdodenhof.circleimageview.CircleImageView;
 import rx.Observable;
 
 public class ChatsPresenter implements ChatsContract.Presenter {
@@ -29,100 +21,54 @@ public class ChatsPresenter implements ChatsContract.Presenter {
 
     public ChatsPresenter(ChatsContract.View mView, ChatsContract.Model model) {
         this.mView = mView;
-
-        // SharedPreferencesManager should be in model layer
         this.mModel = model;
         mUser = mModel.getCurrentUser();
-
+        getAllDialogAndSave();
     }
 
 
     @Override
-    public void setHeaderData(CircleImageView imageView, TextView fullName, TextView email) {
-
-
-        if ((mUser.getBlobId()) != 0) {
-            downLoadImage(mModel.getToken(), mUser.getBlobId(), imageView);
-//
-        } else {
-            Uri uri = new Uri.Builder()
-                    .scheme(UriUtil.LOCAL_RESOURCE_SCHEME) // "res"
-                    .path(String.valueOf(R.drawable.userpic))
-                    .build();
-            imageView.setImageURI(uri);
-        }
-        fullName.setText(mUser.getFullName());
-        email.setText(mUser.getEmail());
-
-
-    }
-
-    private void downLoadImage(String token, long blobId, CircleImageView imageView) {
-
-        Observable<String> observable = Observable.create(subscriber ->
-        {
-            Utils.downloadContent(blobId, token)
-                    .flatMap(contentResponse -> Observable.just(contentResponse.getItemContent().getImageUrl()))
-                    .subscribe(imageUrl -> {
-//                    imageView.setImageURI(Uri.parse(imageUrl));
-
-                        Utils.downloadImageToView(imageUrl, imageView);
-                        subscriber.onNext(imageUrl);
-                        subscriber.onCompleted();
-                    }, throwable -> {
-                        Log.e("IMAGE-error", throwable.getMessage());
+    public Observable<String> getUserAvatar() {
+        Map<String, String> mapAvatar = new HashMap<>();
+        return Observable.fromCallable(() -> {
+            mModel.getObservableUserAvatar()
+                    .subscribe(userAvatars -> {
+                        for (ContentModel user : userAvatars) {
+                            mapAvatar.put(user.getId(), user.getImagePath());
+                        }
                     });
-
+            return mapAvatar.get(String.valueOf(mUser.getId()));
         });
-       /* Utils.downloadImage(blobId, token)
-                .subscribe(file -> {
-                    imageView.setImageURI(Uri.fromFile(new File(file.getPath())));
-                    Log.e("TETS", file.getPath());
-                }, throwable -> {
-                    mView.showMessageError(throwable);
-                });*/
-
-        Log.e("TEST OBS", observable.toString());
 
     }
 
     @Override
-    public List<Fragment> setFragmentList() {
-        List<Fragment> list = new ArrayList<>();
-        list.add(new DialogsFragment().newInstance(ApiConstant.TYPE_DIALOG_PUBLIC));
-        list.add(new DialogsFragment().newInstance(ApiConstant.TYPE_DIALOG_GROUP));
-
-        return list;
+    public User getUserModel() {
+        return mUser;
     }
 
-    @Override
-    public void destroySession() {
 
+    @Override
+    public void onLogout() {
         mModel.destroySession(mModel.getToken())
                 .subscribe(aVoid -> {
                     mModel.deleteUser();
-                    mView.logOut();
-                }, throwable -> {
-                    mView.showMessageError(throwable);
-                });
-
+                    mView.navigateToLoginActivity();
+                }, throwable -> mView.showMessageError(throwable));
     }
 
-    @Override
-    public void getAllDialogAndSave() {
-        List<DialogModel> list = new ArrayList<>();
+    private void getAllDialogAndSave() {
+        List<RealmDialogModel> list = new ArrayList<>();
         mModel.getAllDialogs(mModel.getToken())
                 .flatMap(dialogsResponse -> Observable.just(dialogsResponse.getItemDialogList()))
                 .subscribe(dialogList -> {
-
                     Observable.from(dialogList)
-                            .subscribe(dialog -> list.add(new DialogModel(dialog)));
-
+                            .subscribe(dialog -> list.add(new RealmDialogModel(dialog)));
                     mModel.saveDialog(list);
 
-                }, throwable -> {
-                    Log.e("getAllDialogAndSave", throwable.getMessage());
-                });
+                }, throwable -> mView.showMessageError(throwable));
 
     }
+
+
 }

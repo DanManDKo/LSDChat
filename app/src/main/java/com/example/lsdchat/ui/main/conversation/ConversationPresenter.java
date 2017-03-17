@@ -10,13 +10,23 @@ import android.widget.Toast;
 import com.example.lsdchat.App;
 import com.example.lsdchat.api.dialog.model.ItemMessage;
 import com.example.lsdchat.manager.SharedPreferencesManager;
+import com.example.lsdchat.model.IdsListInteger;
+import com.example.lsdchat.model.RealmDialogModel;
+import com.example.lsdchat.model.User;
 import com.example.lsdchat.util.Network;
 
 import java.util.List;
 
+import io.realm.RealmList;
+import rx.Observable;
+
 import static com.facebook.FacebookSdk.getApplicationContext;
 
 public class ConversationPresenter implements ConversationContract.Presenter {
+    private static final int PUBLIC_GROUP_TYPE = 1;
+    private static final int PRIVATE_GROUP_TYPE = 2;
+    private static final int PRIVATE_TYPE = 3;
+
     private ConversationContract.View mView;
     private ConversationContract.Model mModel;
     private Context mContext;
@@ -26,7 +36,7 @@ public class ConversationPresenter implements ConversationContract.Presenter {
 
     public ConversationPresenter(ConversationContract.View view, SharedPreferencesManager manager) {
         mView = view;
-        mContext = view.getViewContext();
+        mContext = view.getContext();
         mModel = new ConversationModel();
         mPreferencesManager = manager;
 
@@ -37,6 +47,8 @@ public class ConversationPresenter implements ConversationContract.Presenter {
     public void onDestroy() {
         mView = null;
         mModel = null;
+        mContext = null;
+        mPreferencesManager = null;
     }
 
     @Override
@@ -54,23 +66,13 @@ public class ConversationPresenter implements ConversationContract.Presenter {
                 String action = intent.getAction();
                 switch (action) {
                     case XMPPService.NEW_MESSAGE:
-                        String fromJID = intent.getStringExtra(XMPPService.BUNDLE_FROM_JID);
-                        String body = intent.getStringExtra(XMPPService.BUNDLE_MESSAGE_BODY);
-                        String messageID = intent.getStringExtra(XMPPService.MESSAGE_ID);
+//                        String fromJID = intent.getStringExtra(XMPPService.BUNDLE_FROM_JID);
+//                        String body = intent.getStringExtra(XMPPService.BUNDLE_MESSAGE_BODY);
 //                        String from = fromJID.split("-")[0];
+                        String messageID = intent.getStringExtra(XMPPService.MESSAGE_ID);
 
                         retrieveNewMessage(mView.getCurrentDialogID(), messageID);
 
-//                        if (fromJID.equals(ownerJID)) {
-//                            Log.e("AAA", "Got a message from myself");
-////                            mAdapter.addFirst(item);
-////                            mRecyclerView.scrollToPosition(0);
-//                        } else {
-//                            Log.e("AAA", "Got a message from friend");
-//
-////                            mAdapter.addFirst(item);
-////                            mRecyclerView.scrollToPosition(0);
-//                        }
                         return;
                 }
             }
@@ -122,16 +124,6 @@ public class ConversationPresenter implements ConversationContract.Presenter {
 
             if (!message.equalsIgnoreCase("")) {
                 Log.e("AAA", "The client is connected to the server, sending Message");
-
-                //mPreferencesManager.getToken();
-//                mModel.createDialogMessage(token, dialogId, message)
-//                        .subscribe(itemMessage -> {
-//                            saveMessagesToDataBase(itemMessage);
-//                            addNewMessageToAdapterList(itemMessage.getId());
-//                        }, throwable -> {
-//
-//                        });
-
                 //Send the message to the server
                 Intent intent = new Intent(XMPPService.SEND_MESSAGE);
                 intent.putExtra(XMPPService.BUNDLE_MESSAGE_BODY, message);
@@ -166,6 +158,46 @@ public class ConversationPresenter implements ConversationContract.Presenter {
 
     private void saveMessagesToDataBase(ItemMessage item) {
         App.getDataManager().insertRealmMessage(item);
+    }
+
+    @Override
+    public void navigateToEditchatFragment(String dialogId) {
+        Observable<Integer> observableUserID =
+                mModel.getCurrentUserFromDatabase()
+                        .map(User::getId);
+
+        Observable<RealmDialogModel> observableDialogModel =
+                mModel.getDialogFromDatabase(dialogId);
+
+        Observable.combineLatest(observableUserID, observableDialogModel, ((value, dialogModel) -> {
+            boolean result = checkAccessLevel(dialogModel, value);
+            return result;
+        })).subscribe(aBoolean -> {
+            if (aBoolean) {
+                mView.replaceFragment(dialogId);
+            } else {
+                Toast.makeText(mContext, "You can`t edit private dialog", Toast.LENGTH_SHORT).show();
+            }
+        }, throwable -> {
+            Log.e("AAA", throwable.getMessage());
+        });
+    }
+
+    private boolean checkAccessLevel(RealmDialogModel dialog, int value) {
+        switch (dialog.getType()) {
+            case PUBLIC_GROUP_TYPE:
+                if (dialog.getOwnerId() == value) return true;
+            case PRIVATE_GROUP_TYPE:
+                RealmList<IdsListInteger> list = dialog.getOccupantsIdsList();
+                for (IdsListInteger item : list) {
+                    if (item.getValue() == value) return true;
+                }
+                return false;
+            case PRIVATE_TYPE:
+                return false;
+            default:
+                return false;
+        }
     }
 
     @Override

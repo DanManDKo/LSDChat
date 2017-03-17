@@ -7,8 +7,10 @@ import com.example.lsdchat.api.dialog.response.DialogsResponse;
 import com.example.lsdchat.api.login.service.LoginService;
 import com.example.lsdchat.manager.DataManager;
 import com.example.lsdchat.manager.SharedPreferencesManager;
-import com.example.lsdchat.model.DialogModel;
+import com.example.lsdchat.model.ContentModel;
+import com.example.lsdchat.model.RealmDialogModel;
 import com.example.lsdchat.model.User;
+import com.example.lsdchat.util.DialogUtil;
 
 import java.util.List;
 
@@ -32,7 +34,7 @@ public class ChatsModel implements ChatsContract.Model {
 
     @Override
     public String getToken() {
-       return mSharedPreferencesManager.getToken();
+        return mSharedPreferencesManager.getToken();
     }
 
     @Override
@@ -61,15 +63,18 @@ public class ChatsModel implements ChatsContract.Model {
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
+
     @Override
-    public void saveDialog(List<DialogModel> dialogList) {
+    public void saveDialog(List<RealmDialogModel> dialogList) {
         Observable.from(dialogList)
                 .subscribe(itemDialog -> mDataManager.insertDialogToDB(itemDialog));
+        DialogUtil.saveImageDialog(dialogList,getToken());
     }
 
 
+
     @Override
-    public List<DialogModel> getDialogsByType(int type) {
-        return mDataManager.getDialogsByType(type);
+    public Observable<List<ContentModel>> getObservableUserAvatar() {
+        return mDataManager.getObservableUserAvatar();
     }
 }
