@@ -14,7 +14,6 @@ import java.util.List;
 import io.realm.Realm;
 import io.realm.RealmResults;
 import io.realm.Sort;
-import rx.Emitter;
 import rx.Observable;
 
 
@@ -68,11 +67,12 @@ public class DataManager {
 
 
     public Observable<List<LoginUser>> getUserObservable() {
+
         return Observable.fromCallable(() -> mRealm.where(LoginUser.class).findAll());
     }
 
     public Observable<List<LoginUser>> getAppUsers() {
-        return  Observable.fromCallable(() -> mRealm.where(LoginUser.class).findAll());
+        return Observable.fromCallable(() -> mRealm.where(LoginUser.class).findAll());
     }
 
     public Observable<List<LoginUser>> getUserObservable(String sort) {
@@ -96,16 +96,15 @@ public class DataManager {
     }
 
     public Observable<RealmDialogModel> getDialogByID(String dialogID) {
-        return Observable.fromCallable(() -> mRealm.where(RealmDialogModel.class).equalTo(ID, dialogID).findFirst());
+        return mRealm.where(RealmDialogModel.class).equalTo(ID, dialogID).findFirst().asObservable();
     }
 
     public Observable<User> getCurrentUser() {
-        return Observable.fromCallable(() -> mRealm.where(User.class).findFirst());
+        return mRealm.where(User.class).findFirst().asObservable();
     }
 
     public RealmResults<LoginUser> getUsersQuick() {
         return mRealm.where(LoginUser.class).findAll();
-//        return mRealm.where(LoginUser.class).findAllSorted("fullName", Sort.ASCENDING);
     }
 
 
