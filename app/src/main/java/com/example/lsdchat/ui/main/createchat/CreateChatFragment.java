@@ -27,6 +27,7 @@ import android.widget.Toast;
 import com.example.lsdchat.App;
 import com.example.lsdchat.R;
 import com.example.lsdchat.api.login.model.LoginUser;
+import com.example.lsdchat.model.ContentModel;
 import com.example.lsdchat.ui.main.fragment.BaseFragment;
 import com.example.lsdchat.util.StorageHelper;
 import com.facebook.drawee.view.SimpleDraweeView;
@@ -72,14 +73,24 @@ public class CreateChatFragment extends BaseFragment implements CreateChatContra
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_new_chat, container, false);
 
-        mCreateChatPresenter = new CreateChatPresenter(this, new CreateChatModel(App.getSharedPreferencesManager(getActivity())));
+        mCreateChatPresenter =
+                new CreateChatPresenter(this,
+                        new CreateChatModel(App.getSharedPreferencesManager(getActivity()),
+                                App.getDataManager(),
+                                App.getApiManager().getDialogService(),
+                                App.getApiManager().getRegistrationService()));
 
         initView(view);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
         mRvSelectMembers.setLayoutManager(mLayoutManager);
 
-        mCreateChatPresenter.getUserListObservable()
-                .subscribe(this::setListUsers);
+        mCreateChatRvAdapter = new CreateChatRvAdapter(mCreateChatPresenter, getActivity());
+        mRvSelectMembers.setAdapter(mCreateChatRvAdapter);
+
+
+        mCreateChatPresenter.getUserListObservable();
+
+        mCreateChatPresenter.getObservableUserAvatar();
 
         radioGroupIsChecked();
 
@@ -107,15 +118,14 @@ public class CreateChatFragment extends BaseFragment implements CreateChatContra
         });
     }
 
+    @Override
+    public void setListUsers(List<LoginUser> list) {
+        mCreateChatRvAdapter.setUserList(list);
+    }
 
-    private void setListUsers(List<LoginUser> list) {
-
-        mCreateChatPresenter.getObservableUserAvatar().subscribe(contentModels ->
-                mCreateChatRvAdapter = new CreateChatRvAdapter(list, contentModels, mCreateChatPresenter, getActivity()));
-
-        mRvSelectMembers.setAdapter(mCreateChatRvAdapter);
-        mCreateChatRvAdapter.notifyDataSetChanged();
-
+    @Override
+    public void setContentModelList(List<ContentModel> contentModelList) {
+        mCreateChatRvAdapter.setContentModelList(contentModelList);
     }
 
     @Override

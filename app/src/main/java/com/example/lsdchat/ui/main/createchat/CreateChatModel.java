@@ -40,10 +40,10 @@ public class CreateChatModel implements CreateChatContract.Model {
     private DataManager mDataManager;
     private SharedPreferencesManager mSharedPreferencesManager;
 
-    public CreateChatModel(SharedPreferencesManager sharedPreferencesManager) {
-        mDialogService = App.getApiManager().getDialogService();
-        mRegistrationService = App.getApiManager().getRegistrationService();
-        mDataManager = App.getDataManager();
+    public CreateChatModel(SharedPreferencesManager sharedPreferencesManager,DataManager mDataManager,DialogService mDialogService,RegistrationService mRegistrationService) {
+        this.mDataManager = mDataManager;
+        this.mDialogService = mDialogService;
+        this.mRegistrationService = mRegistrationService;
         this.mSharedPreferencesManager = sharedPreferencesManager;
     }
 

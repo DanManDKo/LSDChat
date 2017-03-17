@@ -21,6 +21,10 @@ public interface CreateChatContract {
 
     interface View {
 
+        void setContentModelList(List<ContentModel> contentModelList);
+
+        void setListUsers(List<LoginUser> list);
+
         void showErrorDialog(Throwable throwable);
 
         void showErrorDialog(int messageId);
@@ -42,13 +46,13 @@ public interface CreateChatContract {
     interface Presenter {
         void onDestroy();
 
-        Observable<List<LoginUser>> getUserListObservable();
+        void getUserListObservable();
 
         void checkBoxSetOnChecked(int userId, boolean isChecked);
 
         void setClickCreateNewDialog(File mUploadFile);
 
-        Observable<List<ContentModel>> getObservableUserAvatar();
+        void getObservableUserAvatar();
     }
 
     interface Model {
