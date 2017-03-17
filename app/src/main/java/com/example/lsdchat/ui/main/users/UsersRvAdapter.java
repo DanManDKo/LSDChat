@@ -27,16 +27,24 @@ public class UsersRvAdapter extends RecyclerView.Adapter<UsersRvAdapter.ViewHold
     private UsersContract.Presenter mPresenter;
     private Map<String, String> mMapAvatar;
 
-    public UsersRvAdapter(UsersContract.Presenter presenter, List<ContentModel> mContentModelList) {
-        this.mContentModelList = mContentModelList;
+    public UsersRvAdapter(UsersContract.Presenter presenter) {
+        mContentModelList = new ArrayList<>();
         mLoginUserList = new ArrayList<>();
         this.mPresenter = presenter;
         mMapAvatar = new HashMap<>();
+
+
+
+    }
+
+    public void setContentModelList(List<ContentModel> contentModelList) {
+        mContentModelList.addAll(contentModelList);
 
         for (ContentModel user: mContentModelList) {
             mMapAvatar.put(user.getId(),user.getImagePath());
         }
 
+        notifyDataSetChanged();
     }
 
     public void addData(List<LoginUser> loginUserList) {

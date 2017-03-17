@@ -11,13 +11,17 @@ import rx.Observable;
 
 public interface UserInfoContract {
 
-    interface View {
+    interface Model {
+        Observable<String> getImagePath(int userId);
+    }
 
+    interface View {
+        void setImagePath(String path);
 
     }
 
     interface Presenter {
-        Observable<String> getUserAvatar(int userId);
+       void getUserAvatar(int userId);
 
 
     }

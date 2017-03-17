@@ -17,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.example.lsdchat.App;
 import com.example.lsdchat.R;
 import com.example.lsdchat.api.login.model.LoginUser;
 import com.example.lsdchat.ui.main.fragment.BaseFragment;
@@ -63,7 +64,7 @@ public class UserInfoFragment extends BaseFragment implements UserInfoContract.V
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_users_info, container, false);
-        mPresenter = new UserInfoPresenter(this);
+        mPresenter = new UserInfoPresenter(this, new UserInfoModel(App.getDataManager()));
         mPackageManager = getActivity().getPackageManager();
         mLoginUser = getArguments().getParcelable(LIST);
         initView(view);
@@ -73,16 +74,18 @@ public class UserInfoFragment extends BaseFragment implements UserInfoContract.V
         mWebsite.setText(mLoginUser.getWebsite());
 
 
-        mPresenter.getUserAvatar(mLoginUser.getId())
-                .subscribe(path -> {
-                    if (path != null) {
-                        mImageUser.setImageURI(Uri.fromFile(new File(path)));
-                    }
-                });
+        mPresenter.getUserAvatar(mLoginUser.getId());
         onClick();
 
 
         return view;
+    }
+
+    @Override
+    public void setImagePath(String path) {
+        if (path != null) {
+            mImageUser.setImageURI(Uri.fromFile(new File(path)));
+        }
     }
 
     private void onClick() {
