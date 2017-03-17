@@ -1,9 +1,10 @@
 package com.example.lsdchat.ui.main.editchat;
 
 
+import android.content.Context;
 import android.net.Uri;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +14,6 @@ import android.widget.TextView;
 import com.example.lsdchat.R;
 import com.example.lsdchat.api.login.model.LoginUser;
 import com.example.lsdchat.model.ContentModel;
-import com.example.lsdchat.model.User;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -29,16 +29,21 @@ public class EditchatAdapter extends RecyclerView.Adapter<EditchatAdapter.ViewHo
     private static final int PRIVATE_TYPE = 3;
 
     private List<Integer> mOccupantsList;
+    private List<Integer> mAddedOccupantsList;
+    private List<Integer> mDelatedOccupantsList;
     private List<LoginUser> mUsersList;
     private List<ContentModel> mContentModelList;
     private Map<String, String> mMapAvatar;
 
     private int mDialogType;
     private int mUserID;
+    private Context mContext;
     private EditchatPresenter mPresenter;
 
-    public EditchatAdapter(EditchatPresenter presenter, int userID) {
+    public EditchatAdapter(EditchatPresenter presenter, Context context, int userID) {
         mOccupantsList = new ArrayList<>();
+        mAddedOccupantsList = new ArrayList<>();
+        mDelatedOccupantsList = new ArrayList<>();
         mUsersList = new ArrayList<>();
         mContentModelList = new ArrayList<>();
         mMapAvatar = new HashMap<>();
@@ -46,6 +51,7 @@ public class EditchatAdapter extends RecyclerView.Adapter<EditchatAdapter.ViewHo
         mDialogType = PUBLIC_GROUP_TYPE;
         mUserID = userID;
         mPresenter = presenter;
+        mContext = context;
     }
 
     @Override
@@ -73,20 +79,37 @@ public class EditchatAdapter extends RecyclerView.Adapter<EditchatAdapter.ViewHo
                     holder.mCheckBox.setVisibility(View.GONE);
                     break;
                 case PRIVATE_GROUP_TYPE:
-                    if (mOccupantsList.contains(user.getId())) holder.mCheckBox.setChecked(true);
-                    holder.mCheckBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                        if (isChecked) {
-                            if (!mOccupantsList.contains(user.getId()))
-                                mOccupantsList.add(user.getId());
-                        } else {
-                            if ((int)user.getId() == mUserID && mOccupantsList.contains(user.getId())) {
-                                mOccupantsList.remove(user.getId());
-                            } else {
+                    if (mOccupantsList.contains(user.getId())) {
+                        holder.mCheckBox.setChecked(true);
+                        holder.mUserName.setTextColor(ContextCompat.getColor(mContext, R.color.colorNewChatTextCheck));
+                    }
 
+                    holder.mCheckBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+
+                        if (isChecked) {
+                            if (!mOccupantsList.contains(user.getId())) {
+                                mOccupantsList.add(user.getId());
+                                mAddedOccupantsList.add(user.getId());
+
+                                if (mDelatedOccupantsList.contains(user.getId()))
+                                    mDelatedOccupantsList.remove(user.getId());
+
+                                holder.mUserName.setTextColor(ContextCompat.getColor(mContext, R.color.colorNewChatTextCheck));
                             }
-                        }
-                        for (Integer i : mOccupantsList) {
-                            Log.e("mOccupantsList", i.toString());
+                        } else {
+                            if (((int) user.getId() == mUserID && mOccupantsList.contains(user.getId())) ||
+                                    (mAddedOccupantsList.contains(user.getId()) && mOccupantsList.contains(user.getId()))) {
+                                mOccupantsList.remove(user.getId());
+
+                                if (mAddedOccupantsList.contains(user.getId()))
+                                    mAddedOccupantsList.remove(user.getId());
+
+                                mDelatedOccupantsList.add(user.getId());
+                                holder.mUserName.setTextColor(ContextCompat.getColor(mContext, R.color.colorNewChatText));
+                            } else {
+                                buttonView.setChecked(!isChecked);
+                                mPresenter.showPermissionErrorMessage();
+                            }
                         }
                     });
                     break;
@@ -139,5 +162,13 @@ public class EditchatAdapter extends RecyclerView.Adapter<EditchatAdapter.ViewHo
 
     public List<Integer> getOccupantsList() {
         return mOccupantsList;
+    }
+
+    public List<Integer> getAddedOccupantsList() {
+        return mAddedOccupantsList;
+    }
+
+    public List<Integer> getDelatedOccupantsList() {
+        return mDelatedOccupantsList;
     }
 }

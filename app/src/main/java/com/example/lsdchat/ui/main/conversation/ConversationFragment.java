@@ -168,8 +168,8 @@ public class ConversationFragment extends BaseFragment implements ConversationCo
         super.onDestroyView();
         Log.e("Conv", "onDestroyView");
         mConversationPresenter.onDestroy();
-        getActivity().stopService(new Intent(getContext(), XMPPService.class));
         mEditListener = null;
+        getActivity().stopService(new Intent(getContext(), XMPPService.class));
     }
 
     @Override

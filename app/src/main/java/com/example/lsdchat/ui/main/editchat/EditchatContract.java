@@ -7,6 +7,7 @@ import android.net.Uri;
 
 import com.example.lsdchat.api.dialog.model.ItemDialog;
 import com.example.lsdchat.api.dialog.request.CreateDialogRequest;
+import com.example.lsdchat.api.dialog.request.UpdateDialogRequest;
 import com.example.lsdchat.api.dialog.response.DialogsResponse;
 import com.example.lsdchat.api.login.model.LoginUser;
 import com.example.lsdchat.model.ContentModel;
@@ -31,8 +32,9 @@ public interface EditchatContract {
 
         Uri getDialogImageUri();
 
-        void onActivityResult(int requestCode, int resultCode, Intent data);
+        void showPermissionErrorMessage();
 
+        void updateDialogCredentials(List<Integer> addedOccupants, List<Integer> deletedOccupants, String dialogName);
     }
 
     interface View {
@@ -46,12 +48,13 @@ public interface EditchatContract {
 
         void fillAdapterContentModelsList(List<ContentModel> contentModels);
 
+        void showPermissionErrorMessage();
     }
 
     interface Model {
         Observable<DialogsResponse> getDialogByID(String token, String dialogID);
 
-        Observable<ItemDialog> updateDialog(String dialogID, String token, CreateDialogRequest body);
+        Observable<ItemDialog> updateDialog(String token, String dialogID, UpdateDialogRequest body);
 
         Observable<RealmDialogModel> getDialogFromDatabase(String dialogID);
 

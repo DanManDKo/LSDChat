@@ -4,6 +4,7 @@ import com.example.lsdchat.App;
 import com.example.lsdchat.api.dialog.DialogService;
 import com.example.lsdchat.api.dialog.model.ItemDialog;
 import com.example.lsdchat.api.dialog.request.CreateDialogRequest;
+import com.example.lsdchat.api.dialog.request.UpdateDialogRequest;
 import com.example.lsdchat.api.dialog.response.DialogsResponse;
 import com.example.lsdchat.api.dialog.response.MessagesResponse;
 import com.example.lsdchat.api.login.model.LoginUser;
@@ -34,8 +35,8 @@ public class EditchatModel implements EditchatContract.Model {
     }
 
     @Override
-    public Observable<ItemDialog> updateDialog(String dialogID, String token, CreateDialogRequest body) {
-        return mDialogService.updateDialog(dialogID, token, body)
+    public Observable<ItemDialog> updateDialog(String token, String dialogID, UpdateDialogRequest body) {
+        return mDialogService.updateDialog(token, dialogID, body)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }

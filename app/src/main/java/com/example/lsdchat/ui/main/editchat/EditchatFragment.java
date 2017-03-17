@@ -96,7 +96,7 @@ public class EditchatFragment extends BaseFragment implements EditchatContract.V
     void onPresenterPrepared(EditchatPresenter presenter) {
         int userID = App.getDataManager().getUser().getId();
 
-        mAdapter = new EditchatAdapter(presenter, userID);
+        mAdapter = new EditchatAdapter(presenter, getContext(), userID);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mRecyclerView.setAdapter(mAdapter);
@@ -104,9 +104,11 @@ public class EditchatFragment extends BaseFragment implements EditchatContract.V
         presenter.getAvatarsFromDatabase();
         presenter.loadDialogCredentials(getArguments().getString(DIALOG_ID));
 
-        mDialogImage.setOnClickListener(v -> showImageChooser());
-        mSaveButton.setOnClickListener(v -> {
-        });
+        mDialogImage.setOnClickListener(v -> chooseDialogImage());
+        mSaveButton.setOnClickListener(v ->
+                mPresenter.updateDialogCredentials(mAdapter.getAddedOccupantsList(),
+                        mAdapter.getDelatedOccupantsList(),
+                        mEditChatName.getEditableText().toString()));
     }
 
     @Override
@@ -154,6 +156,11 @@ public class EditchatFragment extends BaseFragment implements EditchatContract.V
     }
 
     @Override
+    public void showPermissionErrorMessage() {
+        Toast.makeText(getContext(), "You can`t delete other users", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
     public void fillDialogAdapter(List<Integer> occupantIDs, List<LoginUser> appUsers, int type) {
         mAdapter.setOccupantsList(occupantIDs);
         mAdapter.setUsersList(appUsers);
@@ -178,10 +185,9 @@ public class EditchatFragment extends BaseFragment implements EditchatContract.V
                 }
                 break;
         }
-//        mPresenter.onActivityResult(requestCode, resultCode, data);
     }
 
-    private void showImageChooser() {
+    private void chooseDialogImage() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext())
                 .setTitle(getString(R.string.add_photo))
                 .setPositiveButton(getString(R.string.photo_gallery), (dialogInterface, i) -> {

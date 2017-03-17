@@ -15,7 +15,9 @@ import android.widget.Toast;
 
 import com.example.lsdchat.App;
 import com.example.lsdchat.R;
+import com.example.lsdchat.api.dialog.model.OccupantsPush;
 import com.example.lsdchat.api.dialog.request.CreateDialogRequest;
+import com.example.lsdchat.api.dialog.request.UpdateDialogRequest;
 import com.example.lsdchat.manager.SharedPreferencesManager;
 import com.example.lsdchat.model.ContentModel;
 import com.example.lsdchat.model.IdsListInteger;
@@ -48,6 +50,7 @@ public class EditchatPresenter implements EditchatContract.Presenter {
     private Context mContext;
     private SharedPreferencesManager mPreferencesManager;
     private int mDialogType;
+    private String mDialogID;
 
     public EditchatPresenter(EditchatContract.View view, EditchatContract.Model model, SharedPreferencesManager manager) {
         Log.e("AAA", "constructor");
@@ -56,6 +59,7 @@ public class EditchatPresenter implements EditchatContract.Presenter {
         mModel = model;
         mPreferencesManager = manager;
         mCheckedOccupantsList = new ArrayList<>();
+        mDialogID = null;
     }
 
     @Override
@@ -73,24 +77,13 @@ public class EditchatPresenter implements EditchatContract.Presenter {
         mModel.getDialogFromDatabase(dialogID)
                 .subscribe(dialogModel -> {
                     Log.e("AAA - DIALOG_NAME", dialogModel.getName().toString());
+                    mDialogID = dialogID;
                     mView.fillDialogNameField(dialogModel.getName());
 
                     prepareAndShowDialogInformation(dialogModel);
                 }, throwable -> {
                     Log.e("AAA - nameError", throwable.getMessage().toString());
                 });
-
-//        RealmDialogModel dialog = App.getDataManager().getDialogByID(dialogID);
-//        mView.fillDialogInformation(dialog.getName());
-//        Log.d("AAA", dialog.getName().toString());
-//        mModel.getDialogByID(mPreferencesManager.getToken(), dialogID)
-//                .map(dialogsResponse -> dialogsResponse.getItemDialogList().get(0))
-//                .doOnNext(itemDialog -> mDialogType = itemDialog.getType())
-//                .subscribe(itemDialog -> {
-//                    fillInformationInFields(itemDialog);
-//                }, throwable -> {
-//
-//                });
     }
 
     private void prepareAndShowDialogInformation(RealmDialogModel dialogModel) {
@@ -139,17 +132,6 @@ public class EditchatPresenter implements EditchatContract.Presenter {
                 });
     }
 
-    private void fillInformationInFields(RealmDialogModel object) {
-        CreateDialogRequest body = new CreateDialogRequest(object.getName());
-
-        mModel.updateDialog(object.getName(), mPreferencesManager.getToken(), body)
-                .subscribe(itemDialog -> {
-
-                }, throwable -> {
-
-                });
-    }
-
     @Override
     public void getPhotoFromGallery() {
         Intent pickPhoto = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
@@ -192,31 +174,23 @@ public class EditchatPresenter implements EditchatContract.Presenter {
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        switch (requestCode) {
-//            case REQUEST_IMAGE_CAMERA:
-//                if (resultCode == RESULT_OK) {
-//                    mView.showDialogAvatar(mFullSizeAvatarUri);
-//                    try {
-//                        mUploadFile = StorageHelper.decodeAndSaveUri(mContext, mFullSizeAvatarUri);
-//                    } catch (FileNotFoundException e) {
-//                        e.printStackTrace();
-//                    }
-//                    Toast.makeText(mContext, mContext.getString(R.string.photo_added), Toast.LENGTH_SHORT).show();
-//                }
-//                break;
-//            case REQUEST_IMAGE_GALLERY:
-//                if (resultCode == RESULT_OK) {
-//                    mFullSizeAvatarUri = data.getData();
-//                    mView.showDialogAvatar(mFullSizeAvatarUri);
-//                    try {
-//                        mUploadFile = StorageHelper.decodeAndSaveUri(mContext, mFullSizeAvatarUri);
-//                    } catch (FileNotFoundException e) {
-//                        e.printStackTrace();
-//                    }
-//                    Toast.makeText(mContext, mContext.getString(R.string.photo_added), Toast.LENGTH_SHORT).show();
-//                }
-//                break;
-//        }
+    public void showPermissionErrorMessage() {
+        mView.showPermissionErrorMessage();
+    }
+
+    @Override
+    public void updateDialogCredentials(List<Integer> addedOccupants, List<Integer> deletedOccupants, String dialogName) {
+        UpdateDialogRequest body = new UpdateDialogRequest();
+        body.setName(dialogName);
+//        body.setPushAll(new OccupantsPush(addedOccupants));
+
+
+        mModel.updateDialog(mPreferencesManager.getToken(), mDialogID, body)
+                .subscribe(itemDialog -> {
+
+
+                }, throwable -> {
+
+                });
     }
 }
