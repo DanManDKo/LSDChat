@@ -30,7 +30,7 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 public class Utils {
-    static ImageLoader imageLoader;
+
 
 
     public static Observable<ContentResponse> downloadContent(long blobId, String token) {
@@ -38,34 +38,6 @@ public class Utils {
         return mDialogService.downloadContent(blobId, token)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
-    }
-
-
-    public static void initLoader(Context context) {
-
-        DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
-                .cacheOnDisc(true).cacheInMemory(true)
-                .imageScaleType(ImageScaleType.EXACTLY)
-                .displayer(new FadeInBitmapDisplayer(300))
-                .resetViewBeforeLoading(true)
-
-                .build();
-
-        ImageLoaderConfiguration.Builder config = new ImageLoaderConfiguration.Builder(context);
-        config.threadPriority(Thread.NORM_PRIORITY - 2);
-        config.denyCacheImageMultipleSizesInMemory();
-        config.diskCacheFileNameGenerator(new Md5FileNameGenerator());
-        config.diskCacheSize(50 * 1024 * 1024); // 50 MiB
-        config.tasksProcessingOrder(QueueProcessingType.LIFO);
-        config.writeDebugLogs(); // Remove for release app
-        config.defaultDisplayImageOptions(defaultOptions);
-        ImageLoader.getInstance().init(config.build());
-        imageLoader = ImageLoader.getInstance();
-
-    }
-
-    public static void setImageByUrl(String url, CircleImageView imageView) {
-        imageLoader.displayImage(url, imageView);
     }
 
 

@@ -65,8 +65,6 @@ public class App extends Application {
                         .build()
         );
 
-        Utils.initLoader(getApplicationContext());
-
     }
 
 }
