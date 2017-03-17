@@ -40,16 +40,20 @@ public interface UsersContract {
         void setListUsers(List<LoginUser> list);
 
         void navigateToInfoUser(Fragment fragment);
+
+        void setContentModelList(List<ContentModel> contentModelList);
     }
 
     interface Presenter {
         void setClickUser(LoginUser loginUser);
 
-        Observable<List<LoginUser>> getUserObservable();
+        void getUserList();
+
+        void getUserFilterList(String query);
 
         void setSortedList(String sort);
 
-        Observable<List<ContentModel>> getObservableUserAvatar();
+        void getContentModelList();
     }
 
 }

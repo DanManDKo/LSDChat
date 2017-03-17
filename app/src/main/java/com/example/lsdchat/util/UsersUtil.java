@@ -21,7 +21,8 @@ public class UsersUtil {
 
 
     public static void getUserListAndSave(String token, Context context) {
-        UsersContract.Model mModel = new UsersModel(App.getSharedPreferencesManager(context));
+        UsersContract.Model mModel = new UsersModel(App.getSharedPreferencesManager(context),
+                App.getDataManager(),App.getApiManager().getDialogService());
 
         mModel.getUserList(token)
                 .subscribe(userListResponse -> {

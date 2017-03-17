@@ -20,6 +20,7 @@ import com.example.lsdchat.App;
 import com.example.lsdchat.R;
 import com.example.lsdchat.api.login.model.LoginUser;
 import com.example.lsdchat.constant.ApiConstant;
+import com.example.lsdchat.model.ContentModel;
 import com.example.lsdchat.ui.main.fragment.BaseFragment;
 
 import java.util.ArrayList;
@@ -49,25 +50,40 @@ public class UsersFragment extends BaseFragment implements UsersContract.View {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_users, container, false);
         mLoginUserList = new ArrayList<>();
-        mPresenter = new UsersPresenter(this, new UsersModel(App.getSharedPreferencesManager(getActivity())));
-        mToolbar = (Toolbar) view.findViewById(R.id.chats_toolbar);
-        mRecyclerView = (RecyclerView) view.findViewById(R.id.realm_recycler_view);
+
+        mPresenter = new UsersPresenter(this, new UsersModel(App.getSharedPreferencesManager(getActivity()),
+                        App.getDataManager(),App.getApiManager().getDialogService()));
+
+        initView(view);
+
         mToolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
         initToolbar(mToolbar, "Friends");
         mToolbar.setNavigationOnClickListener(v -> onBackPressed());
+
         mLayoutManager = new LinearLayoutManager(getActivity());
         mRecyclerView.setLayoutManager(mLayoutManager);
 
-        mPresenter.getObservableUserAvatar()
-                .subscribe(userAvatars -> mUsersRvAdapter = new UsersRvAdapter(mPresenter, userAvatars));
 
+        mUsersRvAdapter = new UsersRvAdapter(mPresenter);
         mRecyclerView.setAdapter(mUsersRvAdapter);
 
-        mPresenter.getUserObservable()
-                .subscribe(this::setListUsers);
+        mPresenter.getContentModelList();
+
+        mPresenter.getUserList();
+
 
 
         return view;
+    }
+
+    @Override
+    public void setContentModelList(List<ContentModel> contentModelList) {
+        mUsersRvAdapter.setContentModelList(contentModelList);
+    }
+
+    private void initView(View view) {
+        mToolbar = (Toolbar) view.findViewById(R.id.chats_toolbar);
+        mRecyclerView = (RecyclerView) view.findViewById(R.id.realm_recycler_view);
     }
 
     @Override
@@ -98,8 +114,9 @@ public class UsersFragment extends BaseFragment implements UsersContract.View {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                mPresenter.getUserObservable()
-                        .subscribe(loginUsers -> getFilterList(loginUsers, newText));
+
+                mPresenter.getUserFilterList(newText);
+
                 return false;
 
             }
@@ -107,22 +124,6 @@ public class UsersFragment extends BaseFragment implements UsersContract.View {
 
 
     }
-
-    private List<LoginUser> getFilterList(List<LoginUser> list, String query) {
-        query = query.toLowerCase();
-        List<LoginUser> filterList = new ArrayList<>();
-        for (LoginUser user : list) {
-            String name = user.getFullName().toLowerCase();
-            if (name.contains(query)) {
-                filterList.add(user);
-            }
-        }
-
-        setListUsers(filterList);
-
-        return filterList;
-    }
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

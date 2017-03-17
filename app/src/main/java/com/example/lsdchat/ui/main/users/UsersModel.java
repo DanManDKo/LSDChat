@@ -22,10 +22,11 @@ public class UsersModel implements UsersContract.Model {
     private DataManager mDataManager;
     private SharedPreferencesManager mSharedPreferencesManager;
 
-    public UsersModel(SharedPreferencesManager sharedPreferencesManager) {
-        mDataManager = App.getDataManager();
-        mDialogService = App.getApiManager().getDialogService();
+    public UsersModel(SharedPreferencesManager sharedPreferencesManager,DataManager mDataManager,DialogService mDialogService) {
         this.mSharedPreferencesManager = sharedPreferencesManager;
+        this.mDataManager = mDataManager;
+        this.mDialogService = mDialogService;
+
     }
     @Override
     public String getToken() {
