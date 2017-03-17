@@ -46,9 +46,7 @@ public class EditchatAdapter extends RecyclerView.Adapter<EditchatAdapter.ViewHo
 
         mMapAvatar = new HashMap<>();
 
-        for (ContentModel contentModel : mContentModelList) {
-            mMapAvatar.put(contentModel.getId(), contentModel.getImagePath());
-        }
+
     }
 
     @Override
@@ -113,7 +111,11 @@ public class EditchatAdapter extends RecyclerView.Adapter<EditchatAdapter.ViewHo
     }
 
     public void setContentModelList(List<ContentModel> contentModelList) {
-        mContentModelList = contentModelList;
+        mContentModelList.addAll(contentModelList);
+
+        for (ContentModel contentModel : mContentModelList) {
+            mMapAvatar.put(contentModel.getId(), contentModel.getImagePath());
+        }
     }
 
     public void setUsersList(List<LoginUser> usersList) {
