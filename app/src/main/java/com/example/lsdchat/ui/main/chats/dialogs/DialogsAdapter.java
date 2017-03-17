@@ -32,16 +32,24 @@ public class DialogsAdapter extends RecyclerView.Adapter<DialogsAdapter.ViewHold
     private List<ContentModel> mContentModelList;
     private Map<String, String> mMapAvatar;
 
-    public DialogsAdapter(DialogsContract.Presenter mPresenter,List<ContentModel> mContentModelList) {
+    public DialogsAdapter(DialogsContract.Presenter mPresenter) {
         mData = new ArrayList<>();
         this.mPresenter = mPresenter;
-        this.mContentModelList = mContentModelList;
+        mContentModelList = new ArrayList<>();
 
         mMapAvatar = new HashMap<>();
 
-        for (ContentModel contentModel: mContentModelList) {
-            mMapAvatar.put(contentModel.getId(),contentModel.getImagePath());
+
+    }
+
+    public void setContentModelList(List<ContentModel> contentModelList) {
+        mContentModelList.addAll(contentModelList);
+
+        for (ContentModel user: mContentModelList) {
+            mMapAvatar.put(user.getId(),user.getImagePath());
         }
+
+        notifyDataSetChanged();
     }
 
     public void addData(List<RealmDialogModel> loginUserList) {

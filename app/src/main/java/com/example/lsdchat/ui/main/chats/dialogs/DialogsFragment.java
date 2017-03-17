@@ -25,6 +25,7 @@ import android.view.ViewGroup;
 import com.example.lsdchat.App;
 import com.example.lsdchat.R;
 import com.example.lsdchat.api.login.model.LoginUser;
+import com.example.lsdchat.model.ContentModel;
 import com.example.lsdchat.model.RealmDialogModel;
 import com.example.lsdchat.ui.main.fragment.BaseFragment;
 import com.example.lsdchat.util.DialogUtil;
@@ -81,28 +82,15 @@ public class DialogsFragment extends BaseFragment implements DialogsContract.Vie
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                mPresenter.getObservableDialogByType(mType)
-                        .subscribe(dialogModels -> getFilterList(dialogModels, newText));
+
+                mPresenter.getDialogFilterList(mType,newText);
+
                 return false;
 
             }
         });
     }
 
-    private List<RealmDialogModel> getFilterList(List<RealmDialogModel> list, String query) {
-        query = query.toLowerCase();
-        List<RealmDialogModel> filterList = new ArrayList<>();
-        for (RealmDialogModel dialogModel : list) {
-            String name = dialogModel.getName().toLowerCase();
-            if (name.contains(query)) {
-                filterList.add(dialogModel);
-            }
-        }
-
-        setListDialog(filterList);
-
-        return filterList;
-    }
 
     @Override
     public int getType() {
@@ -119,12 +107,14 @@ public class DialogsFragment extends BaseFragment implements DialogsContract.Vie
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
-        mPresenter.getObservableUserAvatar()
-                .subscribe(contentModels -> mDialogsAdapter = new DialogsAdapter(mPresenter, contentModels));
 
+        mDialogsAdapter = new DialogsAdapter(mPresenter);
         mRecyclerView.setAdapter(mDialogsAdapter);
 
-        mPresenter.getObservableDialogByType(mType).subscribe(this::setListDialog);
+
+        mPresenter.getObservableDialogByType(mType);
+
+        mPresenter.getContentModelList();
 
         setRefreshLayout();
 
@@ -134,11 +124,16 @@ public class DialogsFragment extends BaseFragment implements DialogsContract.Vie
         return view;
     }
 
+    @Override
+    public void setContentModelList(List<ContentModel> contentModelList){
+        mDialogsAdapter.setContentModelList(contentModelList);
+    }
+
     private void setRefreshLayout() {
         mSwipeRefreshLayout.setOnRefreshListener(() -> {
-            DialogUtil.getAllDialogAndSave(App.getSharedPreferencesManager(getActivity()));
+            mPresenter.getAllDialogAndSave();
 
-            mPresenter.getObservableDialogByType(mType).subscribe(this::setListDialog);
+            mPresenter.getObservableDialogByType(mType);
             mSwipeRefreshLayout.setRefreshing(false);
         });
     }

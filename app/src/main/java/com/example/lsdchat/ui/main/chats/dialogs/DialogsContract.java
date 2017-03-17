@@ -19,6 +19,7 @@ public interface DialogsContract {
 
         void saveDialog(List<RealmDialogModel> dialogList);
 
+
         String getToken();
 
         Observable<List<ContentModel>> getObservableUserAvatar();
@@ -30,18 +31,21 @@ public interface DialogsContract {
         int getType();
 
         void navigateToChat(Fragment fragment);
+
+        void setContentModelList(List<ContentModel> contentModelList);
     }
 
     interface Presenter {
 
+        void getDialogFilterList(int typeDialog,String query);
 
-        Observable<List<RealmDialogModel>> getObservableDialogByType(int type);
+        void getObservableDialogByType(int type);
 
         void setClickRl(RealmDialogModel realmDialogModel);
 
-        Observable<List<ContentModel>> getObservableUserAvatar();
+        void getContentModelList();
 
-
+        void getAllDialogAndSave();
     }
 
 }

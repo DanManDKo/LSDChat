@@ -8,6 +8,7 @@ import com.example.lsdchat.api.login.model.LoginUser;
 import com.example.lsdchat.manager.DataManager;
 import com.example.lsdchat.manager.SharedPreferencesManager;
 import com.example.lsdchat.model.ContentModel;
+import com.example.lsdchat.util.DialogUtil;
 
 import java.util.List;
 import java.util.Objects;
@@ -40,7 +41,6 @@ public class UsersModel implements UsersContract.Model {
                 .observeOn(AndroidSchedulers.mainThread());
 
     }
-
 
     @Override
     public void insetUsersQuick(LoginUser userQuick) {
