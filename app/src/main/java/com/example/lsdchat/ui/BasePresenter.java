@@ -1,4 +1,4 @@
-package com.example.lsdchat.ui.main.editchat;
+package com.example.lsdchat.ui;
 
 public interface BasePresenter {
     void onDetach();

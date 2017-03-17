@@ -2,6 +2,7 @@ package com.example.lsdchat.ui.main.editchat;
 
 
 import com.example.lsdchat.manager.SharedPreferencesManager;
+import com.example.lsdchat.ui.PresenterFactory;
 
 public class EditchatPresenterFactory implements PresenterFactory<EditchatPresenter> {
     private EditchatContract.Model mModel;

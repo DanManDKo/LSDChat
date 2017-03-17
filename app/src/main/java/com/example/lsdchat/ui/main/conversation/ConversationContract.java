@@ -15,6 +15,7 @@ import rx.Observable;
 // TODO: 3/9/17 [Code Review] this should be in Fragment
 public interface ConversationContract {
     interface Presenter {
+
         void onDestroy();
 
         void onUnregisterBroadcastReceiver();

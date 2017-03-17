@@ -151,24 +151,6 @@ public class EditchatPresenter implements EditchatContract.Presenter {
     }
 
     @Override
-    public void setOnCheckedChangeListener(CompoundButton view, Integer userID) {
-        view.setOnCheckedChangeListener((compoundButton, isChecked) -> {
-            Log.e("AAA-before", String.valueOf(mCheckedOccupantsList.size()));
-
-            if (mCheckedOccupantsList.size() > 1) {
-                if (!compoundButton.isChecked()) {
-                    mCheckedOccupantsList.remove(userID);
-                } else {
-                    mCheckedOccupantsList.add(userID);
-                }
-            } else {
-                Toast.makeText(mContext, "The dialog must have at least one friend", Toast.LENGTH_SHORT).show();
-            }
-            Log.e("AAA-after", String.valueOf(mCheckedOccupantsList.size()));
-        });
-    }
-
-    @Override
     public void getPhotoFromGallery() {
         Intent pickPhoto = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         ((Activity) mContext).startActivityForResult(pickPhoto, REQUEST_IMAGE_GALLERY);
@@ -194,31 +176,47 @@ public class EditchatPresenter implements EditchatContract.Presenter {
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-            case REQUEST_IMAGE_CAMERA:
-                if (resultCode == RESULT_OK) {
-                    mView.showDialogAvatar(mFullSizeAvatarUri);
-                    try {
-                        mUploadFile = StorageHelper.decodeAndSaveUri(mContext, mFullSizeAvatarUri);
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    }
-                    Toast.makeText(mContext, mContext.getString(R.string.photo_added), Toast.LENGTH_SHORT).show();
-                }
-                break;
-            case REQUEST_IMAGE_GALLERY:
-                if (resultCode == RESULT_OK) {
-                    mFullSizeAvatarUri = data.getData();
-                    mView.showDialogAvatar(mFullSizeAvatarUri);
-                    try {
-                        mUploadFile = StorageHelper.decodeAndSaveUri(mContext, mFullSizeAvatarUri);
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    }
-                    Toast.makeText(mContext, mContext.getString(R.string.photo_added), Toast.LENGTH_SHORT).show();
-                }
-                break;
+    public Uri getDialogImageUri() {
+        return mFullSizeAvatarUri;
+    }
+
+    @Override
+    public void saveDialogImageUri(Uri uri) {
+        mFullSizeAvatarUri = uri;
+        try {
+            mUploadFile = StorageHelper.decodeAndSaveUri(mContext, mFullSizeAvatarUri);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
         }
+        Toast.makeText(mContext, mContext.getString(R.string.photo_added), Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        switch (requestCode) {
+//            case REQUEST_IMAGE_CAMERA:
+//                if (resultCode == RESULT_OK) {
+//                    mView.showDialogAvatar(mFullSizeAvatarUri);
+//                    try {
+//                        mUploadFile = StorageHelper.decodeAndSaveUri(mContext, mFullSizeAvatarUri);
+//                    } catch (FileNotFoundException e) {
+//                        e.printStackTrace();
+//                    }
+//                    Toast.makeText(mContext, mContext.getString(R.string.photo_added), Toast.LENGTH_SHORT).show();
+//                }
+//                break;
+//            case REQUEST_IMAGE_GALLERY:
+//                if (resultCode == RESULT_OK) {
+//                    mFullSizeAvatarUri = data.getData();
+//                    mView.showDialogAvatar(mFullSizeAvatarUri);
+//                    try {
+//                        mUploadFile = StorageHelper.decodeAndSaveUri(mContext, mFullSizeAvatarUri);
+//                    } catch (FileNotFoundException e) {
+//                        e.printStackTrace();
+//                    }
+//                    Toast.makeText(mContext, mContext.getString(R.string.photo_added), Toast.LENGTH_SHORT).show();
+//                }
+//                break;
+//        }
     }
 }
