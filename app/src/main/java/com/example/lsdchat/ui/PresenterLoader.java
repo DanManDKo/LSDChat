@@ -1,4 +1,4 @@
-package com.example.lsdchat.ui.main.editchat;
+package com.example.lsdchat.ui;
 
 import android.content.Context;
 import android.support.v4.content.Loader;
@@ -18,7 +18,7 @@ public final class PresenterLoader<T extends BasePresenter> extends Loader<T> {
 
     @Override
     protected void onStartLoading() {
-        Log.i("loader", "onStartLoading-" + tag);
+        Log.e("PresLoader", "onStartLoading-" + tag);
         if (presenter != null) {
             deliverResult(presenter);
             return;
@@ -32,7 +32,7 @@ public final class PresenterLoader<T extends BasePresenter> extends Loader<T> {
 
     @Override
     protected void onForceLoad() {
-        Log.i("loader", "onForceLoad-" + tag);
+        Log.e("PresLoader", "onForceLoad-" + tag);
         presenter = factory.create();
         deliverResult(presenter);
 
@@ -41,7 +41,7 @@ public final class PresenterLoader<T extends BasePresenter> extends Loader<T> {
 
     @Override
     protected void onReset() {
-        Log.i("loader", "onReset-" + tag);
+        Log.e("PresLoader", "onReset-" + tag);
         if (presenter != null) {
             presenter.onDestroy();
             presenter = null;

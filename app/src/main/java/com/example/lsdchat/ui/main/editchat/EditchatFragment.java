@@ -25,16 +25,21 @@ import com.example.lsdchat.App;
 import com.example.lsdchat.R;
 import com.example.lsdchat.api.login.model.LoginUser;
 import com.example.lsdchat.model.ContentModel;
+import com.example.lsdchat.ui.PresenterLoader;
 import com.example.lsdchat.ui.main.fragment.BaseFragment;
 import com.facebook.drawee.view.SimpleDraweeView;
 
-import java.util.ArrayList;
 import java.util.List;
+
+import static android.app.Activity.RESULT_OK;
 
 public class EditchatFragment extends BaseFragment implements EditchatContract.View {
     private static final String DIALOG_ID = "dialog_id";
     private static final int LOADER_ID = 101;
-    private static final String TAG = "AAA_LOADER";
+    private static final int REQUEST_IMAGE_CAMERA = 11;
+    private static final int REQUEST_IMAGE_GALLERY = 22;
+
+    private static final String TAG = "EDITCHAT_LOADER";
 
     private EditchatPresenter mPresenter;
     private EditchatAdapter mAdapter;
@@ -64,7 +69,7 @@ public class EditchatFragment extends BaseFragment implements EditchatContract.V
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        Log.i(TAG, "onActivityCreated");
+        Log.i("editchat", "onActivityCreated");
         getLoaderManager().initLoader(LOADER_ID, null, new LoaderManager.LoaderCallbacks<EditchatPresenter>() {
             @Override
             public Loader<EditchatPresenter> onCreateLoader(int id, Bundle args) {
@@ -89,8 +94,9 @@ public class EditchatFragment extends BaseFragment implements EditchatContract.V
     }
 
     void onPresenterPrepared(EditchatPresenter presenter) {
-        Toast.makeText(getContext(), getArguments().getString(DIALOG_ID), Toast.LENGTH_SHORT).show();
-        mAdapter = new EditchatAdapter(presenter);
+        int userID = App.getDataManager().getUser().getId();
+
+        mAdapter = new EditchatAdapter(presenter, userID);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mRecyclerView.setAdapter(mAdapter);
@@ -106,7 +112,7 @@ public class EditchatFragment extends BaseFragment implements EditchatContract.V
     @Override
     public void onResume() {
         super.onResume();
-        Log.i(TAG, "onResume " + mPresenter.toString());
+        Log.i("editchat", "onResume " + mPresenter.toString());
     }
 
     @Override
@@ -157,11 +163,25 @@ public class EditchatFragment extends BaseFragment implements EditchatContract.V
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        mPresenter.onActivityResult(requestCode, resultCode, data);
         super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case REQUEST_IMAGE_CAMERA:
+                if (resultCode == RESULT_OK) {
+                    mDialogImage.setImageURI(mPresenter.getDialogImageUri());
+                    mPresenter.saveDialogImageUri(mPresenter.getDialogImageUri());
+                }
+                break;
+            case REQUEST_IMAGE_GALLERY:
+                if (resultCode == RESULT_OK) {
+                    mDialogImage.setImageURI(data.getData());
+                    mPresenter.saveDialogImageUri(data.getData());
+                }
+                break;
+        }
+//        mPresenter.onActivityResult(requestCode, resultCode, data);
     }
 
-    void showImageChooser() {
+    private void showImageChooser() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext())
                 .setTitle(getString(R.string.add_photo))
                 .setPositiveButton(getString(R.string.photo_gallery), (dialogInterface, i) -> {

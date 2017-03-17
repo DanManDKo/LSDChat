@@ -29,6 +29,7 @@ public class ConversationPresenter implements ConversationContract.Presenter {
 
     private ConversationContract.View mView;
     private ConversationContract.Model mModel;
+
     private Context mContext;
     private SharedPreferencesManager mPreferencesManager;
     private BroadcastReceiver mBroadcastReceiver;
@@ -47,8 +48,8 @@ public class ConversationPresenter implements ConversationContract.Presenter {
     public void onDestroy() {
         mView = null;
         mModel = null;
-        mContext = null;
-        mPreferencesManager = null;
+//        mContext = null;
+//        mPreferencesManager = null;
     }
 
     @Override

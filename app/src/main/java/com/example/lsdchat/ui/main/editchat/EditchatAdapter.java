@@ -3,6 +3,7 @@ package com.example.lsdchat.ui.main.editchat;
 
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +13,7 @@ import android.widget.TextView;
 import com.example.lsdchat.R;
 import com.example.lsdchat.api.login.model.LoginUser;
 import com.example.lsdchat.model.ContentModel;
-import com.facebook.drawee.view.SimpleDraweeView;
+import com.example.lsdchat.model.User;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -26,7 +27,6 @@ public class EditchatAdapter extends RecyclerView.Adapter<EditchatAdapter.ViewHo
     private static final int PUBLIC_GROUP_TYPE = 1;
     private static final int PRIVATE_GROUP_TYPE = 2;
     private static final int PRIVATE_TYPE = 3;
-    private static final String EMPTY_STRING = "";
 
     private List<Integer> mOccupantsList;
     private List<LoginUser> mUsersList;
@@ -34,19 +34,18 @@ public class EditchatAdapter extends RecyclerView.Adapter<EditchatAdapter.ViewHo
     private Map<String, String> mMapAvatar;
 
     private int mDialogType;
+    private int mUserID;
     private EditchatPresenter mPresenter;
 
-    public EditchatAdapter(EditchatPresenter presenter) {
+    public EditchatAdapter(EditchatPresenter presenter, int userID) {
         mOccupantsList = new ArrayList<>();
         mUsersList = new ArrayList<>();
         mContentModelList = new ArrayList<>();
-
-        mDialogType = PUBLIC_GROUP_TYPE;
-        mPresenter = presenter;
-
         mMapAvatar = new HashMap<>();
 
-
+        mDialogType = PUBLIC_GROUP_TYPE;
+        mUserID = userID;
+        mPresenter = presenter;
     }
 
     @Override
@@ -76,7 +75,19 @@ public class EditchatAdapter extends RecyclerView.Adapter<EditchatAdapter.ViewHo
                 case PRIVATE_GROUP_TYPE:
                     if (mOccupantsList.contains(user.getId())) holder.mCheckBox.setChecked(true);
                     holder.mCheckBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                        mPresenter.setOnCheckedChangeListener(buttonView, user.getId());
+                        if (isChecked) {
+                            if (!mOccupantsList.contains(user.getId()))
+                                mOccupantsList.add(user.getId());
+                        } else {
+                            if ((int)user.getId() == mUserID && mOccupantsList.contains(user.getId())) {
+                                mOccupantsList.remove(user.getId());
+                            } else {
+
+                            }
+                        }
+                        for (Integer i : mOccupantsList) {
+                            Log.e("mOccupantsList", i.toString());
+                        }
                     });
                     break;
                 case PRIVATE_TYPE:
@@ -124,5 +135,9 @@ public class EditchatAdapter extends RecyclerView.Adapter<EditchatAdapter.ViewHo
 
     public void setDialogType(int dialogType) {
         mDialogType = dialogType;
+    }
+
+    public List<Integer> getOccupantsList() {
+        return mOccupantsList;
     }
 }

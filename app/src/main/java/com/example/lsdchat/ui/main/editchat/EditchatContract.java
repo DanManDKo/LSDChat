@@ -4,17 +4,14 @@ package com.example.lsdchat.ui.main.editchat;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.view.View;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
 
 import com.example.lsdchat.api.dialog.model.ItemDialog;
 import com.example.lsdchat.api.dialog.request.CreateDialogRequest;
 import com.example.lsdchat.api.dialog.response.DialogsResponse;
-import com.example.lsdchat.api.dialog.response.MessagesResponse;
 import com.example.lsdchat.api.login.model.LoginUser;
 import com.example.lsdchat.model.ContentModel;
 import com.example.lsdchat.model.RealmDialogModel;
+import com.example.lsdchat.ui.BasePresenter;
 
 import java.util.List;
 
@@ -30,9 +27,11 @@ public interface EditchatContract {
 
         void getPhotoFromCamera();
 
-        void onActivityResult(int requestCode, int resultCode, Intent data);
+        void saveDialogImageUri(Uri uri);
 
-        void setOnCheckedChangeListener(CompoundButton view, Integer userID);
+        Uri getDialogImageUri();
+
+        void onActivityResult(int requestCode, int resultCode, Intent data);
 
     }
 

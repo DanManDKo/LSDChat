@@ -12,6 +12,7 @@ import com.example.lsdchat.manager.SharedPreferencesManager;
 import com.example.lsdchat.ui.main.chats.ChatsFragment;
 import com.example.lsdchat.ui.main.chats.dialogs.DialogsFragment;
 import com.example.lsdchat.ui.main.conversation.ConversationFragment;
+import com.example.lsdchat.ui.main.conversation.ConversationPresenter;
 import com.example.lsdchat.ui.main.editchat.EditchatFragment;
 import com.example.lsdchat.ui.main.fragment.BaseFragment;
 import com.example.lsdchat.util.UsersUtil;
@@ -63,6 +64,7 @@ public class MainActivity extends AppCompatActivity implements ConversationFragm
             super.onBackPressed();
         }
     }
+
     @Override
     public void onEditchatSelected(String dialogID) {
         replaceFragment(EditchatFragment.newInstance(dialogID));

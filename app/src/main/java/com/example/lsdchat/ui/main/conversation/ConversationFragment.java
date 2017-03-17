@@ -88,7 +88,7 @@ public class ConversationFragment extends BaseFragment implements ConversationCo
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        Log.e("AAA", "ConversationPresenterFragment - onCreateView");
+        Log.e("Conv", "onCreateView");
         View view = inflater.inflate(R.layout.fragment_conversation, container, false);
         mConversationPresenter = new ConversationPresenter(this, App.getSharedPreferencesManager(getActivity()));
         dialogID = getArguments().getString(DIALOG_ID);
@@ -165,10 +165,17 @@ public class ConversationFragment extends BaseFragment implements ConversationCo
 
     @Override
     public void onDestroyView() {
-        Log.e("AAA", "ConversationPresenterFragment - onDestroyView");
-        mConversationPresenter.onDestroy();
-        mEditListener = null;
         super.onDestroyView();
+        Log.e("Conv", "onDestroyView");
+        mConversationPresenter.onDestroy();
+        getActivity().stopService(new Intent(getContext(), XMPPService.class));
+        mEditListener = null;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.e("Conv", "onDestroy");
     }
 
     private void initView(View view) {
