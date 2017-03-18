@@ -3,6 +3,7 @@ package com.example.lsdchat.ui.main.createchat;
 
 import android.content.Context;
 import android.net.Uri;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +16,7 @@ import com.example.lsdchat.api.login.model.LoginUser;
 import com.example.lsdchat.model.ContentModel;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,19 +35,31 @@ public class CreateChatRvAdapter extends RecyclerView.Adapter<CreateChatRvAdapte
     private Set<Integer> idChecked;
     private Context mContext;
 
-    public CreateChatRvAdapter(List<LoginUser> loginUserList, List<ContentModel> mContentModelList, CreateChatContract.Presenter presenter, Context context) {
-        this.mLoginUserList = loginUserList;
+    public CreateChatRvAdapter(CreateChatContract.Presenter presenter, Context context) {
+        mLoginUserList = new ArrayList<>();
         this.mPresenter = presenter;
-        this.mContentModelList = mContentModelList;
+        mContentModelList = new ArrayList<>();
         this.mContext = context;
         mMapAvatar = new HashMap<>();
         idChecked = new TreeSet<>();
 
-        for (ContentModel user : mContentModelList) {
-            mMapAvatar.put(user.getId(), user.getImagePath());
-        }
+
     }
 
+    public void setContentModelList(List<ContentModel> contentModelList) {
+        mContentModelList.addAll(contentModelList);
+
+        for (ContentModel user: mContentModelList) {
+            mMapAvatar.put(user.getId(),user.getImagePath());
+        }
+
+        notifyDataSetChanged();
+    }
+
+    public void setUserList(List<LoginUser> loginUserList) {
+        mLoginUserList.addAll(loginUserList);
+        notifyDataSetChanged();
+    }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -71,9 +85,9 @@ public class CreateChatRvAdapter extends RecyclerView.Adapter<CreateChatRvAdapte
         boolean isChecked = idChecked.contains(user.getId());
         holder.mCheckBox.setChecked(isChecked);
         if (isChecked) {
-            holder.mName.setTextColor(mContext.getResources().getColor(R.color.colorNewChatTextCheck));
+            holder.mName.setTextColor(ContextCompat.getColor(mContext,R.color.colorNewChatTextCheck));
         } else {
-            holder.mName.setTextColor(mContext.getResources().getColor(R.color.colorNewChatText));
+            holder.mName.setTextColor(ContextCompat.getColor(mContext,R.color.colorNewChatText));
         }
 
 
@@ -103,11 +117,11 @@ public class CreateChatRvAdapter extends RecyclerView.Adapter<CreateChatRvAdapte
                 if (isChecked) {
                     idChecked.add(mLoginUserList.get(getAdapterPosition()).getId());
                     mPresenter.checkBoxSetOnChecked(mLoginUserList.get(getAdapterPosition()).getId(), true);
-                    mName.setTextColor(mContext.getResources().getColor(R.color.colorNewChatTextCheck));
+                    mName.setTextColor(ContextCompat.getColor(mContext,R.color.colorNewChatTextCheck));
                 } else {
                     idChecked.remove(mLoginUserList.get(getAdapterPosition()).getId());
                     mPresenter.checkBoxSetOnChecked(mLoginUserList.get(getAdapterPosition()).getId(), false);
-                    mName.setTextColor(mContext.getResources().getColor(R.color.colorNewChatText));
+                    mName.setTextColor(ContextCompat.getColor(mContext,R.color.colorNewChatText));
 
                 }
 

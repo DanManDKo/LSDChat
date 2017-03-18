@@ -4,19 +4,12 @@ package com.example.lsdchat.ui.main.createchat;
 import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
-import android.widget.Button;
-import android.widget.EditText;
 
 import com.example.lsdchat.R;
 import com.example.lsdchat.api.dialog.request.CreateDialogRequest;
-import com.example.lsdchat.api.login.model.LoginUser;
 import com.example.lsdchat.constant.ApiConstant;
-import com.example.lsdchat.model.ContactsModel;
-import com.example.lsdchat.model.ContentModel;
 import com.example.lsdchat.ui.main.conversation.ConversationFragment;
 import com.example.lsdchat.util.CreateMapRequestBody;
-import com.example.lsdchat.util.UsersUtil;
-import com.facebook.drawee.view.SimpleDraweeView;
 
 import java.io.File;
 import java.net.URLConnection;
@@ -29,7 +22,7 @@ import java.util.TreeSet;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
-import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
 
 public class CreateChatPresenter implements CreateChatContract.Presenter {
 
@@ -55,12 +48,11 @@ public class CreateChatPresenter implements CreateChatContract.Presenter {
     }
 
 
-
     private void createDialog(CreateDialogRequest request) {
         mModel.createDialog(mModel.getToken(), request)
                 .subscribe(itemDialog ->
                                 mView.navigateToChat(ConversationFragment
-                        .newInstance(itemDialog.getId(), itemDialog.getType(), itemDialog.getName())),
+                                        .newInstance(itemDialog.getId(), itemDialog.getType(), itemDialog.getName())),
                         throwable -> {
                             Log.e("DIALOG", throwable.getMessage());
                         });
@@ -81,11 +73,11 @@ public class CreateChatPresenter implements CreateChatContract.Presenter {
                     RequestBody file = RequestBody.create(MediaType.parse(getFileMimeType(mUploadFile)), mUploadFile);
                     MultipartBody.Part multiPart = MultipartBody.Part.createFormData(ApiConstant.UploadParametres.FILE, mUploadFile.getName(), file);
 
-                    uploadFileRetrofit(mUploadFile,blobId, CreateMapRequestBody.createMapRequestBody(uri), multiPart);
+                    uploadFileRetrofit(mUploadFile, blobId, CreateMapRequestBody.createMapRequestBody(uri), multiPart);
                 }, throwable -> mView.showErrorDialog(throwable));
     }
 
-    private void uploadFileRetrofit(File mUploadFile,long blobId, HashMap<String, RequestBody> map, MultipartBody.Part file) {
+    private void uploadFileRetrofit(File mUploadFile, long blobId, HashMap<String, RequestBody> map, MultipartBody.Part file) {
         mModel.uploadFileMap(map, file)
                 .subscribe(aVoid -> {
                     long fileSize = mUploadFile.length();
@@ -109,13 +101,17 @@ public class CreateChatPresenter implements CreateChatContract.Presenter {
     }
 
     @Override
-    public Observable<List<LoginUser>> getUserListObservable() {
-        return mModel.getUserListObservable();
+    public void getUserListObservable() {
+        mModel.getUserListObservable()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(loginUserList -> mView.setListUsers(loginUserList));
     }
 
     @Override
-    public Observable<List<ContentModel>> getObservableUserAvatar() {
-        return mModel.getObservableUserAvatar();
+    public void getObservableUserAvatar() {
+        mModel.getObservableUserAvatar()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(contentModels -> mView.setContentModelList(contentModels));
     }
 
     @Override
@@ -176,7 +172,7 @@ public class CreateChatPresenter implements CreateChatContract.Presenter {
         }
     }
 
-   private CreateDialogRequest getTypeDialog(long imageId) {
+    private CreateDialogRequest getTypeDialog(long imageId) {
         String nameDialog = mView.getNameDialog();
         CreateDialogRequest createDialogRequest = new CreateDialogRequest();
 
