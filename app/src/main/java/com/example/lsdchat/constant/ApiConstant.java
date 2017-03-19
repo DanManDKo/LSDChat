@@ -78,7 +78,8 @@ public class ApiConstant {
         public static final String MESSAGE_ID = "_id";
         public static final String DIALOG_ID = "_id";
         public static final String MARK_AS_READ = "mark_as_read";
-        public static final int MESSAGE_LIMIT = 100;
+        public static final int MESSAGE_LIMIT = 20;
+        public static final int MESSAGE_SKIP = 0;
         public static final String MULTI_USER_CHAT = "@muc.chat.quickblox.com";
         public static final String USER_CHAT = "chat.quickblox.com";
     }

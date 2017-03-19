@@ -25,15 +25,15 @@ public class ConversationModel implements ConversationContract.Model {
     }
 
     @Override
-    public Observable<MessagesResponse> getMessagesByDialogId(String token, String dialogId, int readMark) {
-        return mDialogService.getMessages(token, dialogId, ApiConstant.MessageRequestParams.MESSAGE_LIMIT, ApiConstant.MessageRequestParams.DATE_SENT, readMark)
+    public Observable<MessagesResponse> getMessagesByDialogId(String token, String dialogId, int readMark, int pageLimit, int skip) {
+        return mDialogService.getMessages(token, dialogId, pageLimit, skip, ApiConstant.MessageRequestParams.DATE_SENT, readMark)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
 
     @Override
-    public Observable<MessagesResponse> getMessageByMessageID(String token, String dialogID, String messageID) {
-        return mDialogService.getMessageById(token, dialogID, messageID)
+    public Observable<MessagesResponse> getMessageByMessageID(String token, String dialogID, String messageID, int readMark) {
+        return mDialogService.getMessageById(token, dialogID, messageID, readMark)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }

@@ -22,9 +22,11 @@ public interface ConversationContract {
 
         void onRegisterBroadcastReceiver();
 
-        void getMessages(String dialogId);
+        void getMessages(String dialogId, int limit, int skip);
 
-        void fillAdapterListWithMessages(String dialogId);
+        void fillAdapterListWithMessages(List<ItemMessage> list);
+
+        void fillAdapterListWithMessages(String dialogID);
 
         void addNewMessageToAdapterList(String messageId);
 
@@ -35,6 +37,8 @@ public interface ConversationContract {
         boolean isOnline();
 
         void loadMoreFromDataBase(String dialogId, int page);
+
+        void loadMore(String dialogId, int page);
 
         void navigateToEditchatFragment(String dialogId);
 
@@ -60,11 +64,11 @@ public interface ConversationContract {
     }
 
     interface Model {
-        Observable<MessagesResponse> getMessagesByDialogId(String token, String dialogId, int readMark);
+        Observable<MessagesResponse> getMessagesByDialogId(String token, String dialogId, int limit, int skip, int readMark);
 
         Observable<ItemMessage> createDialogMessage(String token, String dialogId, String message);
 
-        Observable<MessagesResponse> getMessageByMessageID(String token, String dialogID, String messageID);
+        Observable<MessagesResponse> getMessageByMessageID(String token, String dialogID, String messageID, int readMark);
 
         Observable<RealmDialogModel> getDialogFromDatabase(String dialogID);
 
