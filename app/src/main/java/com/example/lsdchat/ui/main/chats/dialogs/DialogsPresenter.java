@@ -23,6 +23,7 @@ public class DialogsPresenter implements DialogsContract.Presenter {
         this.mView = mView;
         this.mModel = mModel;
 
+        getAllDialogAndSave();
     }
 
     @Override
@@ -56,6 +57,7 @@ public class DialogsPresenter implements DialogsContract.Presenter {
 
             Observable<List<RealmDialogModel>> oG = getObservableDialog(ApiConstant.TYPE_DIALOG_GROUP);
             oG.subscribe(list::addAll);
+
 
             Observable<List<RealmDialogModel>> oP = getObservableDialog(ApiConstant.TYPE_DIALOG_PRIVATE);
             oP.subscribe(list::addAll);
@@ -106,7 +108,7 @@ public class DialogsPresenter implements DialogsContract.Presenter {
                     Observable.from(dialogList)
                             .subscribe(dialog -> list.add(new RealmDialogModel(dialog)));
                     mModel.saveDialog(list);
-                });
+                },throwable -> mView.showErrorDialog(throwable));
 
     }
 }

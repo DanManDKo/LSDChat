@@ -44,6 +44,7 @@ public class DialogsModel implements DialogsContract.Model {
     @Override
     public Observable<List<RealmDialogModel>> getObservableDialogsByType(int type) {
         return mDataManager.getObservableDialogsByType(type);
+
     }
 
     @Override

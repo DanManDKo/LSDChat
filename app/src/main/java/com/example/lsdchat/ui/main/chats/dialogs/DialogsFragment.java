@@ -125,6 +125,11 @@ public class DialogsFragment extends BaseFragment implements DialogsContract.Vie
     }
 
     @Override
+    public void showErrorDialog(Throwable throwable) {
+        showErrorDialog(throwable);
+    }
+
+    @Override
     public void setContentModelList(List<ContentModel> contentModelList){
         mDialogsAdapter.setContentModelList(contentModelList);
     }
