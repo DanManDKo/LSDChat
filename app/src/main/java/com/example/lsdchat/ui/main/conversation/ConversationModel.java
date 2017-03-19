@@ -5,10 +5,14 @@ import com.example.lsdchat.api.dialog.DialogService;
 import com.example.lsdchat.api.dialog.model.ItemMessage;
 import com.example.lsdchat.api.dialog.request.CreateMessageRequest;
 import com.example.lsdchat.api.dialog.response.MessagesResponse;
+import com.example.lsdchat.api.login.model.LoginUser;
 import com.example.lsdchat.constant.ApiConstant;
 import com.example.lsdchat.manager.DataManager;
+import com.example.lsdchat.model.ContentModel;
 import com.example.lsdchat.model.RealmDialogModel;
 import com.example.lsdchat.model.User;
+
+import java.util.List;
 
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
@@ -56,6 +60,18 @@ public class ConversationModel implements ConversationContract.Model {
     @Override
     public Observable<User> getCurrentUserFromDatabase() {
         return mDataManager.getCurrentUser()
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    @Override
+    public Observable<List<LoginUser>> getUsersFromDatabase() {
+        return mDataManager.getUserObservable()
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    @Override
+    public Observable<List<ContentModel>> getUserAvatarFromDatabase() {
+        return mDataManager.getObservableUserAvatar()
                 .observeOn(AndroidSchedulers.mainThread());
     }
 }

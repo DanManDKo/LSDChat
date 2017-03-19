@@ -5,6 +5,8 @@ import android.content.Context;
 
 import com.example.lsdchat.api.dialog.model.ItemMessage;
 import com.example.lsdchat.api.dialog.response.MessagesResponse;
+import com.example.lsdchat.api.login.model.LoginUser;
+import com.example.lsdchat.model.ContentModel;
 import com.example.lsdchat.model.RealmDialogModel;
 import com.example.lsdchat.model.User;
 
@@ -34,15 +36,18 @@ public interface ConversationContract {
 
         void sendMessage(String dialogId, String message, String sendTo);
 
-        boolean isOnline();
-
         void loadMoreFromDataBase(String dialogId, int page);
 
         void loadMore(String dialogId, int page);
 
         void navigateToEditchatFragment(String dialogId);
 
-//        void onNewMessageReceive();
+        void getUsersListFromDatabase();
+
+        void getUsersAvatarsFromDatabase();
+
+        boolean isOnline();
+
     }
 
     interface View {
@@ -61,6 +66,10 @@ public interface ConversationContract {
         void fillConversationAdapter(ItemMessage item);
 
         void loadMoreData(List<ItemMessage> list);
+
+        void passUsersListToAdapter(List<LoginUser> users);
+
+        void passUsersAvatarsToAdapter(List<ContentModel> users);
     }
 
     interface Model {
@@ -73,5 +82,9 @@ public interface ConversationContract {
         Observable<RealmDialogModel> getDialogFromDatabase(String dialogID);
 
         Observable<User> getCurrentUserFromDatabase();
+
+        Observable<List<LoginUser>> getUsersFromDatabase();
+
+        Observable<List<ContentModel>> getUserAvatarFromDatabase();
     }
 }

@@ -38,7 +38,7 @@ public interface DialogService {
 
     @Headers(ApiConstant.HEADER_CONTENT_TYPE)
     @PUT(ApiConstant.UPDATE_DIALOG)
-    Observable<ItemDialog> updateDialog(@Header(ApiConstant.QB_TOKEN) String token, @Path(ApiConstant.MessageRequestParams.DIALOG_ID) String dialogID, @Body UpdateDialogRequest updateDialogRequest);
+    Observable<ItemDialog> updateDialog(@Header(ApiConstant.QB_TOKEN) String token, @Path(ApiConstant.UploadParametres.ID) String dialogID, @Body UpdateDialogRequest updateDialogRequest);
 
     @Headers(ApiConstant.HEADER_CONTENT_TYPE)
     @POST(ApiConstant.DIALOGS_REQUEST)
