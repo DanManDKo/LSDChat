@@ -60,7 +60,7 @@ public interface ConversationContract {
     }
 
     interface Model {
-        Observable<MessagesResponse> getMessagesByDialogId(String token, String dialogId);
+        Observable<MessagesResponse> getMessagesByDialogId(String token, String dialogId, int readMark);
 
         Observable<ItemMessage> createDialogMessage(String token, String dialogId, String message);
 

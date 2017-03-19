@@ -26,6 +26,7 @@ public class ConversationPresenter implements ConversationContract.Presenter {
     private static final int PUBLIC_GROUP_TYPE = 1;
     private static final int PRIVATE_GROUP_TYPE = 2;
     private static final int PRIVATE_TYPE = 3;
+    private static final int UNREAD_MARK = 0;
 
     private ConversationContract.View mView;
     private ConversationContract.Model mModel;
@@ -96,7 +97,7 @@ public class ConversationPresenter implements ConversationContract.Presenter {
 
     @Override
     public void getMessages(String dialogId) {
-        mModel.getMessagesByDialogId(mPreferencesManager.getToken(), dialogId)
+        mModel.getMessagesByDialogId(mPreferencesManager.getToken(), dialogId, UNREAD_MARK)
                 .doOnRequest(aLong -> mView.showLoadProgressBar(true))
                 .doOnUnsubscribe(() -> mView.showLoadProgressBar(false))
                 .map(messagesResponse -> messagesResponse.getItemMessageList())

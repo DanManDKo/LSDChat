@@ -18,14 +18,15 @@ public class ConversationModel implements ConversationContract.Model {
     private DialogService mDialogService;
     private DataManager mDataManager;
 
+
     public ConversationModel() {
         mDialogService = App.getApiManager().getDialogService();
         mDataManager = App.getDataManager();
     }
 
     @Override
-    public Observable<MessagesResponse> getMessagesByDialogId(String token, String dialogId) {
-        return mDialogService.getMessages(token, dialogId, ApiConstant.MessageRequestParams.MESSAGE_LIMIT, ApiConstant.MessageRequestParams.DATE_SENT)
+    public Observable<MessagesResponse> getMessagesByDialogId(String token, String dialogId, int readMark) {
+        return mDialogService.getMessages(token, dialogId, ApiConstant.MessageRequestParams.MESSAGE_LIMIT, ApiConstant.MessageRequestParams.DATE_SENT, readMark)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
