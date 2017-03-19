@@ -9,6 +9,7 @@ import com.example.lsdchat.api.dialog.model.ItemUser;
 import com.example.lsdchat.api.login.model.LoginUser;
 import com.example.lsdchat.manager.DataManager;
 import com.example.lsdchat.model.ContentModel;
+import com.example.lsdchat.ui.main.fragment.BaseFragment;
 import com.example.lsdchat.ui.main.users.UsersContract;
 import com.example.lsdchat.ui.main.users.UsersModel;
 
@@ -19,6 +20,7 @@ import rx.android.schedulers.AndroidSchedulers;
 
 public class UsersUtil {
 
+    static ErrorInterface errorInterface = new BaseFragment();
 
     public static void getUserListAndSave(String token, Context context) {
         UsersContract.Model mModel = new UsersModel(App.getSharedPreferencesManager(context),
@@ -35,28 +37,21 @@ public class UsersUtil {
                     }
                     getImage(itemUsers, token);
 
-                }, throwable -> {
-
-                    Log.e("getUserList-error", throwable.getMessage());
-                });
+                }, throwable -> Log.e("FIX", throwable.getMessage()));
     }
 
     private static void getImage(List<ItemUser> itemUsers, String token) {
         DataManager dataManager = App.getDataManager();
 
         Observable.from(itemUsers)
-                .observeOn(AndroidSchedulers.mainThread())
                 .flatMap(user -> Observable.just(user.getUser()))
                 .filter(user -> user.getBlobId() != 0)
+                .doOnError(throwable -> errorInterface.showErrorDialog(throwable))
                 .subscribe(user ->
                         Utils.downloadImage(user.getBlobId(), token)
                         .flatMap(file -> Observable.just(file.getAbsolutePath()))
-                        .subscribe(path -> {
-
-                            dataManager.saveUserAvatar(new ContentModel(String.valueOf(user.getId()),path));
-                        }, throwable -> {
-                            Log.e("getImage", throwable.getMessage());
-                        }));
+                        .subscribe(path -> dataManager.saveUserAvatar(new ContentModel(String.valueOf(user.getId()),path)),
+                                throwable -> Log.e("FIX-user", throwable.getMessage())));
 
 
     }
@@ -66,20 +61,9 @@ public class UsersUtil {
         Observable.from(itemUsers)
                 .observeOn(AndroidSchedulers.mainThread())
                 .flatMap(user -> Observable.just(user.getUser()))
-                .subscribe(user -> {
-                        mModel.insetUsersQuick(user);
-
-                });
+                .subscribe(mModel::insetUsersQuick);
     }
 
-
-    public static List<LoginUser> getAllUser() {
-        return App.getDataManager().getUsersQuickList();
-    }
-
-    public static Observable<List<LoginUser>> getUserObservable() {
-        return App.getDataManager().getUserObservable();
-    }
 
     public static LoginUser getUserById(int id) {
         return App.getDataManager().getUserById(id);

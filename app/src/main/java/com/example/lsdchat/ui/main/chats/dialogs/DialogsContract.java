@@ -33,6 +33,8 @@ public interface DialogsContract {
         void navigateToChat(Fragment fragment);
 
         void setContentModelList(List<ContentModel> contentModelList);
+
+        void showErrorDialog(Throwable throwable);
     }
 
     interface Presenter {

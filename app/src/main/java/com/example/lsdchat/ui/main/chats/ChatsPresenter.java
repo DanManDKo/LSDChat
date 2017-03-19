@@ -23,7 +23,7 @@ public class ChatsPresenter implements ChatsContract.Presenter {
         this.mView = mView;
         this.mModel = model;
         mUser = mModel.getCurrentUser();
-        getAllDialogAndSave();
+//        getAllDialogAndSave();
     }
 
 

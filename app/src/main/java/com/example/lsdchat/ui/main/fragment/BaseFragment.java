@@ -9,12 +9,13 @@ import android.support.v7.widget.Toolbar;
 
 import com.example.lsdchat.App;
 import com.example.lsdchat.ui.main.MainActivity;
+import com.example.lsdchat.util.ErrorInterface;
 import com.example.lsdchat.util.ErrorsCode;
 
 import retrofit2.adapter.rxjava.HttpException;
 
 
-public class BaseFragment extends Fragment {
+public class BaseFragment extends Fragment  implements ErrorInterface{
 
 
     public BaseFragment() {
@@ -58,5 +59,10 @@ public class BaseFragment extends Fragment {
             ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(title);
         }
 
+    }
+
+    @Override
+    public void showErrorDialog(Throwable throwable) {
+        dialogError(throwable);
     }
 }

@@ -49,12 +49,13 @@ public class Utils {
                 .flatMap(responseBodyResponse -> saveImage(responseBodyResponse, blobId))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
+
+
     }
 
 
     private static Observable<File> saveImage(Response<ResponseBody> response, long blobId) {
         return Observable.fromCallable(() -> {
-
             String fileName = String.valueOf(blobId) + ".jpg";
             File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getAbsoluteFile(), fileName);
             BufferedSink sink = Okio.buffer(Okio.sink(file));
