@@ -8,7 +8,9 @@ import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.text.SpannableString;
 import android.text.Spanned;
@@ -64,6 +66,7 @@ public class ChatsFragment extends BaseFragment implements ChatsContract.View {
     private TextView mSpannableText;
     private ImageView mNoChatsImage;
     private LinearLayout mNoChatsMessage;
+    private SearchView mSearchView;
 
 
     public ChatsFragment() {
@@ -239,7 +242,6 @@ public class ChatsFragment extends BaseFragment implements ChatsContract.View {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-//        inflater.inflate(R.menu.toolbar_options_menu, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -299,4 +301,6 @@ public class ChatsFragment extends BaseFragment implements ChatsContract.View {
 
         }
     }
+
+
 }

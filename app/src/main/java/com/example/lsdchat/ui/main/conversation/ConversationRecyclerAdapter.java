@@ -122,8 +122,8 @@ public class ConversationRecyclerAdapter extends RecyclerView.Adapter<RecyclerVi
 
     public void addFirst(ItemMessage object) {
         mList.add(0, object);
-        notifyItemInserted(mList.size() - 1);
-//        notifyDataSetChanged();
+//        notifyItemInserted(mList.size() - 1);
+        notifyDataSetChanged();
     }
 
     public void addAll(List<ItemMessage> list) {

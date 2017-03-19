@@ -8,29 +8,22 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SearchView;
+import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.lsdchat.App;
 import com.example.lsdchat.R;
-import com.example.lsdchat.api.login.model.LoginUser;
 import com.example.lsdchat.model.ContentModel;
 import com.example.lsdchat.model.RealmDialogModel;
 import com.example.lsdchat.ui.main.fragment.BaseFragment;
-import com.example.lsdchat.util.DialogUtil;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -44,6 +37,7 @@ public class DialogsFragment extends BaseFragment implements DialogsContract.Vie
     private DialogsAdapter mDialogsAdapter;
     private List<RealmDialogModel> mList;
     private SwipeRefreshLayout mSwipeRefreshLayout;
+    private Toolbar mToolbar;
 
 
     public DialogsFragment() {
@@ -63,33 +57,9 @@ public class DialogsFragment extends BaseFragment implements DialogsContract.Vie
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
     }
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.toolbar_options_menu, menu);
 
-        MenuItem items = menu.findItem(R.id.toolbar_search);
-        SearchView searchView = (SearchView) MenuItemCompat.getActionView(items);
-
-
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-
-                mPresenter.getDialogFilterList(mType,newText);
-
-                return false;
-
-            }
-        });
-    }
 
 
     @Override
@@ -122,6 +92,14 @@ public class DialogsFragment extends BaseFragment implements DialogsContract.Vie
 
 
         return view;
+    }
+
+    private void initView(View view) {
+        mRecyclerView = (RecyclerView) view.findViewById(R.id.chats_recycler_view);
+        mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipeRefreshLayout);
+
+
+
     }
 
     @Override
@@ -226,11 +204,7 @@ public class DialogsFragment extends BaseFragment implements DialogsContract.Vie
         itemTouchHelper.attachToRecyclerView(mRecyclerView);
     }
 
-    private void initView(View view) {
-        mRecyclerView = (RecyclerView) view.findViewById(R.id.chats_recycler_view);
-        mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipeRefreshLayout);
 
-    }
 
     @Override
     public void navigateToChat(Fragment fragment) {

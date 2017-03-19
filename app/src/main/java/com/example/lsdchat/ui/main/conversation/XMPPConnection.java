@@ -19,6 +19,7 @@ import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.packet.DefaultExtensionElement;
 import org.jivesoftware.smack.packet.ExtensionElement;
 import org.jivesoftware.smack.packet.Message;
+import org.jivesoftware.smack.packet.id.StanzaIdUtil;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
 import org.jivesoftware.smack.util.PacketParserUtils;
@@ -28,7 +29,9 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class XMPPConnection implements ConnectionListener {
 
@@ -37,6 +40,7 @@ public class XMPPConnection implements ConnectionListener {
     private final String mPassword;
     private final String mServiceName;
     public String mucChat;
+    private Map<String, MultiUserChat> publicChats;
 
     MultiUserChat muc;
     MultiUserChatManager manager;
@@ -52,6 +56,9 @@ public class XMPPConnection implements ConnectionListener {
         mUsername = userID + "-" + ApiConstant.APP_ID;
         mServiceName = ApiConstant.MessageRequestParams.USER_CHAT;
         mucChat = ApiConstant.APP_ID + "_" + dialogID + ApiConstant.MessageRequestParams.MULTI_USER_CHAT;
+
+        publicChats = new ConcurrentHashMap<>();
+
     }
 
     public void connect() throws IOException, XMPPException, SmackException {
@@ -141,14 +148,19 @@ public class XMPPConnection implements ConnectionListener {
     }
 
     private void sendMessage(String body, String toJid) {
+
+
         Message msg = new Message();
         //rewrite Strings below to Constants
         //These steps for saving messages to history on server
+        long timestamp = System.currentTimeMillis() / 1000;
         DefaultExtensionElement extensionElement = new DefaultExtensionElement("extraParams", "jabber:client");
         extensionElement.setValue("save_to_history", "1");
+        extensionElement.setValue("date_sent", timestamp + "");
+        extensionElement.setValue("notification_type", timestamp + "");
 
         msg.setBody(body);
-        msg.setStanzaId(String.valueOf(new Random(1000).nextInt()));
+        msg.setStanzaId(StanzaIdUtil.newStanzaId());
         msg.setType(Message.Type.groupchat);
         msg.setTo(toJid);
         msg.addExtension(extensionElement);
@@ -156,6 +168,7 @@ public class XMPPConnection implements ConnectionListener {
         try {
             muc.sendMessage(msg);
         } catch (SmackException.NotConnectedException e) {
+
             e.printStackTrace();
         }
     }
