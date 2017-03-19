@@ -122,16 +122,13 @@ public class ConversationRecyclerAdapter extends RecyclerView.Adapter<RecyclerVi
 
     public void addFirst(ItemMessage object) {
         mList.add(0, object);
-        notifyDataSetChanged();
+        notifyItemInserted(mList.size() - 1);
+//        notifyDataSetChanged();
     }
 
-    public void addAll(List<ItemMessage> list, int startIndex, int lastIndex) {
-        if (list.size() != 0 && list.size() - 1 >= lastIndex) {
-            List<ItemMessage> temp = list.subList(startIndex, lastIndex);
-            Log.e("AAA", String.valueOf(temp.size()));
-            mList.addAll(temp);
+    public void addAll(List<ItemMessage> list) {
+            mList.addAll(list);
             notifyDataSetChanged();
-        }
     }
 
     public void addMore(List<ItemMessage> list) {

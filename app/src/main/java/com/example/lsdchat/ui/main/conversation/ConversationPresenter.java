@@ -9,6 +9,7 @@ import android.widget.Toast;
 
 import com.example.lsdchat.App;
 import com.example.lsdchat.api.dialog.model.ItemMessage;
+import com.example.lsdchat.constant.ApiConstant;
 import com.example.lsdchat.manager.SharedPreferencesManager;
 import com.example.lsdchat.model.IdsListInteger;
 import com.example.lsdchat.model.RealmDialogModel;
@@ -26,6 +27,7 @@ public class ConversationPresenter implements ConversationContract.Presenter {
     private static final int PUBLIC_GROUP_TYPE = 1;
     private static final int PRIVATE_GROUP_TYPE = 2;
     private static final int PRIVATE_TYPE = 3;
+    private static final int UNREAD_MARK = 0;
 
     private ConversationContract.View mView;
     private ConversationContract.Model mModel;
@@ -83,7 +85,7 @@ public class ConversationPresenter implements ConversationContract.Presenter {
     }
 
     private void retrieveNewMessage(String dialogID, String messageID) {
-        mModel.getMessageByMessageID(mPreferencesManager.getToken(), dialogID, messageID)
+        mModel.getMessageByMessageID(mPreferencesManager.getToken(), dialogID, messageID, UNREAD_MARK)
                 .subscribe(messagesResponse -> {
                     ItemMessage im = messagesResponse.getItemMessageList().get(0);
                     saveMessagesToDataBase(im);
@@ -95,14 +97,15 @@ public class ConversationPresenter implements ConversationContract.Presenter {
     }
 
     @Override
-    public void getMessages(String dialogId) {
-        mModel.getMessagesByDialogId(mPreferencesManager.getToken(), dialogId)
+    public void getMessages(String dialogId, int limit, int skip) {
+        mModel.getMessagesByDialogId(mPreferencesManager.getToken(), dialogId, limit, skip, UNREAD_MARK)
                 .doOnRequest(aLong -> mView.showLoadProgressBar(true))
                 .doOnUnsubscribe(() -> mView.showLoadProgressBar(false))
                 .map(messagesResponse -> messagesResponse.getItemMessageList())
                 .doOnNext(itemMessages -> saveMessagesToDataBase(itemMessages))
                 .subscribe(itemMessages -> {
-                    fillAdapterListWithMessages(dialogId);
+
+                    fillAdapterListWithMessages(itemMessages);
 
                 }, throwable -> {
                     Log.e("AAA", throwable.getMessage().toString());
@@ -140,8 +143,13 @@ public class ConversationPresenter implements ConversationContract.Presenter {
     }
 
     @Override
-    public void fillAdapterListWithMessages(String dialogId) {
-        List<ItemMessage> list = App.getDataManager().retrieveMessagesByDialogId(dialogId);
+    public void fillAdapterListWithMessages(List<ItemMessage> list) {
+        mView.fillConversationAdapter(list);
+    }
+
+    @Override
+    public void fillAdapterListWithMessages(String dialogID) {
+        List<ItemMessage> list = App.getDataManager().retrieveMessagesByDialogId(dialogID);
         mView.fillConversationAdapter(list);
     }
 
@@ -204,11 +212,29 @@ public class ConversationPresenter implements ConversationContract.Presenter {
 
     @Override
     public void loadMoreFromDataBase(String dialogId, int page) {
+
+
         List<ItemMessage> list = App.getDataManager().retrieveMessagesByDialogId(dialogId);
         if (page + 20 <= list.size()) {
             mView.loadMoreData(list.subList(page, page + 20));
         } else {
             Toast.makeText(mContext, "All history up to date", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    @Override
+    public void loadMore(String dialogId, int skip) {
+        mModel.getMessagesByDialogId(mPreferencesManager.getToken(), dialogId, ApiConstant.MessageRequestParams.MESSAGE_LIMIT, skip, UNREAD_MARK)
+                .doOnRequest(aLong -> mView.showLoadProgressBar(true))
+                .doOnUnsubscribe(() -> mView.showLoadProgressBar(false))
+                .map(messagesResponse -> messagesResponse.getItemMessageList())
+                .doOnNext(itemMessages -> saveMessagesToDataBase(itemMessages))
+                .subscribe(itemMessages -> {
+
+                    fillAdapterListWithMessages(itemMessages);
+
+                }, throwable -> {
+                    Log.e("AAA", throwable.getMessage().toString());
+                });
     }
 }

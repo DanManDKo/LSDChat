@@ -34,7 +34,7 @@ public interface DialogService {
 
     @Headers(ApiConstant.HEADER_CONTENT_TYPE)
     @GET(ApiConstant.DIALOGS_REQUEST)
-    Observable<DialogsResponse> getDialog(@Header(ApiConstant.QB_TOKEN) String token, @Query("_id") String dialogID);
+    Observable<DialogsResponse> getDialog(@Header(ApiConstant.QB_TOKEN) String token, @Query(ApiConstant.MessageRequestParams.DIALOG_ID) String dialogID);
 
     @Headers(ApiConstant.HEADER_CONTENT_TYPE)
     @PUT(ApiConstant.UPDATE_DIALOG)
@@ -46,11 +46,11 @@ public interface DialogService {
 
     @Headers(ApiConstant.HEADER_CONTENT_TYPE)
     @GET(ApiConstant.MESSAGES_REQUEST)
-    Observable<MessagesResponse> getMessages(@Header(ApiConstant.QB_TOKEN) String token, @Query(ApiConstant.MessageRequestParams.CHAT_DIALOG_ID) String chatDialogId, @Query(ApiConstant.MessageRequestParams.LIMIT) int page, @Query(ApiConstant.MessageRequestParams.SORT_DESC) String sort);
+    Observable<MessagesResponse> getMessages(@Header(ApiConstant.QB_TOKEN) String token, @Query(ApiConstant.MessageRequestParams.CHAT_DIALOG_ID) String chatDialogId, @Query(ApiConstant.MessageRequestParams.LIMIT) int page, @Query(ApiConstant.MessageRequestParams.SKIP) int skip, @Query(ApiConstant.MessageRequestParams.SORT_DESC) String sort, @Query(ApiConstant.MessageRequestParams.MARK_AS_READ) int readMark);
 
     @Headers(ApiConstant.HEADER_CONTENT_TYPE)
     @GET(ApiConstant.MESSAGES_REQUEST)
-    Observable<MessagesResponse> getMessageById(@Header(ApiConstant.QB_TOKEN) String token, @Query(ApiConstant.MessageRequestParams.CHAT_DIALOG_ID) String chatDialogId, @Query(ApiConstant.MessageRequestParams.MESSAGE_ID) String messageID);
+    Observable<MessagesResponse> getMessageById(@Header(ApiConstant.QB_TOKEN) String token, @Query(ApiConstant.MessageRequestParams.CHAT_DIALOG_ID) String chatDialogId, @Query(ApiConstant.MessageRequestParams.MESSAGE_ID) String messageID, @Query(ApiConstant.MessageRequestParams.MARK_AS_READ) int readMark);
 
     @Headers(ApiConstant.HEADER_CONTENT_TYPE)
     @POST(ApiConstant.MESSAGES_REQUEST)

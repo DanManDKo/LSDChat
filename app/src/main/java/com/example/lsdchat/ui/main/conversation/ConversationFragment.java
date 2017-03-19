@@ -108,7 +108,7 @@ public class ConversationFragment extends BaseFragment implements ConversationCo
         mAdapter = new ConversationRecyclerAdapter(mMessageList, mConversationPresenter, user.getId());
 
         if (mConversationPresenter.isOnline()) {
-            mConversationPresenter.getMessages(dialogID);
+            mConversationPresenter.getMessages(dialogID, ApiConstant.MessageRequestParams.MESSAGE_LIMIT, ApiConstant.MessageRequestParams.MESSAGE_SKIP);
         } else {
             mConversationPresenter.fillAdapterListWithMessages(dialogID);
         }
@@ -121,8 +121,9 @@ public class ConversationFragment extends BaseFragment implements ConversationCo
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.addOnScrollListener(new EndlessScrollListener(linearLayoutManager) {
             @Override
-            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
-                mConversationPresenter.loadMoreFromDataBase(dialogID, page);
+            public void onLoadMore(int skip, int totalItemsCount, RecyclerView view) {
+                mConversationPresenter.loadMore(dialogID, skip);
+//                mConversationPresenter.loadMoreFromDataBase(dialogID, page);
             }
         });
 
@@ -194,7 +195,7 @@ public class ConversationFragment extends BaseFragment implements ConversationCo
     @Override
     public void fillConversationAdapter(List<ItemMessage> list) {
         Log.e("AAA", String.valueOf(mMessageList.size()));
-        mAdapter.addAll(list, 0, 1);
+        mAdapter.addAll(list);
     }
 
     @Override
