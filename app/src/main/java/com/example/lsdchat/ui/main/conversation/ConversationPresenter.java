@@ -112,6 +112,7 @@ public class ConversationPresenter implements ConversationContract.Presenter {
                 });
     }
 
+
     @Override
     public void onAdapterItemClicked(String id, int position) {
         Toast.makeText(mContext, "item " + id, Toast.LENGTH_SHORT).show();
@@ -236,5 +237,30 @@ public class ConversationPresenter implements ConversationContract.Presenter {
                 }, throwable -> {
                     Log.e("AAA", throwable.getMessage().toString());
                 });
+    }
+
+    @Override
+    public void getUsersListFromDatabase() {
+        mModel.getUsersFromDatabase()
+                .doOnRequest(aLong -> mView.showLoadProgressBar(true))
+                .doOnUnsubscribe(() -> mView.showLoadProgressBar(false))
+                .subscribe(loginUsers -> {
+                    mView.passUsersListToAdapter(loginUsers);
+                }, throwable -> {
+
+                });
+    }
+
+    @Override
+    public void getUsersAvatarsFromDatabase() {
+        mModel.getUserAvatarFromDatabase()
+                .doOnRequest(aLong -> mView.showLoadProgressBar(true))
+                .doOnUnsubscribe(() -> mView.showLoadProgressBar(false))
+                .subscribe(contentModel -> {
+                    mView.passUsersAvatarsToAdapter(contentModel);
+                }, throwable -> {
+
+                });
+
     }
 }

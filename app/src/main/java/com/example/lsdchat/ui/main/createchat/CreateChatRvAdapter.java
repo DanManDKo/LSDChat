@@ -112,7 +112,6 @@ public class CreateChatRvAdapter extends RecyclerView.Adapter<CreateChatRvAdapte
             mName = (TextView) itemView.findViewById(R.id.new_chat_member_name);
             mCheckBox = (CheckBox) itemView.findViewById(R.id.new_chat_member_checkbox);
 
-
             mCheckBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
                 if (isChecked) {
                     idChecked.add(mLoginUserList.get(getAdapterPosition()).getId());
@@ -122,12 +121,8 @@ public class CreateChatRvAdapter extends RecyclerView.Adapter<CreateChatRvAdapte
                     idChecked.remove(mLoginUserList.get(getAdapterPosition()).getId());
                     mPresenter.checkBoxSetOnChecked(mLoginUserList.get(getAdapterPosition()).getId(), false);
                     mName.setTextColor(ContextCompat.getColor(mContext,R.color.colorNewChatText));
-
                 }
-
             });
         }
-
-
     }
 }

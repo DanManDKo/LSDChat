@@ -2,6 +2,7 @@ package com.example.lsdchat.ui.main.conversation;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -19,13 +20,14 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.lsdchat.App;
 import com.example.lsdchat.R;
 import com.example.lsdchat.api.dialog.model.ItemMessage;
+import com.example.lsdchat.api.login.model.LoginUser;
 import com.example.lsdchat.constant.ApiConstant;
 import com.example.lsdchat.listener.EndlessScrollListener;
+import com.example.lsdchat.model.ContentModel;
 import com.example.lsdchat.model.User;
 import com.example.lsdchat.ui.main.fragment.BaseFragment;
 
@@ -36,9 +38,13 @@ public class ConversationFragment extends BaseFragment implements ConversationCo
     private static final String EMPTY_STRING = "";
 
     private static final String DIALOG_ID = "dialog_id";
-//    private static final String DIALOG_TYPE = "dialog_type";
     private static final String DIALOG_NAME = "dialog_name";
+    private static final String INTENT_USER_ID = "userID";
+    private static final String INTENT_DIALOG_ID = "dialogID";
+    private static final String INTENT_PASSWORD = "password";
+
     private static final int DIALOG_PRIVATE = 3;
+    private static final int TOTAL_ITEM_COUNT = 19;
 
     private ConversationPresenter mConversationPresenter;
     private OnEditchatButtonClicked mEditListener;
@@ -55,7 +61,6 @@ public class ConversationFragment extends BaseFragment implements ConversationCo
 
     private String mucToJID;
     private String dialogID;
-//    private int dialogType;
     private String mNameDialog;
 
     private ArrayList<ItemMessage> mMessageList = new ArrayList<>();
@@ -64,7 +69,6 @@ public class ConversationFragment extends BaseFragment implements ConversationCo
         ConversationFragment conversationFragment = new ConversationFragment();
         Bundle bundle = new Bundle();
         bundle.putString(DIALOG_ID, dialogID);
-//        bundle.putInt(DIALOG_TYPE, typeDialog);
         bundle.putString(DIALOG_NAME, nameDialog);
         conversationFragment.setArguments(bundle);
         return conversationFragment;
@@ -84,6 +88,9 @@ public class ConversationFragment extends BaseFragment implements ConversationCo
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        dialogID = getArguments().getString(DIALOG_ID);
+        mucToJID = ApiConstant.APP_ID + "_" + dialogID + ApiConstant.MessageRequestParams.MULTI_USER_CHAT;
+        mNameDialog = getArguments().getString(DIALOG_NAME);
     }
 
     @Override
@@ -91,23 +98,21 @@ public class ConversationFragment extends BaseFragment implements ConversationCo
         Log.e("Conv", "onCreateView");
         View view = inflater.inflate(R.layout.fragment_conversation, container, false);
         mConversationPresenter = new ConversationPresenter(this, App.getSharedPreferencesManager(getActivity()));
-        dialogID = getArguments().getString(DIALOG_ID);
-//        dialogType = getArguments().getInt(DIALOG_TYPE);
-        mucToJID = ApiConstant.APP_ID + "_" + dialogID + ApiConstant.MessageRequestParams.MULTI_USER_CHAT;
-        mNameDialog = getArguments().getString(DIALOG_NAME);
 
         initView(view);
 
         User user = App.getDataManager().getUser();
         Intent intentService = new Intent(getActivity(), XMPPService.class);
-        intentService.putExtra("userID", user.getId());
-        intentService.putExtra("password", user.getPassword());
-        intentService.putExtra("dialogID", dialogID);
+        intentService.putExtra(INTENT_USER_ID, user.getId());
+        intentService.putExtra(INTENT_PASSWORD, user.getPassword());
+        intentService.putExtra(INTENT_DIALOG_ID, dialogID);
         getActivity().startService(intentService);
 
         mAdapter = new ConversationRecyclerAdapter(mMessageList, mConversationPresenter, user.getId());
 
         if (mConversationPresenter.isOnline()) {
+            mConversationPresenter.getUsersListFromDatabase();
+            mConversationPresenter.getUsersAvatarsFromDatabase();
             mConversationPresenter.getMessages(dialogID, ApiConstant.MessageRequestParams.MESSAGE_LIMIT, ApiConstant.MessageRequestParams.MESSAGE_SKIP);
         } else {
             mConversationPresenter.fillAdapterListWithMessages(dialogID);
@@ -122,8 +127,9 @@ public class ConversationFragment extends BaseFragment implements ConversationCo
         mRecyclerView.addOnScrollListener(new EndlessScrollListener(linearLayoutManager) {
             @Override
             public void onLoadMore(int skip, int totalItemsCount, RecyclerView view) {
-                mConversationPresenter.loadMore(dialogID, skip);
-//                mConversationPresenter.loadMoreFromDataBase(dialogID, page);
+                if (totalItemsCount > TOTAL_ITEM_COUNT) {
+                    mConversationPresenter.loadMore(dialogID, skip);
+                }
             }
         });
 
@@ -222,6 +228,16 @@ public class ConversationFragment extends BaseFragment implements ConversationCo
     @Override
     public void loadMoreData(List<ItemMessage> list) {
         mAdapter.addMore(list);
+    }
+
+    @Override
+    public void passUsersListToAdapter(List<LoginUser> users) {
+        mAdapter.addUsersList(users);
+    }
+
+    @Override
+    public void passUsersAvatarsToAdapter(List<ContentModel> models) {
+        mAdapter.addContentList(models);
     }
 
     @Override

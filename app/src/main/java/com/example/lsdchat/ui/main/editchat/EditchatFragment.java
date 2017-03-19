@@ -82,7 +82,7 @@ public class EditchatFragment extends BaseFragment implements EditchatContract.V
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        Log.i("editchat", "onActivityCreated");
+        Log.i("fragment", "onActivityCreated");
         getLoaderManager().initLoader(EDITCHAT_LOADER_ID, null, new LoaderManager.LoaderCallbacks<EditchatPresenter>() {
             @Override
             public Loader<EditchatPresenter> onCreateLoader(int id, Bundle args) {
@@ -102,12 +102,55 @@ public class EditchatFragment extends BaseFragment implements EditchatContract.V
             public void onLoaderReset(Loader<EditchatPresenter> loader) {
                 Log.i(TAG, "onLoaderReset");
                 EditchatFragment.this.mPresenter = null;
-                mListener = null;
+
+                onPresenterDestroyed();
             }
         });
     }
 
-    void onPresenterPrepared(EditchatPresenter presenter) {
+    @Override
+    public void onStart() {
+        super.onStart();
+        Log.i("fragment", "onStart");
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.i("fragment", "onResume");
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.i("fragment", "onPause");
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        Log.i("fragment", "onStop");
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.i("fragment", "onDestroy");
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        Log.i("fragment", "onDetach");
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        Log.i("fragment", "onDetach");
+    }
+
+    private void onPresenterPrepared(EditchatPresenter presenter) {
         int ownerID = App.getDataManager().getUser().getId();
 
         mAdapter = new EditchatAdapter(presenter, getContext(), ownerID);
@@ -125,24 +168,11 @@ public class EditchatFragment extends BaseFragment implements EditchatContract.V
                         mEditChatName.getEditableText().toString()));
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        Log.i("editchat", "onResume " + mPresenter.toString());
-    }
-
-    @Override
-    public void onPause() {
-//        mPresenter.onDetach();
-        super.onPause();
-    }
-
-    @Override
-    public void onDestroyView() {
-        mPresenter.onDetach();
+    private void onPresenterDestroyed() {
         mListener = null;
-        super.onDestroyView();
     }
+
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

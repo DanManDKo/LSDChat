@@ -8,13 +8,11 @@
                 android:layout_marginBottom="8dp"
                 android:layout_marginTop="8dp">
 
-    <com.facebook.drawee.view.SimpleDraweeView
+    <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/left_bubble_image"
         android:layout_width="45dp"
         android:layout_height="45dp"
-        android:layout_alignParentLeft="true"
-        fresco:placeholderImage="@drawable/userpic_default"
-        fresco:roundAsCircle="true"/>
+        android:layout_alignParentLeft="true"/>
 
     <RelativeLayout
         android:id="@+id/bubble_layout"

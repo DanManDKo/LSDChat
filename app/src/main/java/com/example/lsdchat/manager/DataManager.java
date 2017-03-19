@@ -71,10 +71,6 @@ public class DataManager {
         return Observable.fromCallable(() -> mRealm.where(LoginUser.class).findAll());
     }
 
-    public Observable<List<LoginUser>> getAppUsers() {
-        return Observable.fromCallable(() -> mRealm.where(LoginUser.class).findAll());
-    }
-
     public Observable<List<LoginUser>> getUserObservable(String sort) {
         return Observable.fromCallable(() -> {
             switch (sort) {

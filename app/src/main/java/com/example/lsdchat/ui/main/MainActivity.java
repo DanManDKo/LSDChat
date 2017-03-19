@@ -5,14 +5,13 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.FrameLayout;
-import android.widget.Toast;
 
+import com.example.lsdchat.App;
 import com.example.lsdchat.R;
 import com.example.lsdchat.manager.SharedPreferencesManager;
+import com.example.lsdchat.model.User;
 import com.example.lsdchat.ui.main.chats.ChatsFragment;
-import com.example.lsdchat.ui.main.chats.dialogs.DialogsFragment;
 import com.example.lsdchat.ui.main.conversation.ConversationFragment;
-import com.example.lsdchat.ui.main.conversation.ConversationPresenter;
 import com.example.lsdchat.ui.main.editchat.EditchatFragment;
 import com.example.lsdchat.ui.main.fragment.BaseFragment;
 import com.example.lsdchat.util.UsersUtil;
