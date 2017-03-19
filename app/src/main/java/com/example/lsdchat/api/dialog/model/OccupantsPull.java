@@ -12,12 +12,4 @@ public class OccupantsPull {
     public OccupantsPull(List<Integer> pullAll) {
         this.pullAll = pullAll;
     }
-
-    public List<Integer> getPullAll() {
-        return pullAll;
-    }
-
-    public void setPullAll(List<Integer> pullAll) {
-        this.pullAll = pullAll;
-    }
 }

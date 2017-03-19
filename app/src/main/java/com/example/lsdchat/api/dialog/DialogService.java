@@ -9,6 +9,8 @@ import com.example.lsdchat.api.dialog.response.ContentResponse;
 import com.example.lsdchat.api.dialog.response.DialogsResponse;
 import com.example.lsdchat.api.dialog.response.MessagesResponse;
 import com.example.lsdchat.api.dialog.response.UserListResponse;
+import com.example.lsdchat.api.login.response.LoginResponse;
+import com.example.lsdchat.api.registration.request.UpdateRequest;
 import com.example.lsdchat.constant.ApiConstant;
 
 import okhttp3.ResponseBody;
@@ -32,7 +34,7 @@ public interface DialogService {
 
     @Headers(ApiConstant.HEADER_CONTENT_TYPE)
     @GET(ApiConstant.DIALOGS_REQUEST)
-    Observable<DialogsResponse> getDialog(@Header(ApiConstant.QB_TOKEN) String token, @Query(ApiConstant.MessageRequestParams.DIALOG_ID) String dialogID);
+    Observable<DialogsResponse> getDialog(@Header(ApiConstant.QB_TOKEN) String token, @Query("_id") String dialogID);
 
     @Headers(ApiConstant.HEADER_CONTENT_TYPE)
     @PUT(ApiConstant.UPDATE_DIALOG)
@@ -66,5 +68,6 @@ public interface DialogService {
     @POST(ApiConstant.GET_FILEPATH_REQUEST)
     Observable<ContentResponse> downloadContent(@Path(ApiConstant.BLOB_ID) long blobId, @Header(ApiConstant.QB_TOKEN) String token);
 
-
+    @PUT(ApiConstant.UPDATE_REQUEST)
+    Observable<LoginResponse> updateUserInfoRequest(@Path(ApiConstant.UploadParametres.ID) String dialogID, @Header(ApiConstant.QB_TOKEN) String token, @Body UpdateRequest body);
 }

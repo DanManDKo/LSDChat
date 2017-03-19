@@ -36,7 +36,7 @@ public class ConversationFragment extends BaseFragment implements ConversationCo
     private static final String EMPTY_STRING = "";
 
     private static final String DIALOG_ID = "dialog_id";
-    private static final String DIALOG_TYPE = "dialog_type";
+//    private static final String DIALOG_TYPE = "dialog_type";
     private static final String DIALOG_NAME = "dialog_name";
     private static final int DIALOG_PRIVATE = 3;
 
@@ -55,16 +55,16 @@ public class ConversationFragment extends BaseFragment implements ConversationCo
 
     private String mucToJID;
     private String dialogID;
-    private int dialogType;
+//    private int dialogType;
     private String mNameDialog;
 
     private ArrayList<ItemMessage> mMessageList = new ArrayList<>();
 
-    public static ConversationFragment newInstance(String dialogID, int typeDialog, String nameDialog) {
+    public static ConversationFragment newInstance(String dialogID, String nameDialog) {
         ConversationFragment conversationFragment = new ConversationFragment();
         Bundle bundle = new Bundle();
         bundle.putString(DIALOG_ID, dialogID);
-        bundle.putInt(DIALOG_TYPE, typeDialog);
+//        bundle.putInt(DIALOG_TYPE, typeDialog);
         bundle.putString(DIALOG_NAME, nameDialog);
         conversationFragment.setArguments(bundle);
         return conversationFragment;
@@ -92,7 +92,7 @@ public class ConversationFragment extends BaseFragment implements ConversationCo
         View view = inflater.inflate(R.layout.fragment_conversation, container, false);
         mConversationPresenter = new ConversationPresenter(this, App.getSharedPreferencesManager(getActivity()));
         dialogID = getArguments().getString(DIALOG_ID);
-        dialogType = getArguments().getInt(DIALOG_TYPE);
+//        dialogType = getArguments().getInt(DIALOG_TYPE);
         mucToJID = ApiConstant.APP_ID + "_" + dialogID + ApiConstant.MessageRequestParams.MULTI_USER_CHAT;
         mNameDialog = getArguments().getString(DIALOG_NAME);
 

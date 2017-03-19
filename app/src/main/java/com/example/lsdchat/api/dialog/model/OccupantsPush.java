@@ -11,12 +11,4 @@ public class OccupantsPush {
     public OccupantsPush(List<Integer> pushAll) {
         this.pushAll = pushAll;
     }
-
-    public List<Integer> getPushAll() {
-        return pushAll;
-    }
-
-    public void setPushAll(List<Integer> pushAll) {
-        this.pushAll = pushAll;
-    }
 }

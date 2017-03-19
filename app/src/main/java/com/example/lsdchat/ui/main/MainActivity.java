@@ -19,7 +19,7 @@ import com.example.lsdchat.util.UsersUtil;
 
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements ConversationFragment.OnEditchatButtonClicked {
+public class MainActivity extends AppCompatActivity implements ConversationFragment.OnEditchatButtonClicked, EditchatFragment.OnSaveButtonClicked {
 
     private FrameLayout mFrameLayout;
 
@@ -68,6 +68,11 @@ public class MainActivity extends AppCompatActivity implements ConversationFragm
     @Override
     public void onEditchatSelected(String dialogID) {
         replaceFragment(EditchatFragment.newInstance(dialogID));
+    }
+
+    @Override
+    public void onConversationFragmentSelected(String dialogID, String dialogName) {
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment, ConversationFragment.newInstance(dialogID, dialogName)).commit();
     }
 
     @Override

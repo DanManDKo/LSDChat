@@ -10,12 +10,17 @@ import com.example.lsdchat.api.dialog.request.CreateDialogRequest;
 import com.example.lsdchat.api.dialog.request.UpdateDialogRequest;
 import com.example.lsdchat.api.dialog.response.DialogsResponse;
 import com.example.lsdchat.api.login.model.LoginUser;
+import com.example.lsdchat.api.login.response.LoginResponse;
+import com.example.lsdchat.api.registration.response.RegistrationCreateFileResponse;
 import com.example.lsdchat.model.ContentModel;
 import com.example.lsdchat.model.RealmDialogModel;
 import com.example.lsdchat.ui.BasePresenter;
 
 import java.util.List;
+import java.util.Map;
 
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import rx.Observable;
 
 public interface EditchatContract {
@@ -40,7 +45,7 @@ public interface EditchatContract {
     interface View {
         Context getContext();
 
-        void fillDialogNameField(String name);
+        void fillDialogNameField(String name, Integer dialogCreaterID);
 
         void showDialogAvatar(Uri path);
 
@@ -49,6 +54,8 @@ public interface EditchatContract {
         void fillAdapterContentModelsList(List<ContentModel> contentModels);
 
         void showPermissionErrorMessage();
+
+        void navigateToConversationFragment(String dialogID, String dialogName);
     }
 
     interface Model {
@@ -63,5 +70,12 @@ public interface EditchatContract {
         Observable<ContentModel> getDialogAvatarFromDatabase(String dialogID);
 
         Observable<List<LoginUser>> getAppUsersFromDatabase();
+
+        Observable<RegistrationCreateFileResponse> createFile(String token, String mime, String fileName);
+
+        Observable<Void> declareFileUploaded(long size, String token, long blobId);
+
+        Observable<Void> uploadFileMap(Map<String, RequestBody> map, MultipartBody.Part part);
+
     }
 }
