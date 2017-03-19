@@ -9,27 +9,32 @@ import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.Toast;
 
-import com.example.lsdchat.App;
 import com.example.lsdchat.R;
-import com.example.lsdchat.api.dialog.request.CreateDialogRequest;
+import com.example.lsdchat.api.dialog.model.ItemDialog;
+import com.example.lsdchat.api.dialog.model.OccupantsPull;
+import com.example.lsdchat.api.dialog.model.OccupantsPush;
+import com.example.lsdchat.api.dialog.request.UpdateDialogRequest;
+import com.example.lsdchat.constant.ApiConstant;
 import com.example.lsdchat.manager.SharedPreferencesManager;
-import com.example.lsdchat.model.ContentModel;
 import com.example.lsdchat.model.IdsListInteger;
 import com.example.lsdchat.model.RealmDialogModel;
+import com.example.lsdchat.util.CreateMapRequestBody;
 import com.example.lsdchat.util.StorageHelper;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.net.URLConnection;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
-import static android.app.Activity.RESULT_OK;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 
 public class EditchatPresenter implements EditchatContract.Presenter {
     private static final int REQUEST_IMAGE_CAMERA = 11;
@@ -48,6 +53,8 @@ public class EditchatPresenter implements EditchatContract.Presenter {
     private Context mContext;
     private SharedPreferencesManager mPreferencesManager;
     private int mDialogType;
+    private String mDialogID;
+    private String mNewDialogName;
 
     public EditchatPresenter(EditchatContract.View view, EditchatContract.Model model, SharedPreferencesManager manager) {
         Log.e("AAA", "constructor");
@@ -56,6 +63,8 @@ public class EditchatPresenter implements EditchatContract.Presenter {
         mModel = model;
         mPreferencesManager = manager;
         mCheckedOccupantsList = new ArrayList<>();
+        mDialogID = null;
+        mNewDialogName = null;
     }
 
     @Override
@@ -70,30 +79,28 @@ public class EditchatPresenter implements EditchatContract.Presenter {
 
     @Override
     public void loadDialogCredentials(String dialogID) {
-        mModel.getDialogFromDatabase(dialogID)
-                .subscribe(dialogModel -> {
-                    Log.e("AAA - DIALOG_NAME", dialogModel.getName().toString());
-                    mView.fillDialogNameField(dialogModel.getName());
+        mModel.getDialogByID(mPreferencesManager.getToken(), dialogID)
+                .subscribe(dialogsResponse -> {
+                    mDialogID = dialogID;
+                    ItemDialog item = dialogsResponse.getItemDialogList().get(0);
+                    mView.fillDialogNameField(item.getName(), item.getOwnerId());
 
-                    prepareAndShowDialogInformation(dialogModel);
-                }, throwable -> {
-                    Log.e("AAA - nameError", throwable.getMessage().toString());
+                    prepareAndShowDialogInformation(item);
                 });
 
-//        RealmDialogModel dialog = App.getDataManager().getDialogByID(dialogID);
-//        mView.fillDialogInformation(dialog.getName());
-//        Log.d("AAA", dialog.getName().toString());
-//        mModel.getDialogByID(mPreferencesManager.getToken(), dialogID)
-//                .map(dialogsResponse -> dialogsResponse.getItemDialogList().get(0))
-//                .doOnNext(itemDialog -> mDialogType = itemDialog.getType())
-//                .subscribe(itemDialog -> {
-//                    fillInformationInFields(itemDialog);
+
+//        mModel.getDialogFromDatabase(dialogID)
+//                .subscribe(dialogModel -> {
+//                    mDialogID = dialogID;
+//                    mView.fillDialogNameField(dialogModel.getName(), dialogModel.getOwnerId());
+//
+//                    prepareAndShowDialogInformation(dialogModel);
 //                }, throwable -> {
 //
 //                });
     }
 
-    private void prepareAndShowDialogInformation(RealmDialogModel dialogModel) {
+    private void prepareAndShowDialogInformation(ItemDialog dialogModel) {
         mModel.getDialogAvatarFromDatabase(dialogModel.getId())
                 .map(contentModel -> {
                     if (contentModel != null) {
@@ -114,8 +121,8 @@ public class EditchatPresenter implements EditchatContract.Presenter {
         int dialogType = dialogModel.getType();
         mDialogType = dialogType;
         List<Integer> dialogOccupantsIDs = new ArrayList<>();
-        for (IdsListInteger id : dialogModel.getOccupantsIdsList()) {
-            dialogOccupantsIDs.add(id.getValue());
+        for (Integer id : dialogModel.getOccupantsIdsList()) {
+            dialogOccupantsIDs.add(id);
         }
 
         mModel.getAppUsersFromDatabase()
@@ -136,17 +143,8 @@ public class EditchatPresenter implements EditchatContract.Presenter {
         mModel.getAllAvatarsFromDatabase()
                 .subscribe(contentModelList -> {
                     mView.fillAdapterContentModelsList(contentModelList);
-                });
-    }
-
-    private void fillInformationInFields(RealmDialogModel object) {
-        CreateDialogRequest body = new CreateDialogRequest(object.getName());
-
-        mModel.updateDialog(object.getName(), mPreferencesManager.getToken(), body)
-                .subscribe(itemDialog -> {
-
                 }, throwable -> {
-
+                    Log.e("AAA", throwable.getMessage());
                 });
     }
 
@@ -192,31 +190,112 @@ public class EditchatPresenter implements EditchatContract.Presenter {
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        switch (requestCode) {
-//            case REQUEST_IMAGE_CAMERA:
-//                if (resultCode == RESULT_OK) {
-//                    mView.showDialogAvatar(mFullSizeAvatarUri);
-//                    try {
-//                        mUploadFile = StorageHelper.decodeAndSaveUri(mContext, mFullSizeAvatarUri);
-//                    } catch (FileNotFoundException e) {
-//                        e.printStackTrace();
-//                    }
-//                    Toast.makeText(mContext, mContext.getString(R.string.photo_added), Toast.LENGTH_SHORT).show();
-//                }
-//                break;
-//            case REQUEST_IMAGE_GALLERY:
-//                if (resultCode == RESULT_OK) {
-//                    mFullSizeAvatarUri = data.getData();
-//                    mView.showDialogAvatar(mFullSizeAvatarUri);
-//                    try {
-//                        mUploadFile = StorageHelper.decodeAndSaveUri(mContext, mFullSizeAvatarUri);
-//                    } catch (FileNotFoundException e) {
-//                        e.printStackTrace();
-//                    }
-//                    Toast.makeText(mContext, mContext.getString(R.string.photo_added), Toast.LENGTH_SHORT).show();
-//                }
-//                break;
-//        }
+    public void showPermissionErrorMessage() {
+        mView.showPermissionErrorMessage();
+    }
+
+    @Override
+    public void updateDialogCredentials(List<Integer> addedOccupants, List<Integer> deletedOccupants, String dialogName) {
+        mNewDialogName = dialogName;
+
+        if (mUploadFile != null) {
+            getBlobObjectCreateFile(mPreferencesManager.getToken(), getFileMimeType(mUploadFile), mUploadFile.getName());
+        }
+
+        if (!addedOccupants.isEmpty()) {
+            UpdateDialogRequest body = new UpdateDialogRequest();
+            body.setName(dialogName);
+            body.setPushAll(new OccupantsPush(addedOccupants));
+
+            mModel.updateDialog(mPreferencesManager.getToken(), mDialogID, body)
+                    .subscribe(itemDialog -> {
+
+                    }, throwable -> {
+
+                    });
+        }
+        if (!deletedOccupants.isEmpty()) {
+            UpdateDialogRequest body = new UpdateDialogRequest();
+            body.setName(dialogName);
+            body.setPullAll(new OccupantsPull(deletedOccupants));
+
+            mModel.updateDialog(mPreferencesManager.getToken(), mDialogID, body)
+                    .subscribe(itemDialog -> {
+
+                    }, throwable -> {
+
+                    });
+        } else {
+            UpdateDialogRequest body = new UpdateDialogRequest();
+            body.setName(dialogName);
+
+            mModel.updateDialog(mPreferencesManager.getToken(), mDialogID, body)
+                    .subscribe(itemDialog -> {
+
+                    }, throwable -> {
+
+                    });
+        }
+
+        mView.navigateToConversationFragment(mDialogID, mNewDialogName);
+
+    }
+
+    private void getBlobObjectCreateFile(String token, String mime, String fileName) {
+        mModel.createFile(token, mime, fileName)
+                .subscribe(registrationCreateFileResponse -> {
+                    long blobId = registrationCreateFileResponse.getBlob().getBlobObjestAccess().getBlobId();
+                    String params = registrationCreateFileResponse.getBlob().getBlobObjestAccess().getParams();
+                    Uri uri = Uri.parse(params);
+
+                    RequestBody file = RequestBody.create(MediaType.parse(getFileMimeType(mUploadFile)), mUploadFile);
+                    MultipartBody.Part multiPart = MultipartBody.Part.createFormData(ApiConstant.UploadParametres.FILE, mUploadFile.getName(), file);
+
+                    uploadFileRetrofit(token, blobId, CreateMapRequestBody.createMapRequestBody(uri), multiPart);
+                }, throwable -> {
+
+//                    decodeThrowableAndShowAlert(throwable);
+                    Log.e("TEST", throwable.getMessage());
+                });
+    }
+
+    private void uploadFileRetrofit(String token, long blobId, HashMap<String, RequestBody> map, MultipartBody.Part file) {
+        mModel.uploadFileMap(map, file)
+                .subscribe(aVoid -> {
+                    long fileSize = mUploadFile.length();
+                    if (fileSize != 0 && blobId != 0) {
+                        declareFileUploaded(fileSize, token, blobId);
+                    }
+                }, throwable -> {
+
+//                    decodeThrowableAndShowAlert(throwable);
+                });
+    }
+
+    private void declareFileUploaded(long size, String token, long blobId) {
+        mModel.declareFileUploaded(size, token, blobId)
+                .subscribe(aVoid -> {
+                    updateDialog(mPreferencesManager.getToken(), mDialogID, blobId);
+                }, throwable -> {
+
+//                    decodeThrowableAndShowAlert(throwable);
+                });
+    }
+
+    private void updateDialog(String token, String dialogID, long blobID) {
+        UpdateDialogRequest body = new UpdateDialogRequest();
+        body.setPhotoId(blobID);
+
+        mModel.updateDialog(mPreferencesManager.getToken(), mDialogID, body)
+                .subscribe(itemDialog -> {
+
+                }, throwable -> {
+
+                });
+//                    updateUserBlobId(token, blobId);
+    }
+
+    private String getFileMimeType(File file) {
+        return URLConnection.guessContentTypeFromName(file.getName());
     }
 }

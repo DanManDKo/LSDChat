@@ -52,7 +52,7 @@ public class CreateChatPresenter implements CreateChatContract.Presenter {
         mModel.createDialog(mModel.getToken(), request)
                 .subscribe(itemDialog ->
                                 mView.navigateToChat(ConversationFragment
-                                        .newInstance(itemDialog.getId(), itemDialog.getType(), itemDialog.getName())),
+                                        .newInstance(itemDialog.getId(), itemDialog.getName())),
                         throwable -> {
                             Log.e("DIALOG", throwable.getMessage());
                         });

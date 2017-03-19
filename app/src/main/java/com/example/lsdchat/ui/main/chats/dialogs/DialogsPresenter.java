@@ -82,7 +82,7 @@ public class DialogsPresenter implements DialogsContract.Presenter {
     @Override
     public void setClickRl(RealmDialogModel realmDialogModel) {
         mView.navigateToChat(ConversationFragment
-                .newInstance(realmDialogModel.getId(), realmDialogModel.getType(), realmDialogModel.getName()));
+                .newInstance(realmDialogModel.getId(), realmDialogModel.getName()));
 
     }
 

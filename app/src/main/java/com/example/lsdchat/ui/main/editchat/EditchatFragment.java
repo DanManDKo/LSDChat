@@ -1,6 +1,7 @@
 package com.example.lsdchat.ui.main.editchat;
 
 
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -26,6 +27,7 @@ import com.example.lsdchat.R;
 import com.example.lsdchat.api.login.model.LoginUser;
 import com.example.lsdchat.model.ContentModel;
 import com.example.lsdchat.ui.PresenterLoader;
+import com.example.lsdchat.ui.main.conversation.ConversationFragment;
 import com.example.lsdchat.ui.main.fragment.BaseFragment;
 import com.facebook.drawee.view.SimpleDraweeView;
 
@@ -35,7 +37,7 @@ import static android.app.Activity.RESULT_OK;
 
 public class EditchatFragment extends BaseFragment implements EditchatContract.View {
     private static final String DIALOG_ID = "dialog_id";
-    private static final int LOADER_ID = 101;
+    private static final int EDITCHAT_LOADER_ID = 101;
     private static final int REQUEST_IMAGE_CAMERA = 11;
     private static final int REQUEST_IMAGE_GALLERY = 22;
 
@@ -44,11 +46,22 @@ public class EditchatFragment extends BaseFragment implements EditchatContract.V
     private EditchatPresenter mPresenter;
     private EditchatAdapter mAdapter;
     private RecyclerView mRecyclerView;
+    private OnSaveButtonClicked mListener;
 
     private Toolbar mToolbar;
     private EditText mEditChatName;
     private SimpleDraweeView mDialogImage;
     private Button mSaveButton;
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        try {
+            mListener = (EditchatFragment.OnSaveButtonClicked) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException("Activity should implement " + EditchatFragment.OnSaveButtonClicked.class.getSimpleName());
+        }
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -70,7 +83,7 @@ public class EditchatFragment extends BaseFragment implements EditchatContract.V
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         Log.i("editchat", "onActivityCreated");
-        getLoaderManager().initLoader(LOADER_ID, null, new LoaderManager.LoaderCallbacks<EditchatPresenter>() {
+        getLoaderManager().initLoader(EDITCHAT_LOADER_ID, null, new LoaderManager.LoaderCallbacks<EditchatPresenter>() {
             @Override
             public Loader<EditchatPresenter> onCreateLoader(int id, Bundle args) {
                 Log.i(TAG, "onCreateLoader");
@@ -89,14 +102,15 @@ public class EditchatFragment extends BaseFragment implements EditchatContract.V
             public void onLoaderReset(Loader<EditchatPresenter> loader) {
                 Log.i(TAG, "onLoaderReset");
                 EditchatFragment.this.mPresenter = null;
+                mListener = null;
             }
         });
     }
 
     void onPresenterPrepared(EditchatPresenter presenter) {
-        int userID = App.getDataManager().getUser().getId();
+        int ownerID = App.getDataManager().getUser().getId();
 
-        mAdapter = new EditchatAdapter(presenter, userID);
+        mAdapter = new EditchatAdapter(presenter, getContext(), ownerID);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mRecyclerView.setAdapter(mAdapter);
@@ -104,9 +118,11 @@ public class EditchatFragment extends BaseFragment implements EditchatContract.V
         presenter.getAvatarsFromDatabase();
         presenter.loadDialogCredentials(getArguments().getString(DIALOG_ID));
 
-        mDialogImage.setOnClickListener(v -> showImageChooser());
-        mSaveButton.setOnClickListener(v -> {
-        });
+        mDialogImage.setOnClickListener(v -> chooseDialogImage());
+        mSaveButton.setOnClickListener(v ->
+                mPresenter.updateDialogCredentials(mAdapter.getAddedOccupantsList(),
+                        mAdapter.getDelatedOccupantsList(),
+                        mEditChatName.getEditableText().toString()));
     }
 
     @Override
@@ -124,6 +140,7 @@ public class EditchatFragment extends BaseFragment implements EditchatContract.V
     @Override
     public void onDestroyView() {
         mPresenter.onDetach();
+        mListener = null;
         super.onDestroyView();
     }
 
@@ -138,8 +155,9 @@ public class EditchatFragment extends BaseFragment implements EditchatContract.V
     }
 
     @Override
-    public void fillDialogNameField(String name) {
+    public void fillDialogNameField(String name, Integer dialogCreaterID) {
         mEditChatName.setText(name);
+        mAdapter.setDialogCreaterID(dialogCreaterID);
     }
 
     @Override
@@ -154,11 +172,21 @@ public class EditchatFragment extends BaseFragment implements EditchatContract.V
     }
 
     @Override
+    public void showPermissionErrorMessage() {
+        Toast.makeText(getContext(), "You can`t delete other users", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
     public void fillDialogAdapter(List<Integer> occupantIDs, List<LoginUser> appUsers, int type) {
         mAdapter.setOccupantsList(occupantIDs);
         mAdapter.setUsersList(appUsers);
         mAdapter.setDialogType(type);
         mAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void navigateToConversationFragment(String dialogID, String dialogName) {
+        mListener.onConversationFragmentSelected(dialogID, dialogName);
     }
 
     @Override
@@ -178,10 +206,9 @@ public class EditchatFragment extends BaseFragment implements EditchatContract.V
                 }
                 break;
         }
-//        mPresenter.onActivityResult(requestCode, resultCode, data);
     }
 
-    private void showImageChooser() {
+    private void chooseDialogImage() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext())
                 .setTitle(getString(R.string.add_photo))
                 .setPositiveButton(getString(R.string.photo_gallery), (dialogInterface, i) -> {
@@ -216,6 +243,9 @@ public class EditchatFragment extends BaseFragment implements EditchatContract.V
         return fragment;
     }
 
+    public interface OnSaveButtonClicked {
+        void onConversationFragmentSelected(String dialogID, String dialogName);
+    }
 
 }
 

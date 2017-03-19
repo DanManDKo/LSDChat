@@ -188,6 +188,7 @@ public class ConversationPresenter implements ConversationContract.Presenter {
         switch (dialog.getType()) {
             case PUBLIC_GROUP_TYPE:
                 if (dialog.getOwnerId() == value) return true;
+                return false;
             case PRIVATE_GROUP_TYPE:
                 RealmList<IdsListInteger> list = dialog.getOccupantsIdsList();
                 for (IdsListInteger item : list) {
