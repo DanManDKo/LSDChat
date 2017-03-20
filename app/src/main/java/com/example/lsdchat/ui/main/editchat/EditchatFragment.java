@@ -237,8 +237,8 @@ public class EditchatFragment extends BaseFragment implements EditchatContract.V
     }
 
     @Override
-    public void navigateToConversationFragment(String dialogID, String dialogName, int dialogType, int singleOccupant) {
-        mListener.onConversationFragmentSelected(dialogID, dialogName, dialogType, singleOccupant);
+    public void navigateToConversationFragment(String dialogID, String dialogName,int dialogType, int singleOccupant) {
+        mListener.onConversationFragmentSelected(dialogID, dialogName,dialogType,singleOccupant);
     }
 
     @Override
@@ -301,15 +301,7 @@ public class EditchatFragment extends BaseFragment implements EditchatContract.V
         void onConversationFragmentSelected(String dialogID, String dialogName, int dialogType, int singleOccupant);
     }
 
-    @Override
-    public void setRlUsersAccessibility(boolean enable) {
-        if (enable) {
-            mRecyclerView.setVisibility(View.VISIBLE);
-        }
-        else {
-            mRecyclerView.setVisibility(View.GONE);
-        }
-    }
+
 
     @Override
     public void setRlUsersAccessibility(boolean enable) {

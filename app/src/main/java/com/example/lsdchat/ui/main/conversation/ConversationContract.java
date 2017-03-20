@@ -71,7 +71,6 @@ public interface ConversationContract {
 
         void passUsersAvatarsToAdapter(List<ContentModel> users);
 
-        void showAppropriateMessage(int msg);
 
         void showErrorDialog(String message);
     }

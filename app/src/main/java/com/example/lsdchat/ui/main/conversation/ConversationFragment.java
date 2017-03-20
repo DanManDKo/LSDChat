@@ -101,6 +101,7 @@ public class ConversationFragment extends BaseFragment implements ConversationCo
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.e("Conv", "onCreateView");
         View view = inflater.inflate(R.layout.fragment_conversation, container, false);
+
         mConversationPresenter = new ConversationPresenter(this, App.getSharedPreferencesManager(getActivity()));
 
         dialogID = getArguments().getString(DIALOG_ID);
@@ -258,16 +259,6 @@ public class ConversationFragment extends BaseFragment implements ConversationCo
         mAdapter.addContentList(models);
     }
 
-    @Override
-    public void showAppropriateMessage(int msg) {
-        String message = null;
-        switch (msg) {
-            case 0:
-                message = getString(R.string.you_cannot_edit_this_dialog);
-                break;
-        }
-        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
-    }
 
     @Override
     public void showErrorDialog(String message) {

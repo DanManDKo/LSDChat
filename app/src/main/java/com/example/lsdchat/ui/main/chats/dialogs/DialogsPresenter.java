@@ -84,7 +84,7 @@ public class DialogsPresenter implements DialogsContract.Presenter {
     @Override
     public void setClickRl(RealmDialogModel realmDialogModel) {
         mView.navigateToChat(ConversationFragment
-                .newInstance(realmDialogModel.getId(), realmDialogModel.getName()));
+                .newInstance(realmDialogModel.getId(), realmDialogModel.getName(),realmDialogModel.getType(),-1));
 
     }
 
@@ -123,10 +123,8 @@ public class DialogsPresenter implements DialogsContract.Presenter {
             mModel.getAllDialogFromDb()
                     .filter(realmDialogModels -> realmDialogModels.size() > list.size())
                     .flatMap(Observable::from)
-                    .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(dialogModel -> {
                         if (!list.contains(dialogModel)) {
-                            Log.e("HOHOHO", dialogModel.getId());
                             mView.deleteItemDialog(dialogModel);
                             mModel.deleteItemDialog(dialogModel.getId());
                         }

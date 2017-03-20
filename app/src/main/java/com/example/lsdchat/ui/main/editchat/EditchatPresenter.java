@@ -32,7 +32,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -108,7 +107,7 @@ public class EditchatPresenter implements EditchatContract.Presenter {
 
 
                     prepareAndShowDialogInformation(item);
-                },throwable -> mView.showDialogError(throwable));
+                }, throwable -> mView.showDialogError(throwable));
 
 
 //        mModel.getDialogFromDatabase(dialogID)
@@ -260,8 +259,7 @@ public class EditchatPresenter implements EditchatContract.Presenter {
                 if (idOccupants.contains(idRemove)) {
                     if (currentUserId == mCreatedDialogId) {
                         body.setPullAll(new OccupantsPull(idRemoveChecked));
-                    }
-                    else {
+                    } else {
                         isNotError = false;
                         mView.initOccupantsIdList(idOccupants);
                         break;
@@ -274,11 +272,11 @@ public class EditchatPresenter implements EditchatContract.Presenter {
         if (isNotError) {
             mModel.updateDialog(mPreferencesManager.getToken(), mDialogID, body)
                     .subscribe(itemDialog -> {
-                        mView.navigateToConversationFragment(itemDialog.getId(), itemDialog.getName());
+                        mView.navigateToConversationFragment(itemDialog.getId(), itemDialog.getName(), mDialogType, -1);
                     }, throwable -> {
                         mView.showDialogError(throwable);
                         Log.e("TAH", "error edit ");
-                        mView.navigateToConversationFragment(mDialogID, dialogName);
+                        mView.navigateToConversationFragment(mDialogID, dialogName, mDialogType, -1);
                     });
         } else {
             mView.showPermissionErrorMessage();
