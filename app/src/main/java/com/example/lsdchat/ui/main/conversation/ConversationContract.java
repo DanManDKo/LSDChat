@@ -34,7 +34,7 @@ public interface ConversationContract {
 
         void onAdapterItemClicked(String id, int position);
 
-        void sendMessage(String dialogId, String message, String sendTo);
+        void sendMessage(String dialogId, String message, String sendTo, int dialogType);
 
         void loadMoreFromDataBase(String dialogId, int page);
 
@@ -70,6 +70,8 @@ public interface ConversationContract {
         void passUsersListToAdapter(List<LoginUser> users);
 
         void passUsersAvatarsToAdapter(List<ContentModel> users);
+
+        void showAppropriateMessage(int msg);
     }
 
     interface Model {

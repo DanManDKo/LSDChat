@@ -215,8 +215,8 @@ public class EditchatFragment extends BaseFragment implements EditchatContract.V
     }
 
     @Override
-    public void navigateToConversationFragment(String dialogID, String dialogName) {
-        mListener.onConversationFragmentSelected(dialogID, dialogName);
+    public void navigateToConversationFragment(String dialogID, String dialogName, int dialogType, int singleOccupant) {
+        mListener.onConversationFragmentSelected(dialogID, dialogName, dialogType, singleOccupant);
     }
 
     @Override
@@ -274,7 +274,7 @@ public class EditchatFragment extends BaseFragment implements EditchatContract.V
     }
 
     public interface OnSaveButtonClicked {
-        void onConversationFragmentSelected(String dialogID, String dialogName);
+        void onConversationFragmentSelected(String dialogID, String dialogName, int dialogType, int singleOccupant);
     }
 
 }

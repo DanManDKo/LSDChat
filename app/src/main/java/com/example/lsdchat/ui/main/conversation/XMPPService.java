@@ -21,15 +21,20 @@ public class XMPPService extends Service {
 
     public static final String UI_AUTHENTICATED = "com.example.lsdchat.uiauthenticated";
     public static final String SEND_MESSAGE = "com.example.lsdchat.sendmessage";
+    public static final String SEND_MESSAGE_PRIVATE = "com.example.lsdchat.sendmessageprivate";
     public static final String BUNDLE_MESSAGE_BODY = "b_body";
     public static final String BUNDLE_TO = "b_to";
 
     public static final String NEW_MESSAGE = "com.example.lsdchat.newmessage";
+    public static final String NEW_MESSAGE_PRIVATE = "com.example.lsdchat.newmessageprivate";
     public static final String BUNDLE_FROM_JID = "b_from";
     public static final String MESSAGE_ID = "message_id";
+    public static final String OCCUPANT_ID = "occupant_id";
+    public static final String DIALOG_TYPE = "dialog_type";
 
     public static XMPPConnection.ConnectionState sConnectionState;
     public static XMPPConnection.LoggedInState sLoggedInState;
+
     private boolean mActive;//Stores whether or not the thread is active
     private Thread mThread;
     private Handler mTHandler;//Handler to post messages to the background thread.
@@ -55,12 +60,13 @@ public class XMPPService extends Service {
         return sLoggedInState;
     }
 
-    private void initConnection(String userID, String password, String dialogID) {
+    private void initConnection(String userID, String password, String dialogID, int dialogType) {
         Log.d(TAG, "initConnection()");
         Log.e("XMPP", "Service-start()-initConnection()");
         if (mConnection == null) {
             Log.e("XMPP", "Service-start()-initConnection()-new XMPPConnection()");
-            mConnection = new XMPPConnection(this, userID, password, dialogID);
+//            mConnection = new XMPPConnection(this, userID, password, dialogID);
+            mConnection = new XMPPConnection(this, userID, password, dialogID, dialogType);
         }
         try {
             mConnection.connect();
@@ -85,7 +91,7 @@ public class XMPPService extends Service {
         Log.d(TAG, "onCreate()");
     }
 
-    public void start(String userID, String password, String dialogID) {
+    public void start(String userID, String password, String dialogID, int dialogType) {
         Log.d(TAG, "Service Start() function called");
         if (!mActive) {
             mActive = true;
@@ -97,7 +103,7 @@ public class XMPPService extends Service {
                         Looper.prepare();
                         mTHandler = new Handler();
                         Log.e("XMPP", "Service-start()");
-                        initConnection(userID, password, dialogID);
+                        initConnection(userID, password, dialogID, dialogType);
                         //THE CODE HERE RUNS IN A BACKGROUND THREAD.
                         Looper.loop();
                     }
@@ -130,7 +136,8 @@ public class XMPPService extends Service {
         String userID = String.valueOf(bundle.get("userID"));
         String password = String.valueOf(bundle.get("password"));
         String dialogID = String.valueOf(bundle.get("dialogID"));
-        start(userID, password, dialogID);
+        int dialogType = (int) bundle.get(DIALOG_TYPE);
+        start(userID, password, dialogID, dialogType);
         return Service.START_STICKY;
         //RETURNING START_STICKY CAUSES OUR CODE TO STICK AROUND WHEN THE APP ACTIVITY HAS DIED.
     }

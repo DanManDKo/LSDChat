@@ -70,8 +70,8 @@ public class MainActivity extends AppCompatActivity implements ConversationFragm
     }
 
     @Override
-    public void onConversationFragmentSelected(String dialogID, String dialogName) {
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragment, ConversationFragment.newInstance(dialogID, dialogName)).commit();
+    public void onConversationFragmentSelected(String dialogID, String dialogName, int dialogType, int singleOccupant) {
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment, ConversationFragment.newInstance(dialogID, dialogName, dialogType, singleOccupant)).commit();
     }
 
     @Override

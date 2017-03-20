@@ -2,7 +2,6 @@ package com.example.lsdchat.ui.main.conversation;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -20,6 +19,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.lsdchat.App;
 import com.example.lsdchat.R;
@@ -39,6 +39,8 @@ public class ConversationFragment extends BaseFragment implements ConversationCo
 
     private static final String DIALOG_ID = "dialog_id";
     private static final String DIALOG_NAME = "dialog_name";
+    private static final String DIALOG_TYPE = "dialog_type";
+    private static final String OCCUPANT_INDEX = "singleOccupant";
     private static final String INTENT_USER_ID = "userID";
     private static final String INTENT_DIALOG_ID = "dialogID";
     private static final String INTENT_PASSWORD = "password";
@@ -62,14 +64,18 @@ public class ConversationFragment extends BaseFragment implements ConversationCo
     private String mucToJID;
     private String dialogID;
     private String mNameDialog;
+    private String mPrivateOccupant;
+    private int mDialogType;
 
     private ArrayList<ItemMessage> mMessageList = new ArrayList<>();
 
-    public static ConversationFragment newInstance(String dialogID, String nameDialog) {
+    public static ConversationFragment newInstance(String dialogID, String nameDialog, int dialogType, int singleOccupant) {
         ConversationFragment conversationFragment = new ConversationFragment();
         Bundle bundle = new Bundle();
         bundle.putString(DIALOG_ID, dialogID);
         bundle.putString(DIALOG_NAME, nameDialog);
+        bundle.putInt(DIALOG_TYPE, dialogType);
+        bundle.putInt(OCCUPANT_INDEX, singleOccupant);
         conversationFragment.setArguments(bundle);
         return conversationFragment;
     }
@@ -88,9 +94,7 @@ public class ConversationFragment extends BaseFragment implements ConversationCo
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-        dialogID = getArguments().getString(DIALOG_ID);
-        mucToJID = ApiConstant.APP_ID + "_" + dialogID + ApiConstant.MessageRequestParams.MULTI_USER_CHAT;
-        mNameDialog = getArguments().getString(DIALOG_NAME);
+
     }
 
     @Override
@@ -99,6 +103,19 @@ public class ConversationFragment extends BaseFragment implements ConversationCo
         View view = inflater.inflate(R.layout.fragment_conversation, container, false);
         mConversationPresenter = new ConversationPresenter(this, App.getSharedPreferencesManager(getActivity()));
 
+        dialogID = getArguments().getString(DIALOG_ID);
+        if (getArguments().getInt(OCCUPANT_INDEX) != -1) {
+            mPrivateOccupant = String.valueOf(getArguments().getInt(OCCUPANT_INDEX));
+        }
+        mNameDialog = getArguments().getString(DIALOG_NAME);
+        mDialogType = getArguments().getInt(DIALOG_TYPE);
+        if (mDialogType != 3) {
+            mucToJID = ApiConstant.APP_ID + "_" + dialogID + ApiConstant.MessageRequestParams.MULTI_USER_CHAT;
+        } else {
+            mucToJID = mPrivateOccupant + "-" + ApiConstant.APP_ID + "@" + ApiConstant.MessageRequestParams.USER_CHAT;
+        }
+
+
         initView(view);
 
         User user = App.getDataManager().getUser();
@@ -106,6 +123,7 @@ public class ConversationFragment extends BaseFragment implements ConversationCo
         intentService.putExtra(INTENT_USER_ID, user.getId());
         intentService.putExtra(INTENT_PASSWORD, user.getPassword());
         intentService.putExtra(INTENT_DIALOG_ID, dialogID);
+        intentService.putExtra(DIALOG_TYPE, mDialogType);
         getActivity().startService(intentService);
 
         mAdapter = new ConversationRecyclerAdapter(mMessageList, mConversationPresenter, user.getId());
@@ -133,7 +151,7 @@ public class ConversationFragment extends BaseFragment implements ConversationCo
             }
         });
 
-        mButtonSend.setOnClickListener(v -> mConversationPresenter.sendMessage(dialogID, mMessage.getEditableText().toString(), mucToJID));
+        mButtonSend.setOnClickListener(v -> mConversationPresenter.sendMessage(dialogID, mMessage.getEditableText().toString(), mucToJID, mDialogType));
         mButtonSmiles.setOnClickListener(v -> {
         });
 
@@ -238,6 +256,17 @@ public class ConversationFragment extends BaseFragment implements ConversationCo
     @Override
     public void passUsersAvatarsToAdapter(List<ContentModel> models) {
         mAdapter.addContentList(models);
+    }
+
+    @Override
+    public void showAppropriateMessage(int msg) {
+        String message = null;
+        switch (msg) {
+            case 0:
+                message = getString(R.string.you_cannot_edit_this_dialog);
+                break;
+        }
+        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
     }
 
     @Override

@@ -77,10 +77,15 @@ public class ConversationPresenter implements ConversationContract.Presenter {
                         retrieveNewMessage(mView.getCurrentDialogID(), messageID);
 
                         return;
+                    case XMPPService.NEW_MESSAGE_PRIVATE:
+                        retrieveNewMessagePrivate(mView.getCurrentDialogID());
+                        return;
                 }
             }
         };
-        IntentFilter filter = new IntentFilter(XMPPService.NEW_MESSAGE);
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(XMPPService.NEW_MESSAGE);
+        filter.addAction(XMPPService.NEW_MESSAGE_PRIVATE);
         mContext.registerReceiver(mBroadcastReceiver, filter);
     }
 
@@ -94,6 +99,17 @@ public class ConversationPresenter implements ConversationContract.Presenter {
                 }, throwable -> {
                     Log.e("retrieveNewMessage", throwable.getMessage().toString());
                 });
+    }
+    private void retrieveNewMessagePrivate(String dialogID) {
+        mModel.getMessagesByDialogId(mPreferencesManager.getToken(), dialogID, 1, 0, UNREAD_MARK)
+                .subscribe(messagesResponse -> {
+                    ItemMessage im = messagesResponse.getItemMessageList().get(0);
+                    saveMessagesToDataBase(im);
+                    addNewMessageToAdapterList(im.getId());
+                }, throwable -> {
+                    Log.e("retrieveNewMessage", throwable.getMessage().toString());
+                });
+
     }
 
     @Override
@@ -124,16 +140,23 @@ public class ConversationPresenter implements ConversationContract.Presenter {
     }
 
     @Override
-    public void sendMessage(String dialogId, String message, String sendTo) {
+    public void sendMessage(String dialogId, String message, String sendTo, int dialogType) {
         if (XMPPService.getState().equals(XMPPConnection.ConnectionState.CONNECTED)) {
 
             if (!message.equalsIgnoreCase("")) {
                 Log.e("AAA", "The client is connected to the server, sending Message");
                 //Send the message to the server
-                Intent intent = new Intent(XMPPService.SEND_MESSAGE);
-                intent.putExtra(XMPPService.BUNDLE_MESSAGE_BODY, message);
-                intent.putExtra(XMPPService.BUNDLE_TO, sendTo);
-                getApplicationContext().sendBroadcast(intent);
+                if (dialogType != 3) {
+                    Intent intent = new Intent(XMPPService.SEND_MESSAGE);
+                    intent.putExtra(XMPPService.BUNDLE_MESSAGE_BODY, message);
+                    intent.putExtra(XMPPService.BUNDLE_TO, sendTo);
+                    getApplicationContext().sendBroadcast(intent);
+                } else {
+                    Intent intent = new Intent(XMPPService.SEND_MESSAGE_PRIVATE);
+                    intent.putExtra(XMPPService.BUNDLE_MESSAGE_BODY, message);
+                    intent.putExtra(XMPPService.BUNDLE_TO, sendTo);
+                    getApplicationContext().sendBroadcast(intent);
+                }
             }
         } else {
             Toast.makeText(getApplicationContext(),
@@ -183,14 +206,19 @@ public class ConversationPresenter implements ConversationContract.Presenter {
             boolean result = checkAccessLevel(dialogModel, value);
             return result;
         })).subscribe(aBoolean -> {
-            if (aBoolean) {
-                mView.replaceFragment(dialogId);
-            } else {
-                Toast.makeText(mContext, "You can`t edit private dialog", Toast.LENGTH_SHORT).show();
-            }
+            permissionForEditDialog(aBoolean, dialogId);
+
         }, throwable -> {
             Log.e("AAA", throwable.getMessage());
         });
+    }
+
+    private void permissionForEditDialog(boolean value, String dialogID) {
+        if (value) {
+            mView.replaceFragment(dialogID);
+        } else {
+            mView.showAppropriateMessage(0);
+        }
     }
 
     private boolean checkAccessLevel(RealmDialogModel dialog, int value) {

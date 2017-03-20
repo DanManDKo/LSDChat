@@ -55,7 +55,7 @@ public interface EditchatContract {
 
         void showPermissionErrorMessage();
 
-        void navigateToConversationFragment(String dialogID, String dialogName);
+        void navigateToConversationFragment(String dialogID, String dialogName, int dialogType, int singleOccupant);
     }
 
     interface Model {

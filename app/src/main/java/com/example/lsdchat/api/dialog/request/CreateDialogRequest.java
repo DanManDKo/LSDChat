@@ -33,6 +33,10 @@ public class CreateDialogRequest {
         this.idU = idU;
     }
 
+    public String getIdU() {
+        return idU;
+    }
+
     public void setType(Integer type) {
         this.type = type;
     }

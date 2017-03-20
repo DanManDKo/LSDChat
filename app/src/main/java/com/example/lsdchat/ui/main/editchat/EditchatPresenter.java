@@ -237,7 +237,7 @@ public class EditchatPresenter implements EditchatContract.Presenter {
                     });
         }
 
-        mView.navigateToConversationFragment(mDialogID, mNewDialogName);
+        mView.navigateToConversationFragment(mDialogID, mNewDialogName, mDialogType, -1);
 
     }
 

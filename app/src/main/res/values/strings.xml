@@ -191,4 +191,6 @@
     <string name="alert_delete_chat_delete">Delete</string>
     <string name="alert_delete_chat_cancel">Cancel</string>
 
+    <!--appropriate messages-->
+<string name="you_cannot_edit_this_dialog">You can`t edit this dialog</string>
 </resources>
