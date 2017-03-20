@@ -270,6 +270,11 @@ public class ConversationFragment extends BaseFragment implements ConversationCo
     }
 
     @Override
+    public void showErrorDialog(String message) {
+        dialogError(message);
+    }
+
+    @Override
     public void replaceFragment(String dialogId) {
         mEditListener.onEditchatSelected(dialogId);
     }
@@ -277,4 +282,6 @@ public class ConversationFragment extends BaseFragment implements ConversationCo
     public interface OnEditchatButtonClicked {
         void onEditchatSelected(String dialogID);
     }
+
+
 }

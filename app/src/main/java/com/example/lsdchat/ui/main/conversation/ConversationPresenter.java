@@ -115,8 +115,8 @@ public class ConversationPresenter implements ConversationContract.Presenter {
     @Override
     public void getMessages(String dialogId, int limit, int skip) {
         mModel.getMessagesByDialogId(mPreferencesManager.getToken(), dialogId, limit, skip, UNREAD_MARK)
-                .doOnRequest(aLong -> mView.showLoadProgressBar(true))
-                .doOnUnsubscribe(() -> mView.showLoadProgressBar(false))
+//                .doOnRequest(aLong -> mView.showLoadProgressBar(true))
+//                .doOnUnsubscribe(() -> mView.showLoadProgressBar(false))
                 .map(messagesResponse -> messagesResponse.getItemMessageList())
                 .doOnNext(itemMessages -> saveMessagesToDataBase(itemMessages))
                 .subscribe(itemMessages -> {
@@ -217,7 +217,7 @@ public class ConversationPresenter implements ConversationContract.Presenter {
         if (value) {
             mView.replaceFragment(dialogID);
         } else {
-            mView.showAppropriateMessage(0);
+            mView.showErrorDialog("You can`t edit this dialog");
         }
     }
 
