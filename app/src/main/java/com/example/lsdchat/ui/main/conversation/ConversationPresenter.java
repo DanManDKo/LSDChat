@@ -99,8 +99,8 @@ public class ConversationPresenter implements ConversationContract.Presenter {
     @Override
     public void getMessages(String dialogId, int limit, int skip) {
         mModel.getMessagesByDialogId(mPreferencesManager.getToken(), dialogId, limit, skip, UNREAD_MARK)
-                .doOnRequest(aLong -> mView.showLoadProgressBar(true))
-                .doOnUnsubscribe(() -> mView.showLoadProgressBar(false))
+//                .doOnRequest(aLong -> mView.showLoadProgressBar(true))
+//                .doOnUnsubscribe(() -> mView.showLoadProgressBar(false))
                 .map(messagesResponse -> messagesResponse.getItemMessageList())
                 .doOnNext(itemMessages -> saveMessagesToDataBase(itemMessages))
                 .subscribe(itemMessages -> {
@@ -179,14 +179,13 @@ public class ConversationPresenter implements ConversationContract.Presenter {
         Observable<RealmDialogModel> observableDialogModel =
                 mModel.getDialogFromDatabase(dialogId);
 
-        Observable.combineLatest(observableUserID, observableDialogModel, ((value, dialogModel) -> {
-            boolean result = checkAccessLevel(dialogModel, value);
-            return result;
-        })).subscribe(aBoolean -> {
+        Observable.combineLatest(observableUserID, observableDialogModel, ((value, dialogModel) ->
+                checkAccessLevel(dialogModel, value)))
+                .subscribe(aBoolean -> {
             if (aBoolean) {
                 mView.replaceFragment(dialogId);
             } else {
-                Toast.makeText(mContext, "You can`t edit private dialog", Toast.LENGTH_SHORT).show();
+                mView.showErrorDialog("You can`t edit this dialog");
             }
         }, throwable -> {
             Log.e("AAA", throwable.getMessage());

@@ -70,6 +70,8 @@ public interface ConversationContract {
         void passUsersListToAdapter(List<LoginUser> users);
 
         void passUsersAvatarsToAdapter(List<ContentModel> users);
+
+        void showErrorDialog(String message);
     }
 
     interface Model {
