@@ -18,6 +18,7 @@ import com.example.lsdchat.ui.BasePresenter;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -39,7 +40,9 @@ public interface EditchatContract {
 
         void showPermissionErrorMessage();
 
-        void updateDialogCredentials(List<Integer> addedOccupants, List<Integer> deletedOccupants, String dialogName);
+        void updateDialogCredentials(String dialogName);
+
+        void checkBoxSetOnChecked(int userId, boolean isChecked);
     }
 
     interface View {
@@ -55,7 +58,13 @@ public interface EditchatContract {
 
         void showPermissionErrorMessage();
 
-        void navigateToConversationFragment(String dialogID, String dialogName, int dialogType, int singleOccupant);
+        void navigateToConversationFragment(String dialogID, String dialogName);
+
+        void initOccupantsIdList(Set<Integer> occupantsId);
+
+        void showDialogError(Throwable throwable);
+
+        void setRlUsersAccessibility(boolean enable);
     }
 
     interface Model {

@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.lsdchat.R;
@@ -19,6 +20,7 @@ import com.example.lsdchat.model.ContentModel;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -37,14 +39,15 @@ public class EditchatAdapter extends RecyclerView.Adapter<EditchatAdapter.ViewHo
     private List<LoginUser> mUsersList;
     private List<ContentModel> mContentModelList;
     private Map<String, String> mMapAvatar;
+    private Set<Integer> mIdChecked;
 
     private int mDialogType;
-    private int mOwnerID;
+
     private int mDialogCreaterID;
     private Context mContext;
     private EditchatPresenter mPresenter;
 
-    public EditchatAdapter(EditchatPresenter presenter, Context context, int ownerID) {
+    public EditchatAdapter(EditchatPresenter presenter, Context context) {
         mOccupantsList = new ArrayList<>();
         mAddedOccupantsList = new ArrayList<>();
         mDelatedOccupantsList = new ArrayList<>();
@@ -52,10 +55,18 @@ public class EditchatAdapter extends RecyclerView.Adapter<EditchatAdapter.ViewHo
         mContentModelList = new ArrayList<>();
         mMapAvatar = new HashMap<>();
 
+        mIdChecked = new HashSet<>();
+
         mDialogType = PUBLIC_GROUP_TYPE;
-        mOwnerID = ownerID;
+
         mPresenter = presenter;
         mContext = context;
+    }
+
+    public void setIdChecked(Set<Integer> idChecked) {
+        mIdChecked.clear();
+        mIdChecked.addAll(idChecked);
+        notifyDataSetChanged();
     }
 
     @Override
@@ -79,47 +90,10 @@ public class EditchatAdapter extends RecyclerView.Adapter<EditchatAdapter.ViewHo
                 holder.mUserAvatar.setImageResource(R.drawable.userpic);
             }
 
-            switch (mDialogType) {
-                case PUBLIC_GROUP_TYPE:
-                    holder.mCheckBox.setVisibility(View.GONE);
-                    break;
-                case PRIVATE_GROUP_TYPE:
+            boolean isChecked = mIdChecked.contains(user.getId());
+            holder.mCheckBox.setChecked(isChecked);
 
-                    if (mOccupantsList.contains(user.getId())) {
-                        holder.mCheckBox.setChecked(true);
-                        holder.mUserName.setTextColor(ContextCompat.getColor(mContext, R.color.colorNewChatTextCheck));
-                    }
 
-                    holder.mCheckBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
-
-                        if (isChecked) {
-                            mOccupantsList.add(user.getId());
-                            mAddedOccupantsList.add(user.getId());
-
-                            if (mDelatedOccupantsList.contains(user.getId()))
-                                mDelatedOccupantsList.remove(user.getId());
-
-                            holder.mUserName.setTextColor(ContextCompat.getColor(mContext, R.color.colorNewChatTextCheck));
-                        } else {
-                            if (user.getId() == mOwnerID || mDialogCreaterID == mOwnerID|| mAddedOccupantsList.contains(user.getId())) {
-                                mOccupantsList.remove(user.getId());
-                                mAddedOccupantsList.remove(user.getId());
-                                mDelatedOccupantsList.add(user.getId());
-
-                                holder.mUserName.setTextColor(ContextCompat.getColor(mContext, R.color.colorNewChatText));
-                            } else {
-                                buttonView.setChecked(!isChecked);
-                                mPresenter.showPermissionErrorMessage();
-                            }
-                        }
-                    });
-                    break;
-                case PRIVATE_TYPE:
-                    break;
-                default:
-                    break;
-
-            }
         }
     }
 
@@ -133,17 +107,33 @@ public class EditchatAdapter extends RecyclerView.Adapter<EditchatAdapter.ViewHo
         private TextView mUserName;
         private CheckBox mCheckBox;
 
+
         public ViewHolder(View itemView) {
             super(itemView);
             mUserAvatar = (CircleImageView) itemView.findViewById(R.id.item_editchat_usericon);
             mUserName = (TextView) itemView.findViewById(R.id.item_editchat_username);
             mCheckBox = (CheckBox) itemView.findViewById(R.id.item_editchat_checkbox);
+
+
+            mCheckBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                int userId=mUsersList.get(getAdapterPosition()).getId();
+                if (isChecked) {
+                    mIdChecked.add(userId);
+                    mPresenter.checkBoxSetOnChecked(userId, true);
+                    mUserName.setTextColor(ContextCompat.getColor(mContext,R.color.colorNewChatTextCheck));
+                } else {
+                    mIdChecked.remove(userId);
+                    mPresenter.checkBoxSetOnChecked(userId, false);
+                    mUserName.setTextColor(ContextCompat.getColor(mContext,R.color.colorNewChatText));
+                }
+
+            });
+
+
         }
     }
 
-    public void setOccupantsList(List<Integer> occupantsList) {
-        mOccupantsList.addAll(occupantsList);
-    }
+
 
     public void setContentModelList(List<ContentModel> contentModelList) {
         mContentModelList.addAll(contentModelList);
