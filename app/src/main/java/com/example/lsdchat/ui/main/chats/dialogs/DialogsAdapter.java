@@ -14,6 +14,7 @@ import com.example.lsdchat.R;
 import com.example.lsdchat.model.ContentModel;
 import com.example.lsdchat.model.RealmDialogModel;
 import com.example.lsdchat.util.DateUtils;
+import com.example.lsdchat.util.UsersUtil;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -81,10 +82,10 @@ public class DialogsAdapter extends RecyclerView.Adapter<DialogsAdapter.ViewHold
             holder.mChatName.setText(realmDialogModel.getName());
             holder.mChatDate.setText(DateUtils.millisecondsToDate(realmDialogModel.getLastMessageDateSent()));
             if (realmDialogModel.getLastMessageUserId() != null) {
-//            String fullName = UsersUtil.getUserById(realmDialogModel.getLastMessageUserId()).getFullName();
-//            if (fullName!=null) {
-//                holder.mChatTitle.setText(fullName);
-//            }
+            String fullName = UsersUtil.getUserById(realmDialogModel.getLastMessageUserId()).getFullName();
+            if (fullName!=null) {
+                holder.mChatTitle.setText(fullName);
+            }
             } else {
                 holder.mChatTitle.setText("");
             }
