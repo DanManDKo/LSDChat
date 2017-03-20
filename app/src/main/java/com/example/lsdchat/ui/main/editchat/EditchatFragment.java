@@ -311,5 +311,15 @@ public class EditchatFragment extends BaseFragment implements EditchatContract.V
         }
     }
 
+    @Override
+    public void setRlUsersAccessibility(boolean enable) {
+        if (enable) {
+            mRecyclerView.setVisibility(View.VISIBLE);
+        }
+        else {
+            mRecyclerView.setVisibility(View.GONE);
+        }
+    }
+
 }
 
