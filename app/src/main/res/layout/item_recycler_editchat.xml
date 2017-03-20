@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    android:id="@+id/rl_editchat"
+    xmlns:android="http://schemas.android.com/apk/res/android"
                 xmlns:fresco="http://schemas.android.com/apk/res-auto"
                 xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="match_parent"
@@ -16,6 +18,7 @@
         android:scaleType="centerCrop"
         android:src="@drawable/userpic"
         />
+
     <TextView
         android:id="@+id/item_editchat_username"
         android:layout_width="wrap_content"
