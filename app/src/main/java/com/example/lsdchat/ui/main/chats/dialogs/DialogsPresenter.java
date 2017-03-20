@@ -1,9 +1,9 @@
 package com.example.lsdchat.ui.main.chats.dialogs;
 
 
-import com.example.lsdchat.App;
+import android.util.Log;
+
 import com.example.lsdchat.constant.ApiConstant;
-import com.example.lsdchat.model.IdsListInteger;
 import com.example.lsdchat.model.RealmDialogModel;
 import com.example.lsdchat.ui.main.conversation.ConversationFragment;
 
@@ -83,16 +83,8 @@ public class DialogsPresenter implements DialogsContract.Presenter {
 
     @Override
     public void setClickRl(RealmDialogModel realmDialogModel) {
-        int user = App.getDataManager().getUser().getId();
-        int singleOccupant = 0;
-        for (IdsListInteger o : realmDialogModel.getOccupantsIdsList()) {
-            if (user != o.getValue()) {
-                singleOccupant = o.getValue();
-                break;
-            }
-        }
         mView.navigateToChat(ConversationFragment
-                .newInstance(realmDialogModel.getId(), realmDialogModel.getName(), realmDialogModel.getType(), singleOccupant));
+                .newInstance(realmDialogModel.getId(), realmDialogModel.getName()));
 
     }
 
@@ -109,14 +101,36 @@ public class DialogsPresenter implements DialogsContract.Presenter {
 
     @Override
     public void getAllDialogAndSave() {
+
         List<RealmDialogModel> list = new ArrayList<>();
         mModel.getAllDialogs(mModel.getToken())
+                .observeOn(AndroidSchedulers.mainThread())
                 .flatMap(dialogsResponse -> Observable.just(dialogsResponse.getItemDialogList()))
                 .subscribe(dialogList -> {
                     Observable.from(dialogList)
                             .subscribe(dialog -> list.add(new RealmDialogModel(dialog)));
+
                     mModel.saveDialog(list);
+
+                    checkSizeDb(list);
+
                 }, throwable -> mView.showErrorDialog(throwable));
 
+    }
+
+    private void checkSizeDb(List<RealmDialogModel> list) {
+        if (list!=null) {
+            mModel.getAllDialogFromDb()
+                    .filter(realmDialogModels -> realmDialogModels.size() > list.size())
+                    .flatMap(Observable::from)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(dialogModel -> {
+                        if (!list.contains(dialogModel)) {
+                            Log.e("HOHOHO", dialogModel.getId());
+                            mView.deleteItemDialog(dialogModel);
+                            mModel.deleteItemDialog(dialogModel.getId());
+                        }
+                    });
+        }
     }
 }

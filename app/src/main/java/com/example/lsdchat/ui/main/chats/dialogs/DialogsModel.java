@@ -13,6 +13,7 @@ import com.example.lsdchat.util.DialogUtil;
 import java.util.List;
 
 import rx.Observable;
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
@@ -33,7 +34,6 @@ public class DialogsModel implements DialogsContract.Model {
     }
 
 
-
     @Override
     public Observable<DialogsResponse> getAllDialogs(String token) {
         return mDialogService.getDialog(token)
@@ -50,9 +50,21 @@ public class DialogsModel implements DialogsContract.Model {
     @Override
     public void saveDialog(List<RealmDialogModel> dialogList) {
         Observable.from(dialogList)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(itemDialog -> mDataManager.insertDialogToDB(itemDialog));
 
-        DialogUtil.saveImageDialog(dialogList,getToken());
+        DialogUtil.saveImageDialog(dialogList, getToken());
+    }
+
+    @Override
+    public void deleteItemDialog(String idDialog) {
+        mDataManager.deleteItemDialog(idDialog);
+    }
+
+    @Override
+    public Observable<List<RealmDialogModel>> getAllDialogFromDb() {
+        return mDataManager.getAllDialog();
     }
 
     @Override
