@@ -237,9 +237,7 @@ public class EditchatPresenter implements EditchatContract.Presenter {
 
         if (mUploadFile != null) {
             getBlobObjectCreateFile(mPreferencesManager.getToken(), getFileMimeType(mUploadFile), mUploadFile.getName());
-            if (mBlobId != 0) {
-                body.setPhotoId(mBlobId);
-            }
+
         }
 
         if (!idAddChecked.isEmpty()) {
@@ -330,7 +328,15 @@ public class EditchatPresenter implements EditchatContract.Presenter {
     private void declareFileUploaded(long size, String token, long blobId) {
         mModel.declareFileUploaded(size, token, blobId)
                 .subscribe(aVoid -> {
-                    mBlobId = blobId;
+                    UpdateDialogRequest body = new UpdateDialogRequest();
+                    body.setPhotoId(blobId);
+                    mModel.updateDialog(mPreferencesManager.getToken(), mDialogID, body)
+                            .subscribe(itemDialog -> {
+
+                            }, throwable -> {
+                                mView.showDialogError(throwable);
+
+                            });
                 }, throwable -> mView.showDialogError(throwable));
     }
 
