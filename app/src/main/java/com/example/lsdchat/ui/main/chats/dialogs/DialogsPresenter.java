@@ -3,7 +3,9 @@ package com.example.lsdchat.ui.main.chats.dialogs;
 
 import android.util.Log;
 
+import com.example.lsdchat.App;
 import com.example.lsdchat.constant.ApiConstant;
+import com.example.lsdchat.model.IdsListInteger;
 import com.example.lsdchat.model.RealmDialogModel;
 import com.example.lsdchat.ui.main.conversation.ConversationFragment;
 
@@ -83,8 +85,16 @@ public class DialogsPresenter implements DialogsContract.Presenter {
 
     @Override
     public void setClickRl(RealmDialogModel realmDialogModel) {
+        int ocID = 0;
+        for (IdsListInteger id: realmDialogModel.getOccupantsIdsList()) {
+            if (id.getValue() != App.getDataManager().getUser().getId()){
+                ocID = id.getValue();
+            }
+        }
+
+
         mView.navigateToChat(ConversationFragment
-                .newInstance(realmDialogModel.getId(), realmDialogModel.getName(),realmDialogModel.getType(),-1));
+                .newInstance(realmDialogModel.getId(), realmDialogModel.getName(),realmDialogModel.getType(),ocID));
 
     }
 
