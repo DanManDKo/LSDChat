@@ -50,7 +50,7 @@ public class DialogsPresenter implements DialogsContract.Presenter {
     public void getDialogFilterList(int typeDialog, String query) {
         if (typeDialog == ApiConstant.TYPE_DIALOG_PUBLIC) {
             getObservableDialog(ApiConstant.TYPE_DIALOG_PUBLIC)
-                    .subscribe(dialogModels -> setFilterList(dialogModels,query));
+                    .subscribe(dialogModels -> setFilterList(dialogModels, query));
 
         } else {
             List<RealmDialogModel> list = new ArrayList<>();
@@ -62,7 +62,7 @@ public class DialogsPresenter implements DialogsContract.Presenter {
             Observable<List<RealmDialogModel>> oP = getObservableDialog(ApiConstant.TYPE_DIALOG_PRIVATE);
             oP.subscribe(list::addAll);
 
-            setFilterList(list,query);
+            setFilterList(list, query);
 
         }
 
@@ -101,14 +101,36 @@ public class DialogsPresenter implements DialogsContract.Presenter {
 
     @Override
     public void getAllDialogAndSave() {
+
         List<RealmDialogModel> list = new ArrayList<>();
         mModel.getAllDialogs(mModel.getToken())
+                .observeOn(AndroidSchedulers.mainThread())
                 .flatMap(dialogsResponse -> Observable.just(dialogsResponse.getItemDialogList()))
                 .subscribe(dialogList -> {
                     Observable.from(dialogList)
                             .subscribe(dialog -> list.add(new RealmDialogModel(dialog)));
-                    mModel.saveDialog(list);
-                },throwable -> mView.showErrorDialog(throwable));
 
+                    mModel.saveDialog(list);
+
+                    checkSizeDb(list);
+
+                }, throwable -> mView.showErrorDialog(throwable));
+
+    }
+
+    private void checkSizeDb(List<RealmDialogModel> list) {
+        if (list!=null) {
+            mModel.getAllDialogFromDb()
+                    .filter(realmDialogModels -> realmDialogModels.size() > list.size())
+                    .flatMap(Observable::from)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(dialogModel -> {
+                        if (!list.contains(dialogModel)) {
+                            Log.e("HOHOHO", dialogModel.getId());
+                            mView.deleteItemDialog(dialogModel);
+                            mModel.deleteItemDialog(dialogModel.getId());
+                        }
+                    });
+        }
     }
 }

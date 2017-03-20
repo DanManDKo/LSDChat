@@ -14,7 +14,6 @@ import com.example.lsdchat.R;
 import com.example.lsdchat.model.ContentModel;
 import com.example.lsdchat.model.RealmDialogModel;
 import com.example.lsdchat.util.DateUtils;
-import com.example.lsdchat.util.UsersUtil;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -45,8 +44,8 @@ public class DialogsAdapter extends RecyclerView.Adapter<DialogsAdapter.ViewHold
     public void setContentModelList(List<ContentModel> contentModelList) {
         mContentModelList.addAll(contentModelList);
 
-        for (ContentModel user: mContentModelList) {
-            mMapAvatar.put(user.getId(),user.getImagePath());
+        for (ContentModel user : mContentModelList) {
+            mMapAvatar.put(user.getId(), user.getImagePath());
         }
 
         notifyDataSetChanged();
@@ -54,6 +53,13 @@ public class DialogsAdapter extends RecyclerView.Adapter<DialogsAdapter.ViewHold
 
     public void addData(List<RealmDialogModel> loginUserList) {
         mData.addAll(loginUserList);
+        notifyDataSetChanged();
+    }
+
+    public void deleteItemData(RealmDialogModel dialogModel) {
+        if (mData.contains(dialogModel)) {
+            mData.remove(dialogModel);
+        }
         notifyDataSetChanged();
     }
 
@@ -71,40 +77,39 @@ public class DialogsAdapter extends RecyclerView.Adapter<DialogsAdapter.ViewHold
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         RealmDialogModel realmDialogModel = mData.get(position);
+        if (realmDialogModel != null) {
+            holder.mChatName.setText(realmDialogModel.getName());
+            holder.mChatDate.setText(DateUtils.millisecondsToDate(realmDialogModel.getLastMessageDateSent()));
+            if (realmDialogModel.getLastMessageUserId() != null) {
+//            String fullName = UsersUtil.getUserById(realmDialogModel.getLastMessageUserId()).getFullName();
+//            if (fullName!=null) {
+//                holder.mChatTitle.setText(fullName);
+//            }
+            } else {
+                holder.mChatTitle.setText("");
+            }
+            holder.mChatLastMessage.setText(realmDialogModel.getLastMessage());
 
-        holder.mChatName.setText(realmDialogModel.getName());
-        holder.mChatDate.setText(DateUtils.millisecondsToDate(realmDialogModel.getLastMessageDateSent()));
-        if (realmDialogModel.getLastMessageUserId() != null) {
-            holder.mChatTitle.setText(UsersUtil.getUserById(realmDialogModel.getLastMessageUserId()).getFullName());
+            if (realmDialogModel.getUnreadMessagesCount() != 0) {
+                holder.mNewMessageCounter.setVisibility(View.VISIBLE);
+                holder.mChatName.setTextColor(Color.parseColor("#327780"));
+                holder.mChatDate.setTextColor(Color.BLACK);
+                holder.mNewMessageCounter.setText(String.valueOf(realmDialogModel.getUnreadMessagesCount()));
+            } else {
+                holder.mNewMessageCounter.setText("");
+                holder.mNewMessageCounter.setVisibility(View.GONE);
+            }
+
+
+            String path = mMapAvatar.get(realmDialogModel.getId());
+            if (path != null) {
+                holder.mDialogImage.setImageURI(Uri.fromFile(new File(path)));
+            } else {
+                holder.mDialogImage.setImageResource(R.drawable.userpic_group);
+            }
+
+            holder.mRl.setOnClickListener(v -> mPresenter.setClickRl(realmDialogModel));
         }
-        else {
-            holder.mChatTitle.setText("");
-        }
-        holder.mChatLastMessage.setText(realmDialogModel.getLastMessage());
-
-        if (realmDialogModel.getUnreadMessagesCount() != 0) {
-            holder.mNewMessageCounter.setVisibility(View.VISIBLE);
-            holder.mChatName.setTextColor(Color.parseColor("#327780"));
-            holder.mChatDate.setTextColor(Color.BLACK);
-            holder.mNewMessageCounter.setText(String.valueOf(realmDialogModel.getUnreadMessagesCount()));
-        }
-        else {
-            holder.mNewMessageCounter.setText("");
-            holder.mNewMessageCounter.setVisibility(View.GONE);
-        }
-
-
-        String path = mMapAvatar.get(realmDialogModel.getId());
-        if (path != null) {
-            holder.mDialogImage.setImageURI(Uri.fromFile(new File(path)));
-        }
-        else {
-            holder.mDialogImage.setImageResource(R.drawable.userpic_group);
-        }
-
-        holder.mRl.setOnClickListener(v -> mPresenter.setClickRl(realmDialogModel));
-
-
 
     }
 
