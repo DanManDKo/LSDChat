@@ -69,13 +69,9 @@ public class ConversationPresenter implements ConversationContract.Presenter {
                 String action = intent.getAction();
                 switch (action) {
                     case XMPPService.NEW_MESSAGE:
-//                        String fromJID = intent.getStringExtra(XMPPService.BUNDLE_FROM_JID);
-//                        String body = intent.getStringExtra(XMPPService.BUNDLE_MESSAGE_BODY);
-//                        String from = fromJID.split("-")[0];
                         String messageID = intent.getStringExtra(XMPPService.MESSAGE_ID);
 
                         retrieveNewMessage(mView.getCurrentDialogID(), messageID);
-
                         return;
                     case XMPPService.NEW_MESSAGE_PRIVATE:
                         retrieveNewMessagePrivate(mView.getCurrentDialogID());
@@ -95,11 +91,11 @@ public class ConversationPresenter implements ConversationContract.Presenter {
                     ItemMessage im = messagesResponse.getItemMessageList().get(0);
                     saveMessagesToDataBase(im);
                     addNewMessageToAdapterList(messageID);
-                    Log.e("retrieveNewMessage", im.getMessage());
                 }, throwable -> {
                     Log.e("retrieveNewMessage", throwable.getMessage().toString());
                 });
     }
+
     private void retrieveNewMessagePrivate(String dialogID) {
         mModel.getMessagesByDialogId(mPreferencesManager.getToken(), dialogID, 1, 0, UNREAD_MARK)
                 .subscribe(messagesResponse -> {
@@ -130,8 +126,28 @@ public class ConversationPresenter implements ConversationContract.Presenter {
 
 
     @Override
-    public void onAdapterItemClicked(String id, int position) {
-        Toast.makeText(mContext, "item " + id, Toast.LENGTH_SHORT).show();
+    public void onAdapterItemClicked(String id, int position, String message, String dialogID) {
+        mView.showConfirmationWindow(id, position, message, dialogID);
+    }
+
+    @Override
+    public void deleteMessage(String dialogID, int position) {
+        mModel.deleteMessage(mPreferencesManager.getToken(), dialogID)
+                .subscribe(aVoid -> {
+                    mView.notifyAdapterItemDeleted(position);
+                }, throwable -> {
+
+                });
+    }
+
+    @Override
+    public void updateMessage(String messageID, int position, String message, String dialogID) {
+        mModel.updateMessage(mPreferencesManager.getToken(), messageID, message, dialogID)
+                .subscribe(aVoid -> {
+                    mView.notifyAdapterItemUpdated(position, message);
+                }, throwable -> {
+
+                });
     }
 
     @Override

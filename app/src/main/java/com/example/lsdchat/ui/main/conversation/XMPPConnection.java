@@ -55,7 +55,6 @@ public class XMPPConnection implements ConnectionListener {
 
     public XMPPConnection(Context context, String userID, String password, String dialogID, int dialogType) {
         mApplicationContext = context.getApplicationContext();
-//        jid = "23163511-52350@chat.quickblox.com";
         mDialogType = dialogType;
         mPassword = password;
         mUsername = userID + "-" + ApiConstant.APP_ID;
@@ -91,17 +90,17 @@ public class XMPPConnection implements ConnectionListener {
             muc = manager.getMultiUserChat(mucChat);
             muc.join(mConnection.getUser());
             muc.addMessageListener(message -> {
-                String contactJid = null;
-
-                String from = message.getFrom();
+//                String contactJid = null;
+//
+//                String from = message.getFrom();
                 String messageID = getMessageID(message);
 
-                if (from.contains("/")) {
-                    contactJid = from.split("/")[1];
-                } else {
-                    contactJid = from;
-                }
-                Log.e("AAA", "The real jid is :" + contactJid);
+//                if (from.contains("/")) {
+//                    contactJid = from.split("/")[1];
+//                } else {
+//                    contactJid = from;
+//                }
+//                Log.e("AAA", "The real jid is :" + contactJid);
 
                 //Bundle up the intent and send the broadcast.
                 Intent intent = new Intent(XMPPService.NEW_MESSAGE);
@@ -110,13 +109,13 @@ public class XMPPConnection implements ConnectionListener {
             });
         } else {
             messageListener = (chat, message) -> {
-                String from = message.getFrom();
-                String contactJid = "";
-                if (from.contains("/")) {
-                    contactJid = from.split("/")[0];
-                } else {
-                    contactJid = from;
-                }
+//                String from = message.getFrom();
+//                String contactJid = "";
+//                if (from.contains("/")) {
+//                    contactJid = from.split("/")[0];
+//                } else {
+//                    contactJid = from;
+//                }
 
                 //Bundle up the intent and send the broadcast.
                 Intent intent = new Intent(XMPPService.NEW_MESSAGE_PRIVATE);
@@ -193,11 +192,8 @@ public class XMPPConnection implements ConnectionListener {
             e.printStackTrace();
         }
     }
-    //-------------------------------------------------------------
-
 
     private void sendMessagePrivate(String body, String toJID) {
-        Log.e("AAA", "Sending message to :" + toJID);
         Message msg = new Message();
         //rewrite Strings below to Constants
         //These steps for saving messages to history on server
@@ -224,7 +220,6 @@ public class XMPPConnection implements ConnectionListener {
             e.printStackTrace();
         }
     }
-    //-------------------------------------------------------------------
 
     public void disconnect() {
         Log.e("AAA", "Disconnecting from server " + mServiceName);

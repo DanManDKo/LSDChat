@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -265,8 +266,60 @@ public class ConversationFragment extends BaseFragment implements ConversationCo
             case 0:
                 message = getString(R.string.you_cannot_edit_this_dialog);
                 break;
+            case 1:
+                message = getString(R.string.message_deleted);
+                break;
+            case 2:
+                message = getString(R.string.message_updated);
+                break;
         }
         Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void showConfirmationWindow(String messageID, int position, String message, String dialogID) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle(message)
+                .setPositiveButton(getString(R.string.alert_delete_chat_delete), (dialogInterface, i) -> {
+                    mConversationPresenter.deleteMessage(messageID, position);
+                    dialogInterface.dismiss();
+                })
+                .setNegativeButton(getString(R.string.alert_delete_chat_update), (dialog, which) -> {
+                    showEditMessageWindow(messageID, position, message, dialogID);
+                    dialog.dismiss();
+                })
+                .setNeutralButton(getString(R.string.alert_delete_chat_cancel), (dialog, which) -> dialog.dismiss())
+                .setCancelable(false)
+                .create()
+                .show();
+    }
+
+    private void showEditMessageWindow(String messageID, int position, String message, String dialogID) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setCancelable(false);
+        final EditText input = new EditText(getContext());
+        input.setText(message);
+        builder.setView(input)
+                .setPositiveButton(getString(R.string.alert_delete_chat_update), (dialog, which) -> {
+                    mConversationPresenter.updateMessage(messageID, position, input.getEditableText().toString(), dialogID);
+                    dialog.dismiss();
+                })
+                .setNegativeButton(getString(R.string.alert_delete_chat_cancel), (dialog, which) -> dialog.dismiss())
+                .create()
+                .show();
+    }
+
+
+    @Override
+    public void notifyAdapterItemDeleted(int position) {
+        mAdapter.deleteItem(position);
+        showAppropriateMessage(1);
+    }
+
+    @Override
+    public void notifyAdapterItemUpdated(int position, String message) {
+        mAdapter.updateItem(position, message);
+        showAppropriateMessage(2);
     }
 
     @Override

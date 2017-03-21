@@ -172,8 +172,6 @@ public class EditchatFragment extends BaseFragment implements EditchatContract.V
         mListener = null;
     }
 
-
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {

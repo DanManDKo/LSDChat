@@ -88,9 +88,9 @@ public class ConversationRecyclerAdapter extends RecyclerView.Adapter<Conversati
                 holder.image.setImageResource(R.drawable.userpic);
             }
 
-            holder.messageRoot.setOnClickListener(view -> {
-
-                mConversationPresenter.onAdapterItemClicked(mList.get(position).getId(), position);
+            holder.messageRoot.setOnLongClickListener(v -> {
+                mConversationPresenter.onAdapterItemClicked(mList.get(position).getId(), position, mList.get(position).getMessage(), mList.get(position).getChatDialogId());
+                return true;
             });
         }
     }
@@ -164,5 +164,15 @@ public class ConversationRecyclerAdapter extends RecyclerView.Adapter<Conversati
         for (ContentModel o : mContentModels) {
             mMapAvatar.put(o.getId(), o.getImagePath());
         }
+    }
+
+    public void deleteItem(int position) {
+        mUsers.remove(mUsers.get(position));
+        notifyItemRemoved(position);
+    }
+
+    public void updateItem(int position, String message) {
+        mList.get(position).setMessage(message);
+        notifyItemChanged(position);
     }
 }

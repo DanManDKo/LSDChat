@@ -32,8 +32,6 @@ public interface ConversationContract {
 
         void addNewMessageToAdapterList(String messageId);
 
-        void onAdapterItemClicked(String id, int position);
-
         void sendMessage(String dialogId, String message, String sendTo, int dialogType);
 
         void loadMoreFromDataBase(String dialogId, int page);
@@ -45,6 +43,12 @@ public interface ConversationContract {
         void getUsersListFromDatabase();
 
         void getUsersAvatarsFromDatabase();
+
+        void onAdapterItemClicked(String id, int position, String message, String dialogID);
+
+        void deleteMessage(String dialogID, int position);
+
+        void updateMessage(String messageID, int position, String message, String dialogID);
 
         boolean isOnline();
 
@@ -72,6 +76,12 @@ public interface ConversationContract {
         void passUsersAvatarsToAdapter(List<ContentModel> users);
 
         void showAppropriateMessage(int msg);
+
+        void showConfirmationWindow(String messageID, int position, String message, String dialogID);
+
+        void notifyAdapterItemDeleted(int position);
+
+        void notifyAdapterItemUpdated(int position, String message);
     }
 
     interface Model {
@@ -88,5 +98,9 @@ public interface ConversationContract {
         Observable<List<LoginUser>> getUsersFromDatabase();
 
         Observable<List<ContentModel>> getUserAvatarFromDatabase();
+
+        Observable<Void> deleteMessage(String token, String dialogID);
+
+        Observable<Void> updateMessage(String token, String messageID, String message, String dialogId);
     }
 }
