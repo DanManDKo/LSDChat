@@ -167,7 +167,7 @@ public class ConversationRecyclerAdapter extends RecyclerView.Adapter<Conversati
     }
 
     public void deleteItem(int position) {
-        mUsers.remove(mUsers.get(position));
+        mUsers.remove(position);
         notifyItemRemoved(position);
     }
 

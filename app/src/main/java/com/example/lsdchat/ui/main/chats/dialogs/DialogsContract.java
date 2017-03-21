@@ -20,6 +20,10 @@ public interface DialogsContract {
         void saveDialog(List<RealmDialogModel> dialogList);
 
 
+        Observable<List<RealmDialogModel>> getAllDialogFromDb();
+
+        void deleteItemDialog(String idDialog);
+
         String getToken();
 
         Observable<List<ContentModel>> getObservableUserAvatar();
@@ -35,6 +39,8 @@ public interface DialogsContract {
         void setContentModelList(List<ContentModel> contentModelList);
 
         void showErrorDialog(Throwable throwable);
+
+        void deleteItemDialog(RealmDialogModel item);
     }
 
     interface Presenter {

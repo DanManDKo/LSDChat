@@ -77,7 +77,6 @@ public class DialogsFragment extends BaseFragment implements DialogsContract.Vie
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
-
         mDialogsAdapter = new DialogsAdapter(mPresenter);
         mRecyclerView.setAdapter(mDialogsAdapter);
 
@@ -132,6 +131,12 @@ public class DialogsFragment extends BaseFragment implements DialogsContract.Vie
         mDialogsAdapter.clearData();
     }
 
+    @Override
+    public void deleteItemDialog(RealmDialogModel item) {
+        mDialogsAdapter.deleteItemData(item);
+        mDialogsAdapter.notifyDataSetChanged();
+    }
+
     private void initSwipeDelete() {
         ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
 
@@ -161,7 +166,7 @@ public class DialogsFragment extends BaseFragment implements DialogsContract.Vie
                     mDialogsAdapter.notifyItemRemoved(viewHolder.getLayoutPosition());
 
                 }).setNegativeButton(R.string.alert_delete_chat_cancel, (dialog, which) -> {
-                    setListDialog(mList);
+                    mDialogsAdapter.notifyDataSetChanged();
                     dialog.dismiss();
 
                 }).setCancelable(false).show();

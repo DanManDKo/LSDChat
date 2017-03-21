@@ -116,10 +116,21 @@ public class DataManager {
         mRealm.executeTransaction(realm -> realm.copyToRealmOrUpdate(dialog));
     }
 
+    public void deleteItemDialog(String idDialog) {
+        mRealm.executeTransaction(realm -> {
+            RealmResults<RealmDialogModel> realmResults = mRealm.where(RealmDialogModel.class).equalTo("id",idDialog).findAll();
+            realmResults.deleteAllFromRealm();
+        });
+    }
+
+
+    public Observable<List<RealmDialogModel>> getAllDialog() {
+        return Observable.fromCallable(() -> mRealm.where(RealmDialogModel.class).findAll());
+    }
 
     public Observable<List<RealmDialogModel>> getObservableDialogsByType(int type) {
         return Observable.fromCallable(() ->
-                mRealm.where(RealmDialogModel.class).equalTo("type", type).findAllSorted("updatedAt", Sort.DESCENDING));
+                mRealm.where(RealmDialogModel.class).equalTo("type", type).findAllSorted("lastMessageDateSent", Sort.DESCENDING));
     }
 
 
