@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -30,6 +32,7 @@ import com.example.lsdchat.constant.ApiConstant;
 import com.example.lsdchat.listener.EndlessScrollListener;
 import com.example.lsdchat.model.ContentModel;
 import com.example.lsdchat.model.User;
+import com.example.lsdchat.ui.PresenterLoader;
 import com.example.lsdchat.ui.main.fragment.BaseFragment;
 
 import java.util.ArrayList;
@@ -37,6 +40,8 @@ import java.util.List;
 
 public class ConversationFragment extends BaseFragment implements ConversationContract.View {
     private static final String EMPTY_STRING = "";
+    private static final int CONVERSATION_LOADER_ID = 202;
+    private static final String TAG = "Conversation Loader";
 
     private static final String DIALOG_ID = "dialog_id";
     private static final String DIALOG_NAME = "dialog_name";
@@ -47,7 +52,7 @@ public class ConversationFragment extends BaseFragment implements ConversationCo
     private static final String INTENT_PASSWORD = "password";
 
     private static final int DIALOG_PRIVATE = 3;
-    private static final int TOTAL_ITEM_COUNT = 19;
+    private static final int TOTAL_ITEM_COUNT = 20;
 
     private ConversationPresenter mConversationPresenter;
     private OnEditchatButtonClicked mEditListener;
@@ -95,14 +100,12 @@ public class ConversationFragment extends BaseFragment implements ConversationCo
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.e("Conv", "onCreateView");
         View view = inflater.inflate(R.layout.fragment_conversation, container, false);
-        mConversationPresenter = new ConversationPresenter(this, App.getSharedPreferencesManager(getActivity()));
 
         dialogID = getArguments().getString(DIALOG_ID);
         if (getArguments().getInt(OCCUPANT_INDEX) != -1) {
@@ -116,8 +119,35 @@ public class ConversationFragment extends BaseFragment implements ConversationCo
             mucToJID = mPrivateOccupant + "-" + ApiConstant.APP_ID + "@" + ApiConstant.MessageRequestParams.USER_CHAT;
         }
 
-
         initView(view);
+
+        return view;
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        getLoaderManager().initLoader(CONVERSATION_LOADER_ID, null, new LoaderManager.LoaderCallbacks<ConversationPresenter>() {
+            @Override
+            public Loader<ConversationPresenter> onCreateLoader(int id, Bundle args) {
+                return new PresenterLoader<ConversationPresenter>(getContext(), getFactory(), TAG);
+            }
+
+            @Override
+            public void onLoadFinished(Loader<ConversationPresenter> loader, ConversationPresenter data) {
+                ConversationFragment.this.mConversationPresenter = data;
+                onPresenterPrepared(mConversationPresenter);
+            }
+
+            @Override
+            public void onLoaderReset(Loader<ConversationPresenter> loader) {
+                onPresenterDestroyed(mConversationPresenter);
+                ConversationFragment.this.mConversationPresenter = null;
+            }
+        });
+    }
+
+    private void onPresenterPrepared(ConversationPresenter presenter) {
 
         User user = App.getDataManager().getUser();
         Intent intentService = new Intent(getActivity(), XMPPService.class);
@@ -129,17 +159,16 @@ public class ConversationFragment extends BaseFragment implements ConversationCo
 
         mAdapter = new ConversationRecyclerAdapter(mMessageList, mConversationPresenter, user.getId());
 
-        if (mConversationPresenter.isOnline()) {
-            mConversationPresenter.getUsersListFromDatabase();
-            mConversationPresenter.getUsersAvatarsFromDatabase();
-            mConversationPresenter.getMessages(dialogID, ApiConstant.MessageRequestParams.MESSAGE_LIMIT, ApiConstant.MessageRequestParams.MESSAGE_SKIP);
+        if (presenter.isOnline()) {
+            presenter.getUsersListFromDatabase();
+            presenter.getUsersAvatarsFromDatabase();
+            presenter.getMessages(dialogID, ApiConstant.MessageRequestParams.MESSAGE_LIMIT, ApiConstant.MessageRequestParams.MESSAGE_SKIP);
         } else {
-            mConversationPresenter.fillAdapterListWithMessages(dialogID);
+            presenter.fillAdapterListWithMessages(dialogID);
         }
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
         linearLayoutManager.setReverseLayout(true);
-        mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
         mRecyclerView.setLayoutManager(linearLayoutManager);
         mRecyclerView.setAdapter(mAdapter);
@@ -147,16 +176,20 @@ public class ConversationFragment extends BaseFragment implements ConversationCo
             @Override
             public void onLoadMore(int skip, int totalItemsCount, RecyclerView view) {
                 if (totalItemsCount > TOTAL_ITEM_COUNT) {
-                    mConversationPresenter.loadMore(dialogID, skip);
+                    presenter.loadMore(dialogID, skip);
                 }
             }
         });
 
-        mButtonSend.setOnClickListener(v -> mConversationPresenter.sendMessage(dialogID, mMessage.getEditableText().toString(), mucToJID, mDialogType));
+        mButtonSend.setOnClickListener(v -> presenter.sendMessage(dialogID, mMessage.getEditableText().toString(), mucToJID, mDialogType));
         mButtonSmiles.setOnClickListener(v -> {
         });
+    }
 
-        return view;
+    private void onPresenterDestroyed(ConversationPresenter presenter) {
+        presenter.onDestroy();
+        mEditListener = null;
+        getActivity().stopService(new Intent(getContext(), XMPPService.class));
     }
 
     @Override
@@ -193,9 +226,6 @@ public class ConversationFragment extends BaseFragment implements ConversationCo
     public void onDestroyView() {
         super.onDestroyView();
         Log.e("Conv", "onDestroyView");
-        mConversationPresenter.onDestroy();
-        mEditListener = null;
-        getActivity().stopService(new Intent(getContext(), XMPPService.class));
     }
 
     @Override
@@ -289,7 +319,7 @@ public class ConversationFragment extends BaseFragment implements ConversationCo
                     dialog.dismiss();
                 })
                 .setNeutralButton(getString(R.string.alert_delete_chat_cancel), (dialog, which) -> dialog.dismiss())
-                .setCancelable(false)
+                .setCancelable(true)
                 .create()
                 .show();
     }
@@ -320,6 +350,11 @@ public class ConversationFragment extends BaseFragment implements ConversationCo
     public void notifyAdapterItemUpdated(int position, String message) {
         mAdapter.updateItem(position, message);
         showAppropriateMessage(2);
+    }
+
+    private ConversationPresenterFactory getFactory() {
+        ConversationContract.Model model = new ConversationModel();
+        return new ConversationPresenterFactory(this, model, App.getSharedPreferencesManager(getContext()));
     }
 
     @Override

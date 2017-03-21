@@ -9,6 +9,7 @@ import com.example.lsdchat.api.login.model.LoginUser;
 import com.example.lsdchat.model.ContentModel;
 import com.example.lsdchat.model.RealmDialogModel;
 import com.example.lsdchat.model.User;
+import com.example.lsdchat.ui.BasePresenter;
 
 import java.util.List;
 
@@ -16,7 +17,7 @@ import rx.Observable;
 
 // TODO: 3/9/17 [Code Review] this should be in Fragment
 public interface ConversationContract {
-    interface Presenter {
+    interface Presenter extends BasePresenter {
 
         void onDestroy();
 

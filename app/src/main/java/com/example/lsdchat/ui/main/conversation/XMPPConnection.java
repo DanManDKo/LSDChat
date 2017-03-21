@@ -90,18 +90,8 @@ public class XMPPConnection implements ConnectionListener {
             muc = manager.getMultiUserChat(mucChat);
             muc.join(mConnection.getUser());
             muc.addMessageListener(message -> {
-//                String contactJid = null;
-//
-//                String from = message.getFrom();
+
                 String messageID = getMessageID(message);
-
-//                if (from.contains("/")) {
-//                    contactJid = from.split("/")[1];
-//                } else {
-//                    contactJid = from;
-//                }
-//                Log.e("AAA", "The real jid is :" + contactJid);
-
                 //Bundle up the intent and send the broadcast.
                 Intent intent = new Intent(XMPPService.NEW_MESSAGE);
                 intent.putExtra(XMPPService.MESSAGE_ID, messageID);
@@ -109,14 +99,6 @@ public class XMPPConnection implements ConnectionListener {
             });
         } else {
             messageListener = (chat, message) -> {
-//                String from = message.getFrom();
-//                String contactJid = "";
-//                if (from.contains("/")) {
-//                    contactJid = from.split("/")[0];
-//                } else {
-//                    contactJid = from;
-//                }
-
                 //Bundle up the intent and send the broadcast.
                 Intent intent = new Intent(XMPPService.NEW_MESSAGE_PRIVATE);
                 mApplicationContext.sendBroadcast(intent);

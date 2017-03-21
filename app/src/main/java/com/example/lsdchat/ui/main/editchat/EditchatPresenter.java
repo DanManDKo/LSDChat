@@ -82,6 +82,8 @@ public class EditchatPresenter implements EditchatContract.Presenter {
     @Override
     public void onDetach() {
         mView = null;
+        mModel = null;
+        mPreferencesManager = null;
     }
 
     @Override
@@ -91,6 +93,7 @@ public class EditchatPresenter implements EditchatContract.Presenter {
 
     @Override
     public void loadDialogCredentials(String dialogID) {
+
         mModel.getDialogByID(mPreferencesManager.getToken(), dialogID)
                 .subscribe(dialogsResponse -> {
                     mDialogID = dialogID;
@@ -108,20 +111,10 @@ public class EditchatPresenter implements EditchatContract.Presenter {
 
                     prepareAndShowDialogInformation(item);
                 }, throwable -> mView.showDialogError(throwable));
-
-
-//        mModel.getDialogFromDatabase(dialogID)
-//                .subscribe(dialogModel -> {
-//                    mDialogID = dialogID;
-//                    mView.fillDialogNameField(dialogModel.getName(), dialogModel.getOwnerId());
-//
-//                    prepareAndShowDialogInformation(dialogModel);
-//                }, throwable -> {
-//
-//                });
     }
 
     private void prepareAndShowDialogInformation(ItemDialog dialogModel) {
+
         mModel.getDialogAvatarFromDatabase(dialogModel.getId())
                 .map(contentModel -> {
                     if (contentModel != null) {
@@ -172,6 +165,7 @@ public class EditchatPresenter implements EditchatContract.Presenter {
 
     @Override
     public void getAvatarsFromDatabase() {
+
         mModel.getAllAvatarsFromDatabase()
                 .subscribe(contentModelList -> {
                     mView.fillAdapterContentModelsList(contentModelList);
@@ -237,7 +231,6 @@ public class EditchatPresenter implements EditchatContract.Presenter {
 
         if (mUploadFile != null) {
             getBlobObjectCreateFile(mPreferencesManager.getToken(), getFileMimeType(mUploadFile), mUploadFile.getName());
-
         }
 
         if (!idAddChecked.isEmpty()) {
@@ -263,7 +256,6 @@ public class EditchatPresenter implements EditchatContract.Presenter {
                         break;
                     }
                 }
-
             }
         }
 
@@ -278,10 +270,7 @@ public class EditchatPresenter implements EditchatContract.Presenter {
                     });
         } else {
             mView.showPermissionErrorMessage();
-
         }
-
-
     }
 
 
@@ -302,6 +291,7 @@ public class EditchatPresenter implements EditchatContract.Presenter {
 
 
     private void getBlobObjectCreateFile(String token, String mime, String fileName) {
+
         mModel.createFile(token, mime, fileName)
                 .subscribe(registrationCreateFileResponse -> {
                     long blobId = registrationCreateFileResponse.getBlob().getBlobObjestAccess().getBlobId();
@@ -316,6 +306,7 @@ public class EditchatPresenter implements EditchatContract.Presenter {
     }
 
     private void uploadFileRetrofit(String token, long blobId, HashMap<String, RequestBody> map, MultipartBody.Part file) {
+
         mModel.uploadFileMap(map, file)
                 .subscribe(aVoid -> {
                     long fileSize = mUploadFile.length();
@@ -326,10 +317,12 @@ public class EditchatPresenter implements EditchatContract.Presenter {
     }
 
     private void declareFileUploaded(long size, String token, long blobId) {
+
         mModel.declareFileUploaded(size, token, blobId)
                 .subscribe(aVoid -> {
                     UpdateDialogRequest body = new UpdateDialogRequest();
                     body.setPhotoId(blobId);
+
                     mModel.updateDialog(mPreferencesManager.getToken(), mDialogID, body)
                             .subscribe(itemDialog -> {
 

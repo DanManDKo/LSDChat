@@ -35,23 +35,24 @@ public class ConversationPresenter implements ConversationContract.Presenter {
     private Context mContext;
     private SharedPreferencesManager mPreferencesManager;
     private BroadcastReceiver mBroadcastReceiver;
-    private int userID;
 
-    public ConversationPresenter(ConversationContract.View view, SharedPreferencesManager manager) {
+    public ConversationPresenter(ConversationContract.View view, ConversationContract.Model model, SharedPreferencesManager manager) {
         mView = view;
         mContext = view.getContext();
-        mModel = new ConversationModel();
+        mModel = model;
         mPreferencesManager = manager;
+    }
 
-        userID = mPreferencesManager.getUserID();
+    @Override
+    public void onDetach() {
+
     }
 
     @Override
     public void onDestroy() {
         mView = null;
         mModel = null;
-//        mContext = null;
-//        mPreferencesManager = null;
+        mPreferencesManager = null;
     }
 
     @Override
@@ -111,8 +112,6 @@ public class ConversationPresenter implements ConversationContract.Presenter {
     @Override
     public void getMessages(String dialogId, int limit, int skip) {
         mModel.getMessagesByDialogId(mPreferencesManager.getToken(), dialogId, limit, skip, UNREAD_MARK)
-//                .doOnRequest(aLong -> mView.showLoadProgressBar(true))
-//                .doOnUnsubscribe(() -> mView.showLoadProgressBar(false))
                 .map(messagesResponse -> messagesResponse.getItemMessageList())
                 .doOnNext(itemMessages -> saveMessagesToDataBase(itemMessages))
                 .subscribe(itemMessages -> {
@@ -270,8 +269,6 @@ public class ConversationPresenter implements ConversationContract.Presenter {
     @Override
     public void loadMore(String dialogId, int skip) {
         mModel.getMessagesByDialogId(mPreferencesManager.getToken(), dialogId, ApiConstant.MessageRequestParams.MESSAGE_LIMIT, skip, UNREAD_MARK)
-//                .doOnRequest(aLong -> mView.showLoadProgressBar(true))
-//                .doOnUnsubscribe(() -> mView.showLoadProgressBar(false))
                 .map(messagesResponse -> messagesResponse.getItemMessageList())
                 .doOnNext(itemMessages -> saveMessagesToDataBase(itemMessages))
                 .subscribe(itemMessages -> {
@@ -286,8 +283,6 @@ public class ConversationPresenter implements ConversationContract.Presenter {
     @Override
     public void getUsersListFromDatabase() {
         mModel.getUsersFromDatabase()
-//                .doOnRequest(aLong -> mView.showLoadProgressBar(true))
-//                .doOnUnsubscribe(() -> mView.showLoadProgressBar(false))
                 .subscribe(loginUsers -> {
                     mView.passUsersListToAdapter(loginUsers);
                 }, throwable -> {
@@ -298,8 +293,6 @@ public class ConversationPresenter implements ConversationContract.Presenter {
     @Override
     public void getUsersAvatarsFromDatabase() {
         mModel.getUserAvatarFromDatabase()
-//                .doOnRequest(aLong -> mView.showLoadProgressBar(true))
-//                .doOnUnsubscribe(() -> mView.showLoadProgressBar(false))
                 .subscribe(contentModel -> {
                     mView.passUsersAvatarsToAdapter(contentModel);
                 }, throwable -> {
