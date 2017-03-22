@@ -54,9 +54,30 @@ public class LoginUser extends RealmObject implements Parcelable {
     private String customData;
     @SerializedName("user_tags")
     private String userTags;
+
     private String imagePath;
 
     public LoginUser() {
+    }
+
+    public LoginUser(LoginUser user, String imagePath) {
+        this.id = user.getId();
+        this.fullName = user.getFullName();
+        this.email = user.getEmail();
+        this.login = user.getLogin();
+        this.phone = user.getPhone();
+        this.website = user.getWebsite();
+        this.createdAt = user.getCreatedAt();
+        this.updatedAt = user.getUpdatedAt();
+        this.lastRequestAt = user.getLastRequestAt();
+        this.externalUserId = user.getExternalUserId();
+        this.facebookId = user.getFacebookId();
+        this.twitterId = user.getTwitterId();
+        this.twitterDigitsId = user.getTwitterDigitsId();
+        this.blobId = user.getBlobId();
+        this.customData = user.getCustomData();
+        this.userTags = user.getUserTags();
+        this.imagePath = imagePath;
     }
 
     protected LoginUser(Parcel in) {

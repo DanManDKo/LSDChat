@@ -5,7 +5,10 @@ import com.example.lsdchat.App;
 import com.example.lsdchat.api.dialog.DialogService;
 import com.example.lsdchat.api.dialog.response.DialogsResponse;
 import com.example.lsdchat.manager.DataManager;
-import com.example.lsdchat.model.DialogModel;
+import com.example.lsdchat.manager.SharedPreferencesManager;
+import com.example.lsdchat.model.ContentModel;
+import com.example.lsdchat.model.RealmDialogModel;
+import com.example.lsdchat.util.DialogUtil;
 
 import java.util.List;
 
@@ -16,16 +19,19 @@ import rx.schedulers.Schedulers;
 public class DialogsModel implements DialogsContract.Model {
     private DataManager mDataManager;
     private DialogService mDialogService;
+    private SharedPreferencesManager mSharedPreferencesManager;
 
-    public DialogsModel() {
+    public DialogsModel(SharedPreferencesManager mSharedPreferencesManager) {
         mDataManager = App.getDataManager();
         mDialogService = App.getApiManager().getDialogService();
+        this.mSharedPreferencesManager = mSharedPreferencesManager;
     }
 
     @Override
-    public List<DialogModel> getDialogsByType(int type) {
-        return mDataManager.getDialogsByType(type);
+    public String getToken() {
+        return mSharedPreferencesManager.getToken();
     }
+
 
     @Override
     public Observable<DialogsResponse> getAllDialogs(String token) {
@@ -35,9 +41,40 @@ public class DialogsModel implements DialogsContract.Model {
     }
 
     @Override
-    public void saveDialog(List<DialogModel> dialogList) {
-        Observable.from(dialogList)
-                .subscribe(itemDialog -> mDataManager.insertDialogToDB(itemDialog));
+    public Observable<List<RealmDialogModel>> getObservableDialogsByType(int type) {
+        return mDataManager.getObservableDialogsByType(type);
+
     }
 
+    @Override
+    public void saveDialog(List<RealmDialogModel> dialogList) {
+        Observable.from(dialogList)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(itemDialog -> mDataManager.insertDialogToDB(itemDialog));
+
+        DialogUtil.saveImageDialog(dialogList, getToken());
+    }
+
+    @Override
+    public void deleteItemDialog(String idDialog) {
+        mDataManager.deleteItemDialog(idDialog);
+    }
+
+    @Override
+    public Observable<List<RealmDialogModel>> getAllDialogFromDb() {
+        return mDataManager.getAllDialog();
+    }
+
+    @Override
+    public Observable<List<ContentModel>> getObservableUserAvatar() {
+        return mDataManager.getObservableUserAvatar();
+    }
+
+    @Override
+    public Observable<Void> deleteDialog(String dialogId) {
+      return mDialogService.deleteDialog(getToken(), dialogId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
 }

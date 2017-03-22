@@ -8,10 +8,6 @@ import android.net.NetworkInfo;
 import com.example.lsdchat.R;
 
 
-/**
- * Created by User on 21.01.2017.
- */
-
 public class Network {
     public static boolean isOnline(Context context) {
         ConnectivityManager manager = (ConnectivityManager) context

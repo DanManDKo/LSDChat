@@ -6,15 +6,22 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.util.Log;
 
+import com.example.lsdchat.App;
+import com.example.lsdchat.constant.ApiConstant;
+
 import org.jivesoftware.smack.ConnectionConfiguration;
 import org.jivesoftware.smack.ConnectionListener;
-import org.jivesoftware.smack.MessageListener;
 import org.jivesoftware.smack.ReconnectionManager;
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
+import org.jivesoftware.smack.chat.Chat;
+import org.jivesoftware.smack.chat.ChatManager;
+import org.jivesoftware.smack.chat.ChatManagerListener;
+import org.jivesoftware.smack.chat.ChatMessageListener;
 import org.jivesoftware.smack.packet.DefaultExtensionElement;
 import org.jivesoftware.smack.packet.ExtensionElement;
 import org.jivesoftware.smack.packet.Message;
+import org.jivesoftware.smack.packet.id.StanzaIdUtil;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
 import org.jivesoftware.smack.util.PacketParserUtils;
@@ -24,45 +31,38 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
-import java.util.Random;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class XMPPConnection implements ConnectionListener {
-    //back up with alpha dependence
-    //http://pastebin.com/uewjWzYA
 
-    //back up with multyChat
-    //http://pastebin.com/fBEdcT3j
+    private ChatMessageListener messageListener;
 
-    //app_id + doalog_id
-    public static final String mucChat = "52350_589f6bfda0eb47ea8400026a@muc.chat.quickblox.com";
     private final Context mApplicationContext;
     private final String mUsername;
     private final String mPassword;
     private final String mServiceName;
-    String jid;
+    public String mucChat;
+    public String jid;
+    public int mDialogType;
+    private Map<String, MultiUserChat> publicChats;
+
     MultiUserChat muc;
     MultiUserChatManager manager;
     private XMPPTCPConnection mConnection;
     //Receives messages from the ui thread.
     private BroadcastReceiver uiThreadMessageReceiver;
 
-    public XMPPConnection(Context context) {
-        Log.e("AAA", "RoosterConnection Constructor called.");
+    public XMPPConnection(Context context, String userID, String password, String dialogID, int dialogType) {
         mApplicationContext = context.getApplicationContext();
+        mDialogType = dialogType;
+        mPassword = password;
+        mUsername = userID + "-" + ApiConstant.APP_ID;
+        mServiceName = ApiConstant.MessageRequestParams.USER_CHAT;
+        mucChat = ApiConstant.APP_ID + "_" + dialogID + ApiConstant.MessageRequestParams.MULTI_USER_CHAT;
+        jid = mUsername + "@" + ApiConstant.MessageRequestParams.USER_CHAT;
+        publicChats = new ConcurrentHashMap<>();
 
-        /*There we have to retrieve user_id AND app_id AND password from DataBase
-        *concat user_id + "-" + "ApiConstant.APP_ID";*/
-        jid = "23163511-52350@chat.quickblox.com";
-        //password from DataBase
-        mPassword = "aaaaaaaa";
-
-        if (jid != null) {
-            mUsername = jid.split("@")[0];
-            mServiceName = jid.split("@")[1];
-        } else {
-            mUsername = "";
-            mServiceName = "";
-        }
     }
 
     public void connect() throws IOException, XMPPException, SmackException {
@@ -81,32 +81,29 @@ public class XMPPConnection implements ConnectionListener {
         mConnection.connect();
         mConnection.login();
 
-        manager = MultiUserChatManager.getInstanceFor(mConnection);
-        muc = manager.getMultiUserChat(mucChat);
-        muc.join(mConnection.getUser());
-        muc.addMessageListener(new MessageListener() {
-            @Override
-            public void processMessage(Message message) {
-                String contactJid = null;
+        ChatManager.getInstanceFor(mConnection).addChatListener((chat, createdLocally) -> {
+            chat.addMessageListener(messageListener);
+        });
 
-                String from = message.getFrom();
+        if (mDialogType != 3) {
+            manager = MultiUserChatManager.getInstanceFor(mConnection);
+            muc = manager.getMultiUserChat(mucChat);
+            muc.join(mConnection.getUser());
+            muc.addMessageListener(message -> {
+
                 String messageID = getMessageID(message);
-
-                if (from.contains("/")) {
-                    contactJid = from.split("/")[1];
-                } else {
-                    contactJid = from;
-                }
-                Log.e("AAA", "The real jid is :" + contactJid);
-
                 //Bundle up the intent and send the broadcast.
                 Intent intent = new Intent(XMPPService.NEW_MESSAGE);
-                intent.putExtra(XMPPService.BUNDLE_FROM_JID, contactJid);
                 intent.putExtra(XMPPService.MESSAGE_ID, messageID);
-                intent.putExtra(XMPPService.BUNDLE_MESSAGE_BODY, message.getBody());
                 mApplicationContext.sendBroadcast(intent);
-            }
-        });
+            });
+        } else {
+            messageListener = (chat, message) -> {
+                //Bundle up the intent and send the broadcast.
+                Intent intent = new Intent(XMPPService.NEW_MESSAGE_PRIVATE);
+                mApplicationContext.sendBroadcast(intent);
+            };
+        }
 
         ReconnectionManager reconnectionManager = ReconnectionManager.getInstanceFor(mConnection);
         reconnectionManager.setEnabledPerDefault(true);
@@ -124,7 +121,6 @@ public class XMPPConnection implements ConnectionListener {
             XmlPullParser parser2 = PacketParserUtils.getParserFor(String.valueOf(name));
             messageID = PacketParserUtils.parseElementText(parser2);
 
-            Log.e("AAA", messageID);
         } catch (XmlPullParserException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -137,17 +133,21 @@ public class XMPPConnection implements ConnectionListener {
         uiThreadMessageReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                //Check if the Intents purpose is to send the message.
                 String action = intent.getAction();
+                //Send the message.
                 if (action.equals(XMPPService.SEND_MESSAGE)) {
-                    //Send the message.
                     sendMessage(intent.getStringExtra(XMPPService.BUNDLE_MESSAGE_BODY),
+                            intent.getStringExtra(XMPPService.BUNDLE_TO));
+                }
+                if (action.equals(XMPPService.SEND_MESSAGE_PRIVATE)) {
+                    sendMessagePrivate(intent.getStringExtra(XMPPService.BUNDLE_MESSAGE_BODY),
                             intent.getStringExtra(XMPPService.BUNDLE_TO));
                 }
             }
         };
         IntentFilter filter = new IntentFilter();
         filter.addAction(XMPPService.SEND_MESSAGE);
+        filter.addAction(XMPPService.SEND_MESSAGE_PRIVATE);
         mApplicationContext.registerReceiver(uiThreadMessageReceiver, filter);
     }
 
@@ -155,17 +155,49 @@ public class XMPPConnection implements ConnectionListener {
         Message msg = new Message();
         //rewrite Strings below to Constants
         //These steps for saving messages to history on server
+        long timestamp = System.currentTimeMillis() / 1000;
         DefaultExtensionElement extensionElement = new DefaultExtensionElement("extraParams", "jabber:client");
         extensionElement.setValue("save_to_history", "1");
+        extensionElement.setValue("date_sent", timestamp + "");
+        extensionElement.setValue("notification_type", timestamp + "");
 
         msg.setBody(body);
-        msg.setStanzaId(String.valueOf(new Random(1000).nextInt()));
+        msg.setStanzaId(StanzaIdUtil.newStanzaId());
         msg.setType(Message.Type.groupchat);
         msg.setTo(toJid);
         msg.addExtension(extensionElement);
 
         try {
             muc.sendMessage(msg);
+        } catch (SmackException.NotConnectedException e) {
+
+            e.printStackTrace();
+        }
+    }
+
+    private void sendMessagePrivate(String body, String toJID) {
+        Message msg = new Message();
+        //rewrite Strings below to Constants
+        //These steps for saving messages to history on server
+        long timestamp = System.currentTimeMillis() / 1000;
+        DefaultExtensionElement extensionElement = new DefaultExtensionElement("extraParams", "jabber:client");
+        extensionElement.setValue("save_to_history", "1");
+        extensionElement.setValue("date_sent", timestamp + "");
+        extensionElement.setValue("notification_type", timestamp + "");
+
+        msg.setBody(body);
+        msg.setStanzaId(StanzaIdUtil.newStanzaId());
+        msg.setType(Message.Type.chat);
+        msg.setTo(toJID);
+        msg.addExtension(extensionElement);
+
+
+        Chat chat = ChatManager.getInstanceFor(mConnection)
+                .createChat(toJID, messageListener);
+        try {
+            chat.sendMessage(msg);
+            Intent intent = new Intent(XMPPService.NEW_MESSAGE_PRIVATE);
+            mApplicationContext.sendBroadcast(intent);
         } catch (SmackException.NotConnectedException e) {
             e.printStackTrace();
         }

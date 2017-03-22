@@ -21,12 +21,20 @@ public class CreateDialogRequest {
 
     }
 
+    public CreateDialogRequest(String name) {
+        this.name = name;
+    }
+
     public void setOccupantsIdsList(List<String> occupantsIdsList) {
         this.occupantsIdsList = occupantsIdsList;
     }
 
     public void setIdU(String idU) {
         this.idU = idU;
+    }
+
+    public String getIdU() {
+        return idU;
     }
 
     public void setType(Integer type) {

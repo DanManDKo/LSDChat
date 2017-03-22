@@ -8,6 +8,7 @@ import com.example.lsdchat.api.dialog.DialogService;
 import com.example.lsdchat.api.dialog.model.ItemDialog;
 import com.example.lsdchat.api.dialog.request.CreateDialogRequest;
 import com.example.lsdchat.api.dialog.response.UserListResponse;
+import com.example.lsdchat.api.login.model.LoginUser;
 import com.example.lsdchat.api.registration.request.RegistrationCreateFileRequest;
 import com.example.lsdchat.api.registration.request.RegistrationCreateFileRequestBlob;
 import com.example.lsdchat.api.registration.request.RegistrationDeclaringRequest;
@@ -15,8 +16,13 @@ import com.example.lsdchat.api.registration.request.RegistrationDeclaringRequest
 import com.example.lsdchat.api.registration.response.RegistrationCreateFileResponse;
 import com.example.lsdchat.api.registration.service.RegistrationService;
 import com.example.lsdchat.manager.DataManager;
+import com.example.lsdchat.manager.SharedPreferencesManager;
+import com.example.lsdchat.model.ContentModel;
+import com.example.lsdchat.model.RealmDialogModel;
+import com.example.lsdchat.util.DialogUtil;
 
 import java.io.File;
+import java.util.List;
 import java.util.Map;
 
 import io.realm.internal.IOException;
@@ -34,13 +40,19 @@ public class CreateChatModel implements CreateChatContract.Model {
     private DialogService mDialogService;
     private RegistrationService mRegistrationService;
     private DataManager mDataManager;
+    private SharedPreferencesManager mSharedPreferencesManager;
 
-    public CreateChatModel() {
-        mDialogService = App.getApiManager().getDialogService();
-        mRegistrationService = App.getApiManager().getRegistrationService();
-        mDataManager = App.getDataManager();
+    public CreateChatModel(SharedPreferencesManager sharedPreferencesManager,DataManager mDataManager,DialogService mDialogService,RegistrationService mRegistrationService) {
+        this.mDataManager = mDataManager;
+        this.mDialogService = mDialogService;
+        this.mRegistrationService = mRegistrationService;
+        this.mSharedPreferencesManager = sharedPreferencesManager;
     }
 
+    @Override
+    public String getToken() {
+        return mSharedPreferencesManager.getToken();
+    }
 
     @Override
     public Observable<ItemDialog> createDialog(String token, CreateDialogRequest createDialogRequest) {
@@ -80,44 +92,23 @@ public class CreateChatModel implements CreateChatContract.Model {
     }
 
     @Override
-    public Observable<UserListResponse> getUserList(String token) {
-        return mDialogService.getUserList(token,100)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
-
+    public Observable<List<ContentModel>> getObservableUserAvatar() {
+        return mDataManager.getObservableUserAvatar();
     }
 
     @Override
-    public Observable<File> downloadImage(long blobId, String token) {
-        return mDialogService.downloadImage(blobId, token)
-                .flatMap(responseBodyResponse -> saveImage(responseBodyResponse,blobId))
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
+    public Observable<List<LoginUser>> getUserListObservable() {
+        return mDataManager.getUserObservable();
     }
-
 
     @Override
-    public Observable<File> saveImage(Response<ResponseBody> response,long blobId) {
-        return Observable.create(subscriber -> {
-            try {
+    public void saveDialog(List<RealmDialogModel> dialogList) {
+        Observable.from(dialogList)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(itemDialog -> mDataManager.insertDialogToDB(itemDialog));
 
-                String fileName = String.valueOf(blobId) + ".jpg";
-                File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getAbsoluteFile(), fileName);
-                BufferedSink sink = Okio.buffer(Okio.sink(file));
-
-                sink.writeAll(response.body().source());
-                sink.close();
-                subscriber.onNext(file);
-                subscriber.onCompleted();
-            } catch (IOException e) {
-                e.printStackTrace();
-                subscriber.onError(e);
-            } catch (java.io.IOException e) {
-                e.printStackTrace();
-            }
-        });
+        DialogUtil.saveImageDialog(dialogList, getToken());
     }
-
-
 
 }

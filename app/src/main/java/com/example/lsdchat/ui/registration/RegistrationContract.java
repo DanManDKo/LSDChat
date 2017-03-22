@@ -8,6 +8,7 @@ import com.example.lsdchat.api.login.response.LoginResponse;
 import com.example.lsdchat.api.login.response.SessionResponse;
 import com.example.lsdchat.api.registration.response.RegistrationCreateFileResponse;
 import com.example.lsdchat.api.registration.response.RegistrationResponse;
+import com.example.lsdchat.model.User;
 
 import java.util.Map;
 
@@ -83,6 +84,8 @@ public interface RegistrationContract {
         void showDialogImageSourceChooser();
 
         void navigateToMainScreen();
+
+        void getDialogAndUser(String token);
     }
 
 
@@ -100,5 +103,6 @@ public interface RegistrationContract {
         Observable<Void> uploadFileMap(Map<String, RequestBody> map, MultipartBody.Part part);
 
         Observable<LoginResponse> updateUserInfo(String token, int userId, long blobId);
+
     }
 }

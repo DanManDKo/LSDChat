@@ -12,14 +12,18 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.example.lsdchat.App;
 import com.example.lsdchat.R;
-import com.example.lsdchat.model.DialogModel;
+import com.example.lsdchat.model.ContentModel;
+import com.example.lsdchat.model.RealmDialogModel;
+import com.example.lsdchat.util.error.NetworkConnect;
 import com.example.lsdchat.ui.main.fragment.BaseFragment;
 
 import java.util.List;
@@ -33,9 +37,11 @@ public class DialogsFragment extends BaseFragment implements DialogsContract.Vie
     private int mType;
     private RecyclerView mRecyclerView;
     private DialogsAdapter mDialogsAdapter;
-    private List<DialogModel> mList;
+    private List<RealmDialogModel> mList;
     private SwipeRefreshLayout mSwipeRefreshLayout;
-
+    private Toolbar mToolbar;
+    private NetworkConnect networkConnect;
+    private TextView mErrorConnectTv;
 
     public DialogsFragment() {
         // Required empty public constructor
@@ -54,8 +60,14 @@ public class DialogsFragment extends BaseFragment implements DialogsContract.Vie
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
+        networkConnect = ((NetworkConnect) getActivity());
     }
+
+    @Override
+    public boolean isNetworkConnect() {
+        return networkConnect.isNetworkConnect();
+    }
+
 
     @Override
     public int getType() {
@@ -66,22 +78,97 @@ public class DialogsFragment extends BaseFragment implements DialogsContract.Vie
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_dialogs, container, false);
-        mPresenter = new DialogsPresenter(this, App.getSharedPreferencesManager(getActivity()));
-        mType = getArguments().getInt(TYPE);
         initView(view);
+        mType = getArguments().getInt(TYPE);
+        mPresenter = new DialogsPresenter(this, new DialogsModel(App.getSharedPreferencesManager(getActivity())));
+
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
+        mDialogsAdapter = new DialogsAdapter(mPresenter);
+        mRecyclerView.setAdapter(mDialogsAdapter);
 
-        mList = mPresenter.showDialogs(mType);
-        initAdapter(mList);
-        mPresenter.setOnRefreshListener(mSwipeRefreshLayout);
+        mPresenter.getObservableDialogByType(mType);
+
+        setRefreshLayout();
+
+
+
+        mPresenter.getContentModelList();
+
 
 
         initSwipeDelete();
 
 
         return view;
+    }
+
+    private void initView(View view) {
+        mRecyclerView = (RecyclerView) view.findViewById(R.id.chats_recycler_view);
+        mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipeRefreshLayout);
+        mErrorConnectTv = (TextView) view.findViewById(R.id.error_connect_tv);
+
+
+    }
+
+    @Override
+    public void onDestroy() {
+        mPresenter.onDestroy();
+        super.onDestroy();
+    }
+
+    @Override
+    public void errorConnectAccessibility(boolean enable) {
+        if (enable) {
+            mErrorConnectTv.setVisibility(View.VISIBLE);
+        }
+        else {
+            mErrorConnectTv.setVisibility(View.GONE);
+        }
+    }
+
+    @Override
+    public void showErrorDialog(Throwable throwable) {
+        dialogError(throwable);
+    }
+
+    @Override
+    public void showErrorDialog(int throwable) {
+        dialogError(getResources().getString(throwable));
+    }
+
+    @Override
+    public void setContentModelList(List<ContentModel> contentModelList){
+        mDialogsAdapter.setContentModelList(contentModelList);
+    }
+
+    private void setRefreshLayout() {
+        mSwipeRefreshLayout.setOnRefreshListener(() -> {
+            mPresenter.getAllDialogAndSave();
+
+            mPresenter.getObservableDialogByType(mType);
+            mSwipeRefreshLayout.setRefreshing(false);
+        });
+    }
+
+
+    @Override
+    public void setListDialog(List<RealmDialogModel> list) {
+        clearListDialog();
+        mDialogsAdapter.addData(list);
+        mDialogsAdapter.notifyDataSetChanged();
+    }
+
+    private void clearListDialog() {
+        mDialogsAdapter.clearData();
+        mDialogsAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void deleteItemDialog(RealmDialogModel item) {
+        mDialogsAdapter.deleteItemData(item);
+        mDialogsAdapter.notifyDataSetChanged();
     }
 
     private void initSwipeDelete() {
@@ -105,15 +192,16 @@ public class DialogsFragment extends BaseFragment implements DialogsContract.Vie
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                builder.setMessage("Are you sure you want to delete this chat?");
+                builder.setMessage(R.string.alert_delete_chat);
 
-                builder.setPositiveButton("Delete", (dialog, which) -> {
-//                    TODO: add delete dialog logic
-                    initAdapter(mList);
-                    mDialogsAdapter.notifyItemRemoved(viewHolder.getLayoutPosition());
+                builder.setPositiveButton(R.string.alert_delete_chat_delete, (dialog, which) -> {
 
-                }).setNegativeButton("Cancel", (dialog, which) -> {
-                    initAdapter(mList);
+                    mPresenter.deleteDialog(viewHolder.getLayoutPosition(),mType);
+                    mDialogsAdapter.notifyDataSetChanged();
+//                    mDialogsAdapter.notifyItemRemoved(viewHolder.getLayoutPosition());
+
+                }).setNegativeButton(R.string.alert_delete_chat_cancel, (dialog, which) -> {
+                    mDialogsAdapter.notifyDataSetChanged();
                     dialog.dismiss();
 
                 }).setCancelable(false).show();
@@ -156,23 +244,7 @@ public class DialogsFragment extends BaseFragment implements DialogsContract.Vie
         itemTouchHelper.attachToRecyclerView(mRecyclerView);
     }
 
-    private void initView(View view) {
-        mRecyclerView = (RecyclerView) view.findViewById(R.id.chats_recycler_view);
-        mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipeRefreshLayout);
 
-    }
-
-    @Override
-    public void initAdapter(List<DialogModel> list) {
-        mDialogsAdapter = new DialogsAdapter(list, mPresenter);
-        mRecyclerView.setAdapter(mDialogsAdapter);
-        mDialogsAdapter.notifyDataSetChanged();
-    }
-
-    @Override
-    public void updateAdapter() {
-        mDialogsAdapter.notifyDataSetChanged();
-    }
 
     @Override
     public void navigateToChat(Fragment fragment) {

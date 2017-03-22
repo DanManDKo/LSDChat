@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:fresco="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <include layout="@layout/toolbar" />
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:padding="16dp">
+
+        <Button
+            android:id="@+id/editchat_button"
+            style="@style/ButtonLogin"
+            android:layout_width="216dp"
+            android:layout_height="48dp"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/ripple_chat_create"
+            android:text="save" />
+
+        <RelativeLayout
+            android:id="@+id/editchat_root_editname"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/editchat_tw_chatname"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="CHAT NAME" />
+
+            <com.facebook.drawee.view.SimpleDraweeView
+                android:id="@+id/editchat_groupeimage"
+                android:layout_width="@dimen/usericon_size"
+                android:layout_height="@dimen/usericon_size"
+                android:layout_alignParentRight="true"
+                android:layout_below="@id/editchat_tw_chatname"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:layout_marginBottom="@dimen/activity_vertical_margin"
+                android:contentDescription="@string/cda_userpic_reg"
+                android:scaleType="centerCrop"
+                fresco:backgroundImage="@drawable/userpic_group"
+                fresco:placeholderImage="@drawable/userpic_group"
+                fresco:placeholderImageScaleType="fitCenter"
+                fresco:roundAsCircle="true"
+                tools:background="@color/colorBlack" />
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/editchat_til_chatname"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_below="@id/editchat_tw_chatname"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_toLeftOf="@id/editchat_groupeimage"
+                app:errorTextAppearance="@style/error_appearance"
+                app:theme="@style/TextInputLayoutNewChat">
+
+                <EditText
+                    android:id="@+id/editchat_et_chatname"
+                    style="@style/TextNewChat"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text"
+                    tools:text="current chat name" />
+            </android.support.design.widget.TextInputLayout>
+        </RelativeLayout>
+
+
+        <RelativeLayout
+            android:id="@+id/rl_user_edit_chat"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/editchat_button"
+            android:layout_below="@id/editchat_root_editname">
+
+            <TextView
+                android:id="@+id/editchat_tw_selectmembers"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:layout_marginTop="32dp"
+                tools:text="SELECT MEMBERS" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/editchat_recycler"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/editchat_tw_selectmembers" />
+        </RelativeLayout>
+    </RelativeLayout>
+</LinearLayout>

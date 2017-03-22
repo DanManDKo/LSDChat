@@ -1,87 +1,59 @@
 package com.example.lsdchat.ui.main.createchat;
 
 
-import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.EditText;
-import android.widget.RadioGroup;
-import android.widget.TextView;
+import android.support.v4.app.Fragment;
 
 import com.example.lsdchat.api.dialog.model.ItemDialog;
 import com.example.lsdchat.api.dialog.request.CreateDialogRequest;
-import com.example.lsdchat.api.dialog.response.UserListResponse;
+import com.example.lsdchat.api.login.model.LoginUser;
 import com.example.lsdchat.api.registration.response.RegistrationCreateFileResponse;
-import com.example.lsdchat.model.ContactsModel;
-import com.facebook.drawee.view.SimpleDraweeView;
+import com.example.lsdchat.model.ContentModel;
+import com.example.lsdchat.model.RealmDialogModel;
 
 import java.io.File;
 import java.util.List;
 import java.util.Map;
 
-import de.hdodenhof.circleimageview.CircleImageView;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
-import okhttp3.ResponseBody;
-import retrofit2.Response;
 import rx.Observable;
 
 public interface CreateChatContract {
 
     interface View {
 
-        void showErrorDialog(String message);
+        void setContentModelList(List<ContentModel> contentModelList);
+
+        void setListUsers(List<LoginUser> list);
+
+        void showErrorDialog(Throwable throwable);
+
+        void showErrorDialog(int messageId);
+
+        void setNameAccessibility(boolean enable);
+
+        void setImageAccessibility(boolean enable);
 
         boolean isRbPublic();
+
         boolean isRbPrivate();
 
-        void setNameError();
-        void hideNameError();
+        String getNameDialog();
+        boolean isNetworkConnect();
 
-        void setEnableName(boolean enableName);
-        void setEnableImage(boolean enableImage);
-
-        void setRecyclerEnableDisable(boolean enable);
-
-        void getUserpicUri(Uri uri);
-        void showDialogImageSourceChooser();
-
-        Context getContext();
-
-        String getChatName();
-
-        void initAdapter(List<ContactsModel> list);
-
-        void addModel(List<ContactsModel> list);
+        void navigateToChat(Fragment fragment);
     }
 
     interface Presenter {
         void onDestroy();
 
-        void btnCreateClick(Button btnCreate, EditText etName);
-        void btnImageClick(SimpleDraweeView imageView);
+        void getUserListObservable();
 
-        void onActivityResult(int requestCode, int resultCode, Intent data);
+        void checkBoxSetOnChecked(int userId, boolean isChecked);
 
-        void getPhotoFromGallery();
-        void getPhotoFromCamera();
+        void setClickCreateNewDialog(File mUploadFile);
 
-        void createDialog(String token,CreateDialogRequest request);
-
-        CreateDialogRequest getTypeDialog(long imageId);
-
-        void getContactsModel();
-
-        void setOnCheckedChangeListener(RadioGroup radioGroup);
-
-        String getToken();
-
-        void setOnCheckedChangeListener(CheckBox checkBox, TextView textView,ContactsModel model);
-
-
-        void setImageViewUser(CircleImageView imageView,ContactsModel user);
+        void getObservableUserAvatar();
     }
 
     interface Model {
@@ -93,14 +65,12 @@ public interface CreateChatContract {
 
         Observable<Void> uploadFileMap(Map<String, RequestBody> map, MultipartBody.Part part);
 
-        Observable<UserListResponse> getUserList(String token);
+        String getToken();
 
+        Observable<List<ContentModel>> getObservableUserAvatar();
 
+        Observable<List<LoginUser>> getUserListObservable();
 
-
-        Observable<File> downloadImage(long blobId, String token);
-
-        Observable<File> saveImage(Response<ResponseBody> response,long blobId);
-
+        void saveDialog(List<RealmDialogModel> dialogList);
     }
 }

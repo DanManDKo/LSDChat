@@ -9,26 +9,37 @@ public class User extends RealmObject {
     private String email;
     private String password;
     private String fullName;
+    private int id;
     private long blobId;
     private boolean isSignIn;
 
     public User() {
     }
 
-    public User(String email, String password, String fullName, boolean isSignIn) {
+    public User(String email, String password, String fullName, int id, long blobId, boolean isSignIn) {
         this.email = email;
         this.password = password;
         this.fullName = fullName;
+        this.id = id;
+        this.blobId = blobId;
         this.isSignIn = isSignIn;
     }
 
-    public User(String email, String password, String fullName, long blobId, boolean isSignIn) {
-
+    public User(String email, String password, String fullName, int id, boolean isSignIn) {
         this.email = email;
         this.password = password;
         this.fullName = fullName;
-        this.blobId = blobId;
+        this.id = id;
         this.isSignIn = isSignIn;
+    }
+
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getFullName() {

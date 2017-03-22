@@ -1,5 +1,6 @@
 package com.example.lsdchat.ui.main.users;
 
+import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,23 +10,51 @@ import android.widget.TextView;
 
 import com.example.lsdchat.R;
 import com.example.lsdchat.api.login.model.LoginUser;
+import com.example.lsdchat.model.ContentModel;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
 
 public class UsersRvAdapter extends RecyclerView.Adapter<UsersRvAdapter.ViewHolder> {
-    private List<LoginUser> data;
-    private List<LoginUser> filterData;
-    private UsersContract.Presenter presenter;
+    private List<LoginUser> mLoginUserList;
+    private List<ContentModel> mContentModelList;
+    private UsersContract.Presenter mPresenter;
+    private Map<String, String> mMapAvatar;
 
-    public UsersRvAdapter(List<LoginUser> data, UsersContract.Presenter presenter) {
+    public UsersRvAdapter(UsersContract.Presenter presenter) {
+        mContentModelList = new ArrayList<>();
+        mLoginUserList = new ArrayList<>();
+        this.mPresenter = presenter;
+        mMapAvatar = new HashMap<>();
 
-        this.data = data;
-        this.presenter = presenter;
 
+
+    }
+
+    public void setContentModelList(List<ContentModel> contentModelList) {
+        mContentModelList.addAll(contentModelList);
+
+        for (ContentModel user: mContentModelList) {
+            mMapAvatar.put(user.getId(),user.getImagePath());
+        }
+
+        notifyDataSetChanged();
+    }
+
+    public void addData(List<LoginUser> loginUserList) {
+        mLoginUserList.addAll(loginUserList);
+        notifyDataSetChanged();
+    }
+
+    public void clearData() {
+        mLoginUserList.clear();
+        notifyDataSetChanged();
     }
 
     @Override
@@ -37,26 +66,28 @@ public class UsersRvAdapter extends RecyclerView.Adapter<UsersRvAdapter.ViewHold
 
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, int i) {
-        LoginUser userQuick = data.get(i);
+        LoginUser userQuick = mLoginUserList.get(i);
 
-        presenter.setImageView(viewHolder.mImageView,userQuick);
-
+        String path = mMapAvatar.get(String.valueOf(userQuick.getId()));
+        if (path != null) {
+            viewHolder.mImageView.setImageURI(Uri.fromFile(new File(path)));
+        }
+        else {
+            viewHolder.mImageView.setImageResource(R.drawable.userpic);
+        }
         viewHolder.mName.setText(userQuick.getFullName());
-        presenter.setOnClickListenerRl(viewHolder.mRlUser,userQuick);
+
+        viewHolder.mRlUser.setOnClickListener(v -> mPresenter.setClickUser(userQuick));
+
+
 
     }
 
     @Override
     public int getItemCount() {
-        return data.size();
+        return mLoginUserList.size();
     }
 
-
-    public void setFilter(List<LoginUser> loginUsers) {
-        filterData = new ArrayList<>();
-        filterData.addAll(loginUsers);
-        notifyDataSetChanged();
-    }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 

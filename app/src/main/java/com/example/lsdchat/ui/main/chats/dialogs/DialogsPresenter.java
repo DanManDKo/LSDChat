@@ -1,96 +1,197 @@
 package com.example.lsdchat.ui.main.chats.dialogs;
 
 
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
-import android.widget.RelativeLayout;
 
+import com.example.lsdchat.App;
+import com.example.lsdchat.R;
 import com.example.lsdchat.constant.ApiConstant;
-import com.example.lsdchat.manager.SharedPreferencesManager;
-import com.example.lsdchat.model.DialogModel;
+import com.example.lsdchat.model.IdsListInteger;
+import com.example.lsdchat.model.RealmDialogModel;
 import com.example.lsdchat.ui.main.conversation.ConversationFragment;
-import com.example.lsdchat.util.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import de.hdodenhof.circleimageview.CircleImageView;
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
 
 public class DialogsPresenter implements DialogsContract.Presenter {
 
     private DialogsContract.View mView;
     private DialogsContract.Model mModel;
-    private SharedPreferencesManager mSharedPreferencesManager;
 
-    public DialogsPresenter(DialogsContract.View mView, SharedPreferencesManager mSharedPreferencesManager) {
+
+    public DialogsPresenter(DialogsContract.View mView, DialogsContract.Model mModel) {
         this.mView = mView;
-        mModel = new DialogsModel();
-        this.mSharedPreferencesManager = mSharedPreferencesManager;
+        this.mModel = mModel;
+
+        getAllDialogAndSave();
     }
 
     @Override
-    public List<DialogModel> showDialogs(int type) {
+    public void onDestroy() {
+        mView = null;
+        mModel = null;
+    }
+
+    @Override
+    public void getObservableDialogByType(int type) {
         if (type == ApiConstant.TYPE_DIALOG_PUBLIC) {
-            return mModel.getDialogsByType(ApiConstant.TYPE_DIALOG_PUBLIC);
+            getObservableDialog(ApiConstant.TYPE_DIALOG_PUBLIC)
+                    .subscribe(dialogModels -> mView.setListDialog(dialogModels));
 
         } else {
-            List<DialogModel> list = new ArrayList<>();
-            list.addAll(mModel.getDialogsByType(ApiConstant.TYPE_DIALOG_GROUP));
-            list.addAll(mModel.getDialogsByType(ApiConstant.TYPE_DIALOG_PRIVATE));
+            List<RealmDialogModel> list = new ArrayList<>();
+
+            Observable<List<RealmDialogModel>> oG = getObservableDialog(ApiConstant.TYPE_DIALOG_GROUP);
+            oG.subscribe(list::addAll);
+
+            Observable<List<RealmDialogModel>> oP = getObservableDialog(ApiConstant.TYPE_DIALOG_PRIVATE);
+            oP.subscribe(list::addAll);
+
+            mView.setListDialog(list);
+
+        }
+    }
+
+    @Override
+    public void getDialogFilterList(int typeDialog, String query) {
+        if (typeDialog == ApiConstant.TYPE_DIALOG_PUBLIC) {
+            getObservableDialog(ApiConstant.TYPE_DIALOG_PUBLIC)
+                    .subscribe(dialogModels -> setFilterList(dialogModels, query));
+
+        } else {
+            List<RealmDialogModel> list = new ArrayList<>();
+
+            Observable<List<RealmDialogModel>> oG = getObservableDialog(ApiConstant.TYPE_DIALOG_GROUP);
+            oG.subscribe(list::addAll);
+
+
+            Observable<List<RealmDialogModel>> oP = getObservableDialog(ApiConstant.TYPE_DIALOG_PRIVATE);
+            oP.subscribe(list::addAll);
+
+            setFilterList(list, query);
+
+        }
+
+    }
+
+    private void setFilterList(List<RealmDialogModel> list, String query) {
+        query = query.toLowerCase();
+        List<RealmDialogModel> filterList = new ArrayList<>();
+        for (RealmDialogModel dialogModel : list) {
+            String name = dialogModel.getName().toLowerCase();
+            if (name.contains(query)) {
+                filterList.add(dialogModel);
+            }
+        }
+        mView.setListDialog(filterList);
+
+    }
+
+    @Override
+    public void setClickRl(RealmDialogModel realmDialogModel) {
+        int ocID = 0;
+        for (IdsListInteger id : realmDialogModel.getOccupantsIdsList()) {
+            if (id.getValue() != App.getDataManager().getUser().getId()) {
+                ocID = id.getValue();
+            }
+        }
+
+
+        mView.navigateToChat(ConversationFragment
+                .newInstance(realmDialogModel.getId(), realmDialogModel.getName(), realmDialogModel.getType(), ocID));
+
+    }
+
+    @Override
+    public void getContentModelList() {
+        mModel.getObservableUserAvatar()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(contentModels -> mView.setContentModelList(contentModels));
+    }
+
+    private Observable<List<RealmDialogModel>> getObservableDialog(int type) {
+        return mModel.getObservableDialogsByType(type);
+    }
+
+    @Override
+    public void deleteDialog(int itemPosition, int type) {
+        int currentUserId = App.getDataManager().getUser().getId();
+        RealmDialogModel dialogModel = getDialogsByType(type).get(itemPosition);
+        if (currentUserId == dialogModel.getOwnerId()) {
+            if (mView.isNetworkConnect()) {
+                mView.errorConnectAccessibility(false);
+                mModel.deleteDialog(dialogModel.getId())
+                        .subscribe(aVoid -> {
+                            mView.deleteItemDialog(dialogModel);
+                            mModel.deleteItemDialog(dialogModel.getId());
+                        }, throwable -> mView.showErrorDialog(throwable));
+
+            } else {
+                mView.errorConnectAccessibility(true);
+            }
+        } else {
+            mView.showErrorDialog(R.string.you_cannot_delete_this_dialog);
+        }
+
+
+    }
+
+    private List<RealmDialogModel> getDialogsByType(int type) {
+        if (type == ApiConstant.TYPE_DIALOG_PUBLIC) {
+            List<RealmDialogModel> listPublic = new ArrayList<>();
+            Observable<List<RealmDialogModel>> oPrivate = getObservableDialog(ApiConstant.TYPE_DIALOG_PUBLIC);
+            oPrivate.subscribe(listPublic::addAll);
+            return listPublic;
+
+        } else {
+            List<RealmDialogModel> list = new ArrayList<>();
+
+            Observable<List<RealmDialogModel>> oG = getObservableDialog(ApiConstant.TYPE_DIALOG_GROUP);
+            oG.subscribe(list::addAll);
+
+            Observable<List<RealmDialogModel>> oP = getObservableDialog(ApiConstant.TYPE_DIALOG_PRIVATE);
+            oP.subscribe(list::addAll);
+
             return list;
         }
     }
 
     @Override
     public void getAllDialogAndSave() {
-        List<DialogModel> list = new ArrayList<>();
-        mModel.getAllDialogs(mSharedPreferencesManager.getToken())
-                .flatMap(dialogsResponse -> Observable.just(dialogsResponse.getItemDialogList()))
-                .subscribe(dialogList -> {
+        List<RealmDialogModel> list = new ArrayList<>();
+        if (mView.isNetworkConnect()) {
+            mView.errorConnectAccessibility(false);
+            mModel.getAllDialogs(mModel.getToken())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .flatMap(dialogsResponse -> Observable.just(dialogsResponse.getItemDialogList()))
+                    .subscribe(dialogList -> {
+                        Observable.from(dialogList)
+                                .subscribe(dialog -> list.add(new RealmDialogModel(dialog)));
 
-                    Observable.from(dialogList)
-                            .subscribe(dialog -> list.add(new DialogModel(dialog)));
+                        mModel.saveDialog(list);
 
-                    mModel.saveDialog(list);
+                        checkSizeDb(list);
 
-                    mView.initAdapter(showDialogs(mView.getType()));
-                }, throwable -> {
-                    Log.e("getAllDialogAndSave", throwable.getMessage());
-                });
-
-    }
-
-
-
-    @Override
-    public void setImageDialog(CircleImageView imageView, DialogModel dialogModel) {
-        if (dialogModel.getPhoto() != null && !dialogModel.getPhoto().isEmpty()) {
-            long blobId = Long.parseLong(dialogModel.getPhoto());
-            Utils.downloadContent(blobId, mSharedPreferencesManager.getToken())
-                    .flatMap(contentResponse -> Observable.just(contentResponse.getItemContent().getImageUrl()))
-                    .subscribe(imageUrl -> Utils.downloadImageToView(imageUrl, imageView), throwable -> {
-                        Log.e("IMAGE-error", throwable.getMessage());
-                    });
-
+                    }, throwable -> mView.showErrorDialog(throwable));
+        } else {
+            mView.errorConnectAccessibility(true);
         }
     }
 
-    @Override
-    public void setOnRefreshListener(SwipeRefreshLayout swipeRefreshLayout) {
-        swipeRefreshLayout.setOnRefreshListener(() -> {
-            getAllDialogAndSave();
-            swipeRefreshLayout.setRefreshing(false);
-        });
-    }
-
-
-    @Override
-    public void setOnClickListener(RelativeLayout relativeLayout, DialogModel dialogModel) {
-        relativeLayout.setOnClickListener(v -> {
-            mView.navigateToChat(ConversationFragment
-                    .newInstance(dialogModel.getId(),dialogModel.getType(),dialogModel.getName()));
-
-        });
+    private void checkSizeDb(List<RealmDialogModel> list) {
+        if (list != null) {
+            mModel.getAllDialogFromDb()
+                    .filter(realmDialogModels -> realmDialogModels.size() > list.size())
+                    .flatMap(Observable::from)
+                    .subscribe(dialogModel -> {
+                        if (!list.contains(dialogModel)) {
+                            mView.deleteItemDialog(dialogModel);
+                            mModel.deleteItemDialog(dialogModel.getId());
+                        }
+                    },throwable -> Log.e("Aa", throwable.getMessage()));
+        }
     }
 }

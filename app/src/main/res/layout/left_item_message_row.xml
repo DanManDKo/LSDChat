@@ -2,31 +2,29 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 xmlns:fresco="http://schemas.android.com/apk/res-auto"
                 xmlns:tools="http://schemas.android.com/tools"
-                android:id="@+id/left_bubble_layout_parent"
+                android:id="@+id/right_bubble_layout_parent"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
                 android:layout_marginTop="8dp">
 
-    <com.facebook.drawee.view.SimpleDraweeView
-        android:id="@+id/left_bubble_image"
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/right_bubble_image"
         android:layout_width="45dp"
         android:layout_height="45dp"
-        android:layout_alignParentLeft="true"
-        fresco:placeholderImage="@drawable/userpic_default"
-        fresco:roundAsCircle="true"/>
+        android:layout_alignParentLeft="true"/>
 
     <RelativeLayout
         android:id="@+id/bubble_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:layout_toRightOf="@id/left_bubble_image"
+        android:layout_toRightOf="@id/right_bubble_image"
         android:background="@drawable/bubble_white_left"
         android:paddingBottom="8dp">
 
         <TextView
-            android:id="@+id/left_bubble_message"
+            android:id="@+id/right_bubble_message"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -36,30 +34,30 @@
             tools:text="sd s"/>
 
         <TextView
-            android:id="@+id/left_bubble_person_name"
+            android:id="@+id/right_bubble_person_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/left_bubble_message"
+            android:layout_below="@id/right_bubble_message"
             android:layout_marginRight="24dp"
             android:textColor="@color/colorGray"
             android:textSize="12sp"
             tools:text="Name"/>
 
         <TextView
-            android:id="@+id/left_bubble_time"
+            android:id="@+id/right_bubble_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/left_bubble_message"
+            android:layout_below="@id/right_bubble_message"
             android:layout_marginRight="24dp"
-            android:layout_toRightOf="@id/left_bubble_person_name"
+            android:layout_toRightOf="@id/right_bubble_person_name"
             android:textColor="@color/colorGray"
             android:textSize="12sp"
             tools:text="12:20"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="12dp"
-            android:layout_toRightOf="@id/left_bubble_time"
-            android:layout_below="@id/left_bubble_message"
+            android:layout_toRightOf="@id/right_bubble_time"
+            android:layout_below="@id/right_bubble_message"
             android:background="@drawable/delivered"/>
     </RelativeLayout>
 </RelativeLayout>

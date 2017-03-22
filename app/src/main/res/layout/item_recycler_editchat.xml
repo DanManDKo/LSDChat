@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    android:id="@+id/rl_editchat"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:fresco="http://schemas.android.com/apk/res-auto"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:layout_marginBottom="@dimen/activity_vertical_margin"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:id="@+id/item_editchat_usericon"
+        android:layout_width="@dimen/usericon_size"
+        android:layout_height="@dimen/usericon_size"
+        android:scaleType="centerCrop"
+        android:src="@drawable/userpic"
+        />
+
+    <TextView
+        android:id="@+id/item_editchat_username"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="12dp"
+        android:layout_toRightOf="@id/item_editchat_usericon"
+        android:textColor="@color/colorNewChatText"
+        tools:text="User Name"/>
+
+    <CheckBox
+        android:id="@+id/item_editchat_checkbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"/>
+</RelativeLayout>
