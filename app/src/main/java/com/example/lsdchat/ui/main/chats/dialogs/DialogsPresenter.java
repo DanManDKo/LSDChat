@@ -1,6 +1,8 @@
 package com.example.lsdchat.ui.main.chats.dialogs;
 
 
+import android.util.Log;
+
 import com.example.lsdchat.App;
 import com.example.lsdchat.R;
 import com.example.lsdchat.constant.ApiConstant;
@@ -189,7 +191,7 @@ public class DialogsPresenter implements DialogsContract.Presenter {
                             mView.deleteItemDialog(dialogModel);
                             mModel.deleteItemDialog(dialogModel.getId());
                         }
-                    });
+                    },throwable -> Log.e("Aa", throwable.getMessage()));
         }
     }
 }

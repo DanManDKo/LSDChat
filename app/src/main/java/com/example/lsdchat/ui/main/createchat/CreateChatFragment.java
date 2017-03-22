@@ -15,6 +15,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -144,6 +145,15 @@ public class CreateChatFragment extends BaseFragment implements CreateChatContra
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                getActivity().onBackPressed();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void setUsersListAccessibility(boolean enable) {
@@ -285,7 +295,7 @@ public class CreateChatFragment extends BaseFragment implements CreateChatContra
 
     @Override
     public void navigateToChat(Fragment fragment) {
-        getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragment, fragment).commit();
+        getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragment, fragment).addToBackStack(null).commit();
     }
 
 

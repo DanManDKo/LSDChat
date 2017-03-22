@@ -287,7 +287,7 @@ public class ChatsFragment extends BaseFragment implements ChatsContract.View {
     }
 
     private void replaceFragment(Fragment fragment) {
-        getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragment, fragment).commit();
+        getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragment, fragment).addToBackStack(null).commit();
     }
 
     @Override

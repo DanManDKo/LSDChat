@@ -3,6 +3,7 @@ package com.example.lsdchat.ui.main;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.FrameLayout;
@@ -79,6 +80,7 @@ public class MainActivity extends AppCompatActivity implements ConversationFragm
             super.onBackPressed();
         }
     }
+
 
     @Override
     public void onEditchatSelected(String dialogID) {

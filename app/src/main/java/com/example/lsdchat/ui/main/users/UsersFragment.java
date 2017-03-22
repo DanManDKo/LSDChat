@@ -64,7 +64,7 @@ public class UsersFragment extends BaseFragment implements UsersContract.View {
 
         mToolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
         initToolbar(mToolbar, "Friends");
-        mToolbar.setNavigationOnClickListener(v -> onBackPressed());
+//        mToolbar.setNavigationOnClickListener(v -> onBackPressed());
 
         mLayoutManager = new LinearLayoutManager(getActivity());
         mRecyclerView.setLayoutManager(mLayoutManager);
@@ -105,7 +105,7 @@ public class UsersFragment extends BaseFragment implements UsersContract.View {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-//        super.onCreateOptionsMenu(menu, inflater);
+//
         inflater.inflate(R.menu.friends_option_menu, menu);
 
         MenuItem items = menu.findItem(R.id.action_search);
@@ -127,7 +127,7 @@ public class UsersFragment extends BaseFragment implements UsersContract.View {
 
             }
         });
-
+        super.onCreateOptionsMenu(menu, inflater);
 
     }
 
@@ -142,6 +142,11 @@ public class UsersFragment extends BaseFragment implements UsersContract.View {
                 break;
             case R.id.sort_name_desc:
                 mPresenter.setSortedList(ApiConstant.SORT_NAME_DESC);
+                break;
+            case android.R.id.home:
+                onBackPressed();
+                break;
+            default:
                 break;
         }
 
