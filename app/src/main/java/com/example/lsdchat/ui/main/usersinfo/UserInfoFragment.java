@@ -62,6 +62,11 @@ public class UserInfoFragment extends BaseFragment implements UserInfoContract.V
     }
 
     @Override
+    public void onDestroy() {
+        mPresenter.onDestroy();
+        super.onDestroy();
+    }
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);

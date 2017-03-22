@@ -88,6 +88,13 @@ public class EditchatPresenter implements EditchatContract.Presenter {
         mView = null;
         mModel = null;
         mPreferencesManager = null;
+        idAddChecked = null;
+        idRemoveChecked = null;
+        idOccupants = null;
+        mCreatedDialogId = 0;
+        mContext = null;
+
+
         //nothing to clean at this point
     }
 

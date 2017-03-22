@@ -44,7 +44,7 @@ public class CreateChatPresenter implements CreateChatContract.Presenter {
     public void onDestroy() {
         mView = null;
         mModel = null;
-
+        idChecked = null;
     }
 
 

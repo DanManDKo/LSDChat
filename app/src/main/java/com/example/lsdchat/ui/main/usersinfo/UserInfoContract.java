@@ -32,7 +32,7 @@ public interface UserInfoContract {
 
     interface Presenter {
        void getUserAvatar(int userId);
-
+        void onDestroy();
         void createDialog(int idUser);
 
     }

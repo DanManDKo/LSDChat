@@ -46,7 +46,7 @@ public interface UsersContract {
 
     interface Presenter {
         void setClickUser(LoginUser loginUser);
-
+        void onDestroy();
         void getUserList();
 
         void getUserFilterList(String query);

@@ -22,6 +22,12 @@ public class UsersPresenter implements UsersContract.Presenter {
     }
 
     @Override
+    public void onDestroy() {
+        mView = null;
+        mModel = null;
+    }
+
+    @Override
     public void setClickUser(LoginUser loginUser) {
         mView.navigateToInfoUser(new UserInfoFragment().newInstance(loginUser));
     }

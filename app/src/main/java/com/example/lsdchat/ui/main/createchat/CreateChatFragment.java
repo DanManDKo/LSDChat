@@ -77,6 +77,12 @@ public class CreateChatFragment extends BaseFragment implements CreateChatContra
     }
 
     @Override
+    public void onDestroy() {
+        mCreateChatPresenter.onDestroy();
+        super.onDestroy();
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_new_chat, container, false);
 
@@ -233,11 +239,7 @@ public class CreateChatFragment extends BaseFragment implements CreateChatContra
     }
 
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        mCreateChatPresenter.onDestroy();
-    }
+
 
     private void showDialogImageChoose() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity())

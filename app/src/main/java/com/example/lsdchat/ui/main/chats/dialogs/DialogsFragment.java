@@ -113,6 +113,12 @@ public class DialogsFragment extends BaseFragment implements DialogsContract.Vie
     }
 
     @Override
+    public void onDestroy() {
+        mPresenter.onDestroy();
+        super.onDestroy();
+    }
+
+    @Override
     public void errorConnectAccessibility(boolean enable) {
         if (enable) {
             mErrorConnectTv.setVisibility(View.VISIBLE);

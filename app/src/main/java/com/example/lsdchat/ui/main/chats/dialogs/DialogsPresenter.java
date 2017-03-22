@@ -20,12 +20,17 @@ public class DialogsPresenter implements DialogsContract.Presenter {
     private DialogsContract.Model mModel;
 
 
-
     public DialogsPresenter(DialogsContract.View mView, DialogsContract.Model mModel) {
         this.mView = mView;
         this.mModel = mModel;
 
         getAllDialogAndSave();
+    }
+
+    @Override
+    public void onDestroy() {
+        mView = null;
+        mModel = null;
     }
 
     @Override
@@ -122,8 +127,7 @@ public class DialogsPresenter implements DialogsContract.Presenter {
                             mModel.deleteItemDialog(dialogModel.getId());
                         }, throwable -> mView.showErrorDialog(throwable));
 
-            }
-            else {
+            } else {
                 mView.errorConnectAccessibility(true);
             }
         } else {
@@ -156,24 +160,23 @@ public class DialogsPresenter implements DialogsContract.Presenter {
     @Override
     public void getAllDialogAndSave() {
         List<RealmDialogModel> list = new ArrayList<>();
-       if (mView.isNetworkConnect()) {
-           mView.errorConnectAccessibility(false);
-           mModel.getAllDialogs(mModel.getToken())
-                   .observeOn(AndroidSchedulers.mainThread())
-                   .flatMap(dialogsResponse -> Observable.just(dialogsResponse.getItemDialogList()))
-                   .subscribe(dialogList -> {
-                       Observable.from(dialogList)
-                               .subscribe(dialog -> list.add(new RealmDialogModel(dialog)));
+        if (mView.isNetworkConnect()) {
+            mView.errorConnectAccessibility(false);
+            mModel.getAllDialogs(mModel.getToken())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .flatMap(dialogsResponse -> Observable.just(dialogsResponse.getItemDialogList()))
+                    .subscribe(dialogList -> {
+                        Observable.from(dialogList)
+                                .subscribe(dialog -> list.add(new RealmDialogModel(dialog)));
 
-                       mModel.saveDialog(list);
+                        mModel.saveDialog(list);
 
-                       checkSizeDb(list);
+                        checkSizeDb(list);
 
-                   }, throwable -> mView.showErrorDialog(throwable));
-       }
-       else {
-           mView.errorConnectAccessibility(true);
-       }
+                    }, throwable -> mView.showErrorDialog(throwable));
+        } else {
+            mView.errorConnectAccessibility(true);
+        }
     }
 
     private void checkSizeDb(List<RealmDialogModel> list) {

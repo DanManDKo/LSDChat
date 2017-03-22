@@ -53,7 +53,7 @@ public interface DialogsContract {
 
     interface Presenter {
         void deleteDialog(int itemPosition, int type);
-
+        void onDestroy();
         void getDialogFilterList(int typeDialog,String query);
 
         void getObservableDialogByType(int type);
