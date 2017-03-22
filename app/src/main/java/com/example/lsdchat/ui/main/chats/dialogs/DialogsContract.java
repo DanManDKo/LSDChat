@@ -24,6 +24,8 @@ public interface DialogsContract {
 
         void deleteItemDialog(String idDialog);
 
+        Observable<Void> deleteDialog(String dialogId);
+
         String getToken();
 
         Observable<List<ContentModel>> getObservableUserAvatar();
@@ -40,10 +42,13 @@ public interface DialogsContract {
 
         void showErrorDialog(Throwable throwable);
 
+        void showErrorDialog(int throwable);
+
         void deleteItemDialog(RealmDialogModel item);
     }
 
     interface Presenter {
+        void deleteDialog(int itemPosition, int type);
 
         void getDialogFilterList(int typeDialog,String query);
 

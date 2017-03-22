@@ -78,4 +78,8 @@ public interface DialogService {
 
     @PUT(ApiConstant.UPDATE_DELETE_MESSAGE)
     Observable<Void> updateMessageRequest(@Header(ApiConstant.QB_TOKEN) String token, @Path(ApiConstant.UploadParametres.ID) String dialogID, @Body UpdateMessageRequest body);
+
+    @DELETE(ApiConstant.DELETE_DIALOG)
+    Observable<Void> deleteDialog(@Header(ApiConstant.QB_TOKEN) String token, @Path(ApiConstant.UploadParametres.ID) String dialogID);
+
 }

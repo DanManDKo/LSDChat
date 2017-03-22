@@ -8,12 +8,14 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.Loader;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -103,7 +105,12 @@ public class DialogsFragment extends BaseFragment implements DialogsContract.Vie
 
     @Override
     public void showErrorDialog(Throwable throwable) {
-        showErrorDialog(throwable);
+        dialogError(throwable);
+    }
+
+    @Override
+    public void showErrorDialog(int throwable) {
+        dialogError(getResources().getString(throwable));
     }
 
     @Override
@@ -161,9 +168,10 @@ public class DialogsFragment extends BaseFragment implements DialogsContract.Vie
                 builder.setMessage(R.string.alert_delete_chat);
 
                 builder.setPositiveButton(R.string.alert_delete_chat_delete, (dialog, which) -> {
-//                    TODO: add delete dialog logic
-                    setListDialog(mList);
-                    mDialogsAdapter.notifyItemRemoved(viewHolder.getLayoutPosition());
+
+                    mPresenter.deleteDialog(viewHolder.getLayoutPosition(),mType);
+                    mDialogsAdapter.notifyDataSetChanged();
+//                    mDialogsAdapter.notifyItemRemoved(viewHolder.getLayoutPosition());
 
                 }).setNegativeButton(R.string.alert_delete_chat_cancel, (dialog, which) -> {
                     mDialogsAdapter.notifyDataSetChanged();

@@ -13,7 +13,6 @@ import com.example.lsdchat.util.DialogUtil;
 import java.util.List;
 
 import rx.Observable;
-import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
@@ -70,5 +69,12 @@ public class DialogsModel implements DialogsContract.Model {
     @Override
     public Observable<List<ContentModel>> getObservableUserAvatar() {
         return mDataManager.getObservableUserAvatar();
+    }
+
+    @Override
+    public Observable<Void> deleteDialog(String dialogId) {
+      return mDialogService.deleteDialog(getToken(), dialogId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
     }
 }

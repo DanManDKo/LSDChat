@@ -24,6 +24,7 @@ public class ApiConstant {
     public static final String DIALOGS_REQUEST = "/chat/Dialog.json";
     public static final String UPDATE_DELETE_MESSAGE = "/chat/Message/{id}.json";
     public static final String UPDATE_DIALOG = "chat/Dialog/{id}.json";
+    public static final String DELETE_DIALOG = "/chat/Dialog/{id}.json";
     public static final String MESSAGES_REQUEST = "/chat/Message.json";
     public static final String USER_LIST_REQUEST = "/users.json";
     public static final String GET_FILE_REQUEST = "/blobs/{blob_id}/download.json";

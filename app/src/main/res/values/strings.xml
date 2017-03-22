@@ -143,6 +143,7 @@
 
     <!--appropriate messages-->
 <string name="you_cannot_edit_this_dialog">You can`t edit this dialog</string>
+<string name="you_cannot_delete_this_dialog">You can`t delete this dialog</string>
 <string name="message_deleted">Deleted</string>
 <string name="message_updated">Updated</string>
 </resources>

@@ -1,9 +1,8 @@
 package com.example.lsdchat.ui.main.chats.dialogs;
 
 
-import android.util.Log;
-
 import com.example.lsdchat.App;
+import com.example.lsdchat.R;
 import com.example.lsdchat.constant.ApiConstant;
 import com.example.lsdchat.model.IdsListInteger;
 import com.example.lsdchat.model.RealmDialogModel;
@@ -86,15 +85,15 @@ public class DialogsPresenter implements DialogsContract.Presenter {
     @Override
     public void setClickRl(RealmDialogModel realmDialogModel) {
         int ocID = 0;
-        for (IdsListInteger id: realmDialogModel.getOccupantsIdsList()) {
-            if (id.getValue() != App.getDataManager().getUser().getId()){
+        for (IdsListInteger id : realmDialogModel.getOccupantsIdsList()) {
+            if (id.getValue() != App.getDataManager().getUser().getId()) {
                 ocID = id.getValue();
             }
         }
 
 
         mView.navigateToChat(ConversationFragment
-                .newInstance(realmDialogModel.getId(), realmDialogModel.getName(),realmDialogModel.getType(),ocID));
+                .newInstance(realmDialogModel.getId(), realmDialogModel.getName(), realmDialogModel.getType(), ocID));
 
     }
 
@@ -107,6 +106,44 @@ public class DialogsPresenter implements DialogsContract.Presenter {
 
     private Observable<List<RealmDialogModel>> getObservableDialog(int type) {
         return mModel.getObservableDialogsByType(type);
+    }
+
+    @Override
+    public void deleteDialog(int itemPosition, int type) {
+        int currentUserId = App.getDataManager().getUser().getId();
+        RealmDialogModel dialogModel = getDialogsByType(type).get(itemPosition);
+        if (currentUserId == dialogModel.getOwnerId()) {
+            mModel.deleteDialog(dialogModel.getId())
+                    .subscribe(aVoid -> {
+                        mView.deleteItemDialog(dialogModel);
+                        mModel.deleteItemDialog(dialogModel.getId());
+                    }, throwable -> mView.showErrorDialog(throwable));
+
+        } else {
+            mView.showErrorDialog(R.string.you_cannot_delete_this_dialog);
+        }
+
+
+    }
+
+    private List<RealmDialogModel> getDialogsByType(int type) {
+        if (type == ApiConstant.TYPE_DIALOG_PUBLIC) {
+            List<RealmDialogModel> listPublic = new ArrayList<>();
+            Observable<List<RealmDialogModel>> oPrivate = getObservableDialog(ApiConstant.TYPE_DIALOG_PUBLIC);
+            oPrivate.subscribe(listPublic::addAll);
+            return listPublic;
+
+        } else {
+            List<RealmDialogModel> list = new ArrayList<>();
+
+            Observable<List<RealmDialogModel>> oG = getObservableDialog(ApiConstant.TYPE_DIALOG_GROUP);
+            oG.subscribe(list::addAll);
+
+            Observable<List<RealmDialogModel>> oP = getObservableDialog(ApiConstant.TYPE_DIALOG_PRIVATE);
+            oP.subscribe(list::addAll);
+
+            return list;
+        }
     }
 
     @Override
@@ -129,7 +166,7 @@ public class DialogsPresenter implements DialogsContract.Presenter {
     }
 
     private void checkSizeDb(List<RealmDialogModel> list) {
-        if (list!=null) {
+        if (list != null) {
             mModel.getAllDialogFromDb()
                     .filter(realmDialogModels -> realmDialogModels.size() > list.size())
                     .flatMap(Observable::from)
