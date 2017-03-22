@@ -50,25 +50,29 @@ public class ChatsPresenter implements ChatsContract.Presenter {
 
     @Override
     public void onLogout() {
-        mModel.destroySession(mModel.getToken())
-                .subscribe(aVoid -> {
-                    mModel.deleteUser();
-                    mView.navigateToLoginActivity();
-                }, throwable -> mView.showMessageError(throwable));
+        if (mView.isNetworkConnect()) {
+            mModel.destroySession(mModel.getToken())
+                    .subscribe(aVoid -> {
+                        mModel.deleteUser();
+                        mView.navigateToLoginActivity();
+                    }, throwable -> mView.showMessageError(throwable));
+        }
     }
 
     private void getAllDialogAndSave() {
         List<RealmDialogModel> list = new ArrayList<>();
-        mModel.getAllDialogs(mModel.getToken())
-                .flatMap(dialogsResponse -> Observable.just(dialogsResponse.getItemDialogList()))
-                .subscribe(dialogList -> {
-                    Observable.from(dialogList)
-                            .subscribe(dialog -> list.add(new RealmDialogModel(dialog)));
-                    mModel.saveDialog(list);
+        if (mView.isNetworkConnect()) {
+            mModel.getAllDialogs(mModel.getToken())
+                    .flatMap(dialogsResponse -> Observable.just(dialogsResponse.getItemDialogList()))
+                    .subscribe(dialogList -> {
+                        Observable.from(dialogList)
+                                .subscribe(dialog -> list.add(new RealmDialogModel(dialog)));
+                        mModel.saveDialog(list);
 
-                }, throwable -> mView.showMessageError(throwable));
-
+                    }, throwable -> mView.showMessageError(throwable));
+        }
     }
+
 
 
 }

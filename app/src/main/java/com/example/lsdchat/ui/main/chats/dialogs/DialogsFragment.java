@@ -19,11 +19,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.example.lsdchat.App;
 import com.example.lsdchat.R;
 import com.example.lsdchat.model.ContentModel;
 import com.example.lsdchat.model.RealmDialogModel;
+import com.example.lsdchat.ui.main.NetworkConnect;
 import com.example.lsdchat.ui.main.fragment.BaseFragment;
 
 import java.util.List;
@@ -40,7 +42,8 @@ public class DialogsFragment extends BaseFragment implements DialogsContract.Vie
     private List<RealmDialogModel> mList;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private Toolbar mToolbar;
-
+    private NetworkConnect networkConnect;
+    private TextView mErrorConnectTv;
 
     public DialogsFragment() {
         // Required empty public constructor
@@ -59,9 +62,13 @@ public class DialogsFragment extends BaseFragment implements DialogsContract.Vie
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        networkConnect = ((NetworkConnect) getActivity());
     }
 
-
+    @Override
+    public boolean isNetworkConnect() {
+        return networkConnect.isNetworkConnect();
+    }
 
 
     @Override
@@ -73,9 +80,10 @@ public class DialogsFragment extends BaseFragment implements DialogsContract.Vie
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_dialogs, container, false);
+        initView(view);
         mPresenter = new DialogsPresenter(this, new DialogsModel(App.getSharedPreferencesManager(getActivity())));
         mType = getArguments().getInt(TYPE);
-        initView(view);
+
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
@@ -98,9 +106,19 @@ public class DialogsFragment extends BaseFragment implements DialogsContract.Vie
     private void initView(View view) {
         mRecyclerView = (RecyclerView) view.findViewById(R.id.chats_recycler_view);
         mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipeRefreshLayout);
+        mErrorConnectTv = (TextView) view.findViewById(R.id.error_connect_tv);
 
 
+    }
 
+    @Override
+    public void errorConnectAccessibility(boolean enable) {
+        if (enable) {
+            mErrorConnectTv.setVisibility(View.VISIBLE);
+        }
+        else {
+            mErrorConnectTv.setVisibility(View.GONE);
+        }
     }
 
     @Override

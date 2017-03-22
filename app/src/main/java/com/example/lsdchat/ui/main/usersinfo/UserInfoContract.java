@@ -26,7 +26,7 @@ public interface UserInfoContract {
     interface View {
         void setImagePath(String path);
         void showDialogError(Throwable throwable);
-
+        boolean isNetworkConnect();
         void navigateToChat(Fragment fragment);
     }
 

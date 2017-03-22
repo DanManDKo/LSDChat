@@ -47,7 +47,7 @@ public interface EditchatContract {
 
     interface View {
         Context getContext();
-
+        boolean isNetworkConnect();
         void fillDialogNameField(String name, Integer dialogCreaterID);
 
         void showDialogAvatar(Uri path);

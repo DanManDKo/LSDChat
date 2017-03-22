@@ -28,6 +28,7 @@ import com.example.lsdchat.App;
 import com.example.lsdchat.R;
 import com.example.lsdchat.api.login.model.LoginUser;
 import com.example.lsdchat.model.ContentModel;
+import com.example.lsdchat.ui.main.NetworkConnect;
 import com.example.lsdchat.ui.main.fragment.BaseFragment;
 import com.example.lsdchat.util.StorageHelper;
 import com.facebook.drawee.view.SimpleDraweeView;
@@ -61,12 +62,18 @@ public class CreateChatFragment extends BaseFragment implements CreateChatContra
     private CreateChatRvAdapter mCreateChatRvAdapter;
     private LinearLayout mLlSelectMembers;
     private Toolbar mToolbar;
-
+    private NetworkConnect networkConnect;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        networkConnect = ((NetworkConnect) getActivity());
+    }
+
+    @Override
+    public boolean isNetworkConnect() {
+        return networkConnect.isNetworkConnect();
     }
 
     @Override

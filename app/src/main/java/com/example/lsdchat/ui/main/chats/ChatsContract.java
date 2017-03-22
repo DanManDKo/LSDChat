@@ -21,6 +21,7 @@ public interface ChatsContract {
         void navigateToLoginActivity();
         void showMessageError(Throwable throwable);
 
+        boolean isNetworkConnect();
     }
 
     interface Presenter {

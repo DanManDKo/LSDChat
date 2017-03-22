@@ -98,6 +98,7 @@ public class DialogsAdapter extends RecyclerView.Adapter<DialogsAdapter.ViewHold
                     holder.mChatDate.setTextColor(Color.BLACK);
                     holder.mNewMessageCounter.setText(String.valueOf(realmDialogModel.getUnreadMessagesCount()));
                 } else {
+                    holder.mChatName.setTextColor(Color.parseColor("#000000"));
                     holder.mNewMessageCounter.setText("");
                     holder.mNewMessageCounter.setVisibility(View.GONE);
                 }

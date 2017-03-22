@@ -39,15 +39,16 @@ public class UserInfoPresenter implements UserInfoContract.Presenter {
         CreateDialogRequest createDialogRequest = new CreateDialogRequest();
         createDialogRequest.setType(ApiConstant.TYPE_DIALOG_PRIVATE);
         createDialogRequest.setIdU(String.valueOf(idUser));
-        mModel.createDialog(createDialogRequest)
-                .subscribe(itemDialog -> {
-                    mModel.saveDialog(new RealmDialogModel(itemDialog));
+        if (mView.isNetworkConnect()) {
+            mModel.createDialog(createDialogRequest)
+                    .subscribe(itemDialog -> {
+                        mModel.saveDialog(new RealmDialogModel(itemDialog));
 
-                    mView.navigateToChat(ConversationFragment
-                            .newInstance(itemDialog.getId(), itemDialog.getName(), itemDialog.getType(), idUser));
+                        mView.navigateToChat(ConversationFragment
+                                .newInstance(itemDialog.getId(), itemDialog.getName(), itemDialog.getType(), idUser));
 
-                }, throwable -> mView.showDialogError(throwable));
-
+                    }, throwable -> mView.showDialogError(throwable));
+        }
     }
 
 }

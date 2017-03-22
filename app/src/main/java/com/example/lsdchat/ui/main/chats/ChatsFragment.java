@@ -8,7 +8,6 @@ import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
@@ -36,6 +35,7 @@ import com.example.lsdchat.R;
 import com.example.lsdchat.behavior.NonSwipeableViewPager;
 import com.example.lsdchat.constant.ApiConstant;
 import com.example.lsdchat.ui.login.LoginActivity;
+import com.example.lsdchat.ui.main.NetworkConnect;
 import com.example.lsdchat.ui.main.ViewPagerAdapter;
 import com.example.lsdchat.ui.main.chats.dialogs.DialogsFragment;
 import com.example.lsdchat.ui.main.createchat.CreateChatFragment;
@@ -67,16 +67,21 @@ public class ChatsFragment extends BaseFragment implements ChatsContract.View {
     private ImageView mNoChatsImage;
     private LinearLayout mNoChatsMessage;
     private SearchView mSearchView;
-
+    private NetworkConnect networkConnect;
 
     public ChatsFragment() {
     }
 
+    @Override
+    public boolean isNetworkConnect() {
+        return networkConnect.isNetworkConnect();
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        networkConnect = ((NetworkConnect) getActivity());
     }
 
     @Override

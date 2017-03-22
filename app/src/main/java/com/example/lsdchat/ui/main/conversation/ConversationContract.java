@@ -33,7 +33,6 @@ public interface ConversationContract {
 
         void addNewMessageToAdapterList(String messageId);
 
-        void sendMessage(String dialogId, String message, String sendTo, int dialogType);
 
         void loadMoreFromDataBase(String dialogId, int page);
 
@@ -50,8 +49,6 @@ public interface ConversationContract {
         void deleteMessage(String dialogID, int position);
 
         void updateMessage(String messageID, int position, String message, String dialogID);
-
-        boolean isOnline();
 
     }
 
@@ -83,6 +80,11 @@ public interface ConversationContract {
         void notifyAdapterItemDeleted(int position);
 
         void notifyAdapterItemUpdated(int position, String message);
+
+        boolean isNetworkConnect();
+
+        void showErrorDialog(Throwable throwable);
+
     }
 
     interface Model {

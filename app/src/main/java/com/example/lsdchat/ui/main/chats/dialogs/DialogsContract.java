@@ -45,6 +45,10 @@ public interface DialogsContract {
         void showErrorDialog(int throwable);
 
         void deleteItemDialog(RealmDialogModel item);
+
+        boolean isNetworkConnect();
+
+        void errorConnectAccessibility(boolean enable);
     }
 
     interface Presenter {

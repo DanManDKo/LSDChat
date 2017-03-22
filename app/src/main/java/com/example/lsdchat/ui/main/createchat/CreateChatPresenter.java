@@ -50,56 +50,64 @@ public class CreateChatPresenter implements CreateChatContract.Presenter {
 
     private void createDialog(CreateDialogRequest request) {
         List<RealmDialogModel> list = new ArrayList<>();
-        mModel.createDialog(mModel.getToken(), request)
-                .subscribe(itemDialog -> {
-                    list.add(new RealmDialogModel(itemDialog));
-                    mModel.saveDialog(list);
+        if (mView.isNetworkConnect()) {
+            mModel.createDialog(mModel.getToken(), request)
+                    .subscribe(itemDialog -> {
+                        list.add(new RealmDialogModel(itemDialog));
+                        mModel.saveDialog(list);
 
-                    if (request.getIdU() == null || request.getIdU().contains(",")) {
-                        mView.navigateToChat(ConversationFragment
-                                .newInstance(itemDialog.getId(), itemDialog.getName(), itemDialog.getType(), -1));
-                    } else {
-                        mView.navigateToChat(ConversationFragment
-                                .newInstance(itemDialog.getId(), itemDialog.getName(), itemDialog.getType(), Integer.parseInt(request.getIdU())));
-                    }
-                }, throwable -> mView.showErrorDialog(throwable));
+                        if (request.getIdU() == null || request.getIdU().contains(",")) {
+                            mView.navigateToChat(ConversationFragment
+                                    .newInstance(itemDialog.getId(), itemDialog.getName(), itemDialog.getType(), -1));
+                        } else {
+                            mView.navigateToChat(ConversationFragment
+                                    .newInstance(itemDialog.getId(), itemDialog.getName(), itemDialog.getType(), Integer.parseInt(request.getIdU())));
+                        }
+                    }, throwable -> mView.showErrorDialog(throwable));
+        }
     }
 
 
     private void getBlobObjectCreateFile(File mUploadFile) {
         String mime = getFileMimeType(mUploadFile);
         String fileName = mUploadFile.getName();
+        if (mView.isNetworkConnect()) {
 
-        mModel.createFile(mModel.getToken(), mime, fileName)
+            mModel.createFile(mModel.getToken(), mime, fileName)
 
-                .subscribe(registrationCreateFileResponse -> {
-                    Integer blobId = registrationCreateFileResponse.getBlob().getBlobObjestAccess().getBlobId();
-                    String params = registrationCreateFileResponse.getBlob().getBlobObjestAccess().getParams();
-                    Uri uri = Uri.parse(params);
+                    .subscribe(registrationCreateFileResponse -> {
+                        Integer blobId = registrationCreateFileResponse.getBlob().getBlobObjestAccess().getBlobId();
+                        String params = registrationCreateFileResponse.getBlob().getBlobObjestAccess().getParams();
+                        Uri uri = Uri.parse(params);
 
-                    RequestBody file = RequestBody.create(MediaType.parse(getFileMimeType(mUploadFile)), mUploadFile);
-                    MultipartBody.Part multiPart = MultipartBody.Part.createFormData(ApiConstant.UploadParametres.FILE, mUploadFile.getName(), file);
+                        RequestBody file = RequestBody.create(MediaType.parse(getFileMimeType(mUploadFile)), mUploadFile);
+                        MultipartBody.Part multiPart = MultipartBody.Part.createFormData(ApiConstant.UploadParametres.FILE, mUploadFile.getName(), file);
 
-                    uploadFileRetrofit(mUploadFile, blobId, CreateMapRequestBody.createMapRequestBody(uri), multiPart);
-                }, throwable -> mView.showErrorDialog(throwable));
+                        uploadFileRetrofit(mUploadFile, blobId, CreateMapRequestBody.createMapRequestBody(uri), multiPart);
+                    }, throwable -> mView.showErrorDialog(throwable));
+        }
     }
 
     private void uploadFileRetrofit(File mUploadFile, long blobId, HashMap<String, RequestBody> map, MultipartBody.Part file) {
-        mModel.uploadFileMap(map, file)
-                .subscribe(aVoid -> {
-                    long fileSize = mUploadFile.length();
-                    if (fileSize != 0 && blobId != 0) {
-                        declareFileUploaded(fileSize, blobId);
-                    }
-                }, throwable -> mView.showErrorDialog(throwable));
+        if (mView.isNetworkConnect()) {
+            mModel.uploadFileMap(map, file)
+                    .subscribe(aVoid -> {
+                        long fileSize = mUploadFile.length();
+                        if (fileSize != 0 && blobId != 0) {
+                            declareFileUploaded(fileSize, blobId);
+                        }
+                    }, throwable -> mView.showErrorDialog(throwable));
+        }
     }
 
 
     private void declareFileUploaded(long size, long blobId) {
-        mModel.declareFileUploaded(size, mModel.getToken(), blobId)
-                .subscribe(aVoid -> {
-                    createDialog(getTypeDialog(blobId));
-                }, throwable -> mView.showErrorDialog(throwable));
+        if (mView.isNetworkConnect()) {
+            mModel.declareFileUploaded(size, mModel.getToken(), blobId)
+                    .subscribe(aVoid -> {
+                        createDialog(getTypeDialog(blobId));
+                    }, throwable -> mView.showErrorDialog(throwable));
+        }
     }
 
     private String getFileMimeType(File file) {

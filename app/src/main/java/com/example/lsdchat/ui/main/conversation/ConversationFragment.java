@@ -33,10 +33,13 @@ import com.example.lsdchat.listener.EndlessScrollListener;
 import com.example.lsdchat.model.ContentModel;
 import com.example.lsdchat.model.User;
 import com.example.lsdchat.ui.PresenterLoader;
+import com.example.lsdchat.ui.main.NetworkConnect;
 import com.example.lsdchat.ui.main.fragment.BaseFragment;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.facebook.FacebookSdk.getApplicationContext;
 
 public class ConversationFragment extends BaseFragment implements ConversationContract.View {
     private static final String EMPTY_STRING = "";
@@ -72,7 +75,7 @@ public class ConversationFragment extends BaseFragment implements ConversationCo
     private String mNameDialog;
     private String mPrivateOccupant;
     private int mDialogType;
-
+    private NetworkConnect networkConnect;
     private ArrayList<ItemMessage> mMessageList = new ArrayList<>();
 
     public static ConversationFragment newInstance(String dialogID, String nameDialog, int dialogType, int singleOccupant) {
@@ -97,9 +100,20 @@ public class ConversationFragment extends BaseFragment implements ConversationCo
     }
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        networkConnect = ((NetworkConnect) getActivity());
+    }
+
+    @Override
+    public boolean isNetworkConnect() {
+        return networkConnect.isNetworkConnect();
+    }
+
+    @Override
+    public void showErrorDialog(Throwable throwable) {
+        dialogError(throwable);
     }
 
     @Override
@@ -159,13 +173,11 @@ public class ConversationFragment extends BaseFragment implements ConversationCo
 
         mAdapter = new ConversationRecyclerAdapter(mMessageList, mConversationPresenter, user.getId());
 
-        if (presenter.isOnline()) {
-            presenter.getUsersListFromDatabase();
-            presenter.getUsersAvatarsFromDatabase();
-            presenter.getMessages(dialogID, ApiConstant.MessageRequestParams.MESSAGE_LIMIT, ApiConstant.MessageRequestParams.MESSAGE_SKIP);
-        } else {
-            presenter.fillAdapterListWithMessages(dialogID);
-        }
+
+        presenter.getUsersListFromDatabase();
+        presenter.getUsersAvatarsFromDatabase();
+        presenter.getMessages(dialogID, ApiConstant.MessageRequestParams.MESSAGE_LIMIT, ApiConstant.MessageRequestParams.MESSAGE_SKIP);
+
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
         linearLayoutManager.setReverseLayout(true);
@@ -181,9 +193,36 @@ public class ConversationFragment extends BaseFragment implements ConversationCo
             }
         });
 
-        mButtonSend.setOnClickListener(v -> presenter.sendMessage(dialogID, mMessage.getEditableText().toString(), mucToJID, mDialogType));
+        mButtonSend.setOnClickListener(v -> sendMessage(mMessage.getEditableText().toString(), mucToJID, mDialogType));
         mButtonSmiles.setOnClickListener(v -> {
         });
+    }
+
+    private void sendMessage(String message, String sendTo, int dialogType) {
+
+        if (XMPPService.getState().equals(XMPPConnection.ConnectionState.CONNECTED)) {
+
+            if (!message.equalsIgnoreCase("")) {
+                //Send the message to the server
+                if (dialogType != 3) {
+                    Intent intent = new Intent(XMPPService.SEND_MESSAGE);
+                    intent.putExtra(XMPPService.BUNDLE_MESSAGE_BODY, message);
+                    intent.putExtra(XMPPService.BUNDLE_TO, sendTo);
+                    getApplicationContext().sendBroadcast(intent);
+                } else {
+                    Intent intent = new Intent(XMPPService.SEND_MESSAGE_PRIVATE);
+                    intent.putExtra(XMPPService.BUNDLE_MESSAGE_BODY, message);
+                    intent.putExtra(XMPPService.BUNDLE_TO, sendTo);
+                    getApplicationContext().sendBroadcast(intent);
+                }
+            }
+        } else {
+            Toast.makeText(getApplicationContext(),
+                    "Client not connected to server, message not sent!",
+                    Toast.LENGTH_LONG).show();
+        }
+        clearEditableField();
+
     }
 
     private void onPresenterDestroyed(ConversationPresenter presenter) {

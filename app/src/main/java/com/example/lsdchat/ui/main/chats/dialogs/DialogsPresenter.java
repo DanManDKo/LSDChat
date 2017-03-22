@@ -6,6 +6,7 @@ import com.example.lsdchat.R;
 import com.example.lsdchat.constant.ApiConstant;
 import com.example.lsdchat.model.IdsListInteger;
 import com.example.lsdchat.model.RealmDialogModel;
+import com.example.lsdchat.ui.main.NetworkConnect;
 import com.example.lsdchat.ui.main.conversation.ConversationFragment;
 
 import java.util.ArrayList;
@@ -18,6 +19,7 @@ public class DialogsPresenter implements DialogsContract.Presenter {
 
     private DialogsContract.View mView;
     private DialogsContract.Model mModel;
+
 
 
     public DialogsPresenter(DialogsContract.View mView, DialogsContract.Model mModel) {
@@ -113,12 +115,18 @@ public class DialogsPresenter implements DialogsContract.Presenter {
         int currentUserId = App.getDataManager().getUser().getId();
         RealmDialogModel dialogModel = getDialogsByType(type).get(itemPosition);
         if (currentUserId == dialogModel.getOwnerId()) {
-            mModel.deleteDialog(dialogModel.getId())
-                    .subscribe(aVoid -> {
-                        mView.deleteItemDialog(dialogModel);
-                        mModel.deleteItemDialog(dialogModel.getId());
-                    }, throwable -> mView.showErrorDialog(throwable));
+            if (mView.isNetworkConnect()) {
+                mView.errorConnectAccessibility(false);
+                mModel.deleteDialog(dialogModel.getId())
+                        .subscribe(aVoid -> {
+                            mView.deleteItemDialog(dialogModel);
+                            mModel.deleteItemDialog(dialogModel.getId());
+                        }, throwable -> mView.showErrorDialog(throwable));
 
+            }
+            else {
+                mView.errorConnectAccessibility(true);
+            }
         } else {
             mView.showErrorDialog(R.string.you_cannot_delete_this_dialog);
         }
@@ -148,21 +156,25 @@ public class DialogsPresenter implements DialogsContract.Presenter {
 
     @Override
     public void getAllDialogAndSave() {
-
         List<RealmDialogModel> list = new ArrayList<>();
-        mModel.getAllDialogs(mModel.getToken())
-                .observeOn(AndroidSchedulers.mainThread())
-                .flatMap(dialogsResponse -> Observable.just(dialogsResponse.getItemDialogList()))
-                .subscribe(dialogList -> {
-                    Observable.from(dialogList)
-                            .subscribe(dialog -> list.add(new RealmDialogModel(dialog)));
+       if (mView.isNetworkConnect()) {
+           mView.errorConnectAccessibility(false);
+           mModel.getAllDialogs(mModel.getToken())
+                   .observeOn(AndroidSchedulers.mainThread())
+                   .flatMap(dialogsResponse -> Observable.just(dialogsResponse.getItemDialogList()))
+                   .subscribe(dialogList -> {
+                       Observable.from(dialogList)
+                               .subscribe(dialog -> list.add(new RealmDialogModel(dialog)));
 
-                    mModel.saveDialog(list);
+                       mModel.saveDialog(list);
 
-                    checkSizeDb(list);
+                       checkSizeDb(list);
 
-                }, throwable -> mView.showErrorDialog(throwable));
-
+                   }, throwable -> mView.showErrorDialog(throwable));
+       }
+       else {
+           mView.errorConnectAccessibility(true);
+       }
     }
 
     private void checkSizeDb(List<RealmDialogModel> list) {

@@ -21,6 +21,7 @@ import android.widget.TextView;
 import com.example.lsdchat.App;
 import com.example.lsdchat.R;
 import com.example.lsdchat.api.login.model.LoginUser;
+import com.example.lsdchat.ui.main.NetworkConnect;
 import com.example.lsdchat.ui.main.fragment.BaseFragment;
 import com.example.lsdchat.util.ErrorsCode;
 
@@ -41,7 +42,7 @@ public class UserInfoFragment extends BaseFragment implements UserInfoContract.V
     private RelativeLayout mRlWebsite;
     private UserInfoContract.Presenter mPresenter;
     private PackageManager mPackageManager;
-
+    private NetworkConnect networkConnect;
 
     public UserInfoFragment() {
         // Required empty public constructor
@@ -56,9 +57,15 @@ public class UserInfoFragment extends BaseFragment implements UserInfoContract.V
     }
 
     @Override
+    public boolean isNetworkConnect() {
+        return networkConnect.isNetworkConnect();
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        networkConnect = ((NetworkConnect) getActivity());
     }
 
     @Override
@@ -73,9 +80,9 @@ public class UserInfoFragment extends BaseFragment implements UserInfoContract.V
         mLoginUser = getArguments().getParcelable(LIST);
         initView(view);
 
-        fieldAccessibility(mEmail,mRlEmail,mLoginUser.getEmail());
-        fieldAccessibility(mPhone,mRlPhone,mLoginUser.getPhone());
-        fieldAccessibility(mWebsite,mRlWebsite,mLoginUser.getWebsite());
+        fieldAccessibility(mEmail, mRlEmail, mLoginUser.getEmail());
+        fieldAccessibility(mPhone, mRlPhone, mLoginUser.getPhone());
+        fieldAccessibility(mWebsite, mRlWebsite, mLoginUser.getWebsite());
 
 //        mEmail.setText(mLoginUser.getEmail());
 //        mPhone.setText(mLoginUser.getPhone());
@@ -107,11 +114,10 @@ public class UserInfoFragment extends BaseFragment implements UserInfoContract.V
 
     }
 
-    private void fieldAccessibility(TextView textView,RelativeLayout rl,String value) {
+    private void fieldAccessibility(TextView textView, RelativeLayout rl, String value) {
         if (value == null) {
             rl.setVisibility(View.GONE);
-        }
-        else {
+        } else {
             rl.setVisibility(View.VISIBLE);
             textView.setText(value);
         }

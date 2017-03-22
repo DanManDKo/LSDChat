@@ -146,4 +146,5 @@
 <string name="you_cannot_delete_this_dialog">You can`t delete this dialog</string>
 <string name="message_deleted">Deleted</string>
 <string name="message_updated">Updated</string>
+    <string name="connection_problem">Connection problem</string>
 </resources>

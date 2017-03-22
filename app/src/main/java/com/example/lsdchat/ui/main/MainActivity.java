@@ -6,19 +6,19 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.FrameLayout;
 
-import com.example.lsdchat.App;
 import com.example.lsdchat.R;
 import com.example.lsdchat.manager.SharedPreferencesManager;
-import com.example.lsdchat.model.User;
 import com.example.lsdchat.ui.main.chats.ChatsFragment;
 import com.example.lsdchat.ui.main.conversation.ConversationFragment;
 import com.example.lsdchat.ui.main.editchat.EditchatFragment;
 import com.example.lsdchat.ui.main.fragment.BaseFragment;
+import com.example.lsdchat.util.Network;
 import com.example.lsdchat.util.UsersUtil;
 
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements ConversationFragment.OnEditchatButtonClicked, EditchatFragment.OnSaveButtonClicked {
+public class MainActivity extends AppCompatActivity implements ConversationFragment.OnEditchatButtonClicked,
+        EditchatFragment.OnSaveButtonClicked, NetworkConnect {
 
     private FrameLayout mFrameLayout;
 
@@ -36,9 +36,6 @@ public class MainActivity extends AppCompatActivity implements ConversationFragm
     }
 
 
-
-
-
     private void replaceFragment(Fragment fragment) {
         getSupportFragmentManager().beginTransaction().addToBackStack(null).replace(R.id.fragment, fragment).commit();
     }
@@ -49,17 +46,17 @@ public class MainActivity extends AppCompatActivity implements ConversationFragm
         List fragmentList = getSupportFragmentManager().getFragments();
 
         boolean handled = false;
-        for(Object f : fragmentList) {
-            if(f instanceof BaseFragment) {
-                handled = ((BaseFragment)f).onBackPressed();
+        for (Object f : fragmentList) {
+            if (f instanceof BaseFragment) {
+                handled = ((BaseFragment) f).onBackPressed();
 
-                if(handled) {
+                if (handled) {
                     break;
                 }
             }
         }
 
-        if(!handled) {
+        if (!handled) {
             super.onBackPressed();
         }
     }
@@ -79,6 +76,16 @@ public class MainActivity extends AppCompatActivity implements ConversationFragm
         super.onActivityResult(requestCode, resultCode, data);
         for (Fragment fragment : getSupportFragmentManager().getFragments()) {
             fragment.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
+    @Override
+    public boolean isNetworkConnect() {
+        if (!Network.isOnline(this)) {
+            Network.showErrorConnectDialog(this);
+            return false;
+        } else {
+            return true;
         }
     }
 }

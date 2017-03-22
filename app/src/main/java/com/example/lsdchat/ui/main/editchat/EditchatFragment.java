@@ -27,6 +27,7 @@ import com.example.lsdchat.R;
 import com.example.lsdchat.api.login.model.LoginUser;
 import com.example.lsdchat.model.ContentModel;
 import com.example.lsdchat.ui.PresenterLoader;
+import com.example.lsdchat.ui.main.NetworkConnect;
 import com.example.lsdchat.ui.main.fragment.BaseFragment;
 import com.facebook.drawee.view.SimpleDraweeView;
 
@@ -53,7 +54,7 @@ public class EditchatFragment extends BaseFragment implements EditchatContract.V
     private SimpleDraweeView mDialogImage;
     private Button mSaveButton;
     private RelativeLayout mRlUsers;
-
+    private NetworkConnect networkConnect;
     private String dialogId;
 
     @Override
@@ -70,6 +71,7 @@ public class EditchatFragment extends BaseFragment implements EditchatContract.V
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        networkConnect = ((NetworkConnect) getActivity());
     }
 
     @Nullable
@@ -81,6 +83,10 @@ public class EditchatFragment extends BaseFragment implements EditchatContract.V
         return view;
     }
 
+    @Override
+    public boolean isNetworkConnect() {
+        return networkConnect.isNetworkConnect();
+    }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {

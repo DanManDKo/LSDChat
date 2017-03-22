@@ -21,7 +21,8 @@
     <color name="colorNewChatText">#cccccc</color>
     <color name="colorNewChatTextCheck">@color/colorBlack</color>
     <color name="colorRadioGroup">#262626</color>
-
+    <color name="colorNetBackGround">#E9E9E9</color>
+    <color name="colorNetText">#F73500</color>
 
 
     <color name="line">#28000000</color>

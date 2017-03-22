@@ -93,66 +93,57 @@ public class EditchatPresenter implements EditchatContract.Presenter {
 
     @Override
     public void loadDialogCredentials(String dialogID) {
+        if (mView.isNetworkConnect()) {
+            mModel.getDialogByID(mPreferencesManager.getToken(), dialogID)
+                    .subscribe(dialogsResponse -> {
+                        mDialogID = dialogID;
+                        ItemDialog item = dialogsResponse.getItemDialogList().get(0);
+                        mView.fillDialogNameField(item.getName(), item.getOwnerId());
+                        mCreatedDialogId = item.getOwnerId();
+                        Observable.from(dialogsResponse.getItemDialogList())
+                                .flatMap(itemDialog -> Observable.just(itemDialog.getOccupantsIdsList()))
+                                .subscribe(integers -> {
 
-        mModel.getDialogByID(mPreferencesManager.getToken(), dialogID)
-                .subscribe(dialogsResponse -> {
-                    mDialogID = dialogID;
-                    ItemDialog item = dialogsResponse.getItemDialogList().get(0);
-                    mView.fillDialogNameField(item.getName(), item.getOwnerId());
-                    mCreatedDialogId = item.getOwnerId();
-                    Observable.from(dialogsResponse.getItemDialogList())
-                            .flatMap(itemDialog -> Observable.just(itemDialog.getOccupantsIdsList()))
-                            .subscribe(integers -> {
-
-                                idOccupants.addAll(integers);
-                                mView.initOccupantsIdList(idOccupants);
-                            });
+                                    idOccupants.addAll(integers);
+                                    mView.initOccupantsIdList(idOccupants);
+                                });
 
 
-                    prepareAndShowDialogInformation(item);
-                }, throwable -> mView.showDialogError(throwable));
+                        prepareAndShowDialogInformation(item);
+                    }, throwable -> mView.showDialogError(throwable));
+        }
     }
 
     private void prepareAndShowDialogInformation(ItemDialog dialogModel) {
 
-        mModel.getDialogAvatarFromDatabase(dialogModel.getId())
-                .map(contentModel -> {
-                    if (contentModel != null) {
-                        if (!contentModel.getImagePath().equals("0"))
-                            return contentModel.getImagePath();
+            mModel.getDialogAvatarFromDatabase(dialogModel.getId())
+                    .map(contentModel -> {
+                        if (contentModel != null) {
+                            if (!contentModel.getImagePath().equals("0"))
+                                return contentModel.getImagePath();
+                            return "";
+                        }
                         return "";
-                    }
-                    return "";
-                }).subscribe(s -> {
-                    Log.e("AAA - AVATAR_STRING", "avatar string <" + s + ">");
+                    }).subscribe(s -> mView.showDialogAvatar(Uri.fromFile(new File(s))));
 
-                    mView.showDialogAvatar(Uri.fromFile(new File(s)));
-                },
-                throwable -> {
-                    Log.e("AAA - avatarError", throwable.getMessage().toString());
-                });
+            int dialogType = dialogModel.getType();
 
-        int dialogType = dialogModel.getType();
+            setVisibleUserList(dialogType);
 
-        setVisibleUserList(dialogType);
+            mDialogType = dialogType;
+            List<Integer> dialogOccupantsIDs = new ArrayList<>();
+            for (Integer id : dialogModel.getOccupantsIdsList()) {
+                dialogOccupantsIDs.add(id);
+            }
 
-        mDialogType = dialogType;
-        List<Integer> dialogOccupantsIDs = new ArrayList<>();
-        for (Integer id : dialogModel.getOccupantsIdsList()) {
-            dialogOccupantsIDs.add(id);
-        }
+            mModel.getAppUsersFromDatabase()
+                    .subscribe(loginUsers -> {
+                                mCheckedOccupantsList.clear();
+                                mCheckedOccupantsList.addAll(dialogOccupantsIDs);
 
-        mModel.getAppUsersFromDatabase()
-                .subscribe(loginUsers -> {
-                            Log.e("AAA - APP_USERS", String.valueOf(loginUsers.size()));
-                            mCheckedOccupantsList.clear();
-                            mCheckedOccupantsList.addAll(dialogOccupantsIDs);
+                                mView.fillDialogAdapter(dialogOccupantsIDs, loginUsers, dialogType);
+                            });
 
-                            mView.fillDialogAdapter(dialogOccupantsIDs, loginUsers, dialogType);
-                        },
-                        throwable -> {
-                            Log.e("AAA - usersError", throwable.getMessage());
-                        });
     }
 
     private void setVisibleUserList(int dialogType) {
@@ -260,14 +251,16 @@ public class EditchatPresenter implements EditchatContract.Presenter {
         }
 
         if (isNotError) {
-            mModel.updateDialog(mPreferencesManager.getToken(), mDialogID, body)
-                    .subscribe(itemDialog -> {
-                        mView.navigateToConversationFragment(itemDialog.getId(), itemDialog.getName(), mDialogType, -1);
-                    }, throwable -> {
-                        mView.showDialogError(throwable);
-                        Log.e("TAH", "error edit ");
-                        mView.navigateToConversationFragment(mDialogID, dialogName, mDialogType, -1);
-                    });
+            if (mView.isNetworkConnect()) {
+                mModel.updateDialog(mPreferencesManager.getToken(), mDialogID, body)
+                        .subscribe(itemDialog -> {
+                            mView.navigateToConversationFragment(itemDialog.getId(), itemDialog.getName(), mDialogType, -1);
+                        }, throwable -> {
+                            mView.showDialogError(throwable);
+                            Log.e("TAH", "error edit ");
+                            mView.navigateToConversationFragment(mDialogID, dialogName, mDialogType, -1);
+                        });
+            }
         } else {
             mView.showPermissionErrorMessage();
         }
@@ -291,46 +284,46 @@ public class EditchatPresenter implements EditchatContract.Presenter {
 
 
     private void getBlobObjectCreateFile(String token, String mime, String fileName) {
+        if (mView.isNetworkConnect()) {
+            mModel.createFile(token, mime, fileName)
+                    .subscribe(registrationCreateFileResponse -> {
+                        long blobId = registrationCreateFileResponse.getBlob().getBlobObjestAccess().getBlobId();
+                        String params = registrationCreateFileResponse.getBlob().getBlobObjestAccess().getParams();
+                        Uri uri = Uri.parse(params);
 
-        mModel.createFile(token, mime, fileName)
-                .subscribe(registrationCreateFileResponse -> {
-                    long blobId = registrationCreateFileResponse.getBlob().getBlobObjestAccess().getBlobId();
-                    String params = registrationCreateFileResponse.getBlob().getBlobObjestAccess().getParams();
-                    Uri uri = Uri.parse(params);
+                        RequestBody file = RequestBody.create(MediaType.parse(getFileMimeType(mUploadFile)), mUploadFile);
+                        MultipartBody.Part multiPart = MultipartBody.Part.createFormData(ApiConstant.UploadParametres.FILE, mUploadFile.getName(), file);
 
-                    RequestBody file = RequestBody.create(MediaType.parse(getFileMimeType(mUploadFile)), mUploadFile);
-                    MultipartBody.Part multiPart = MultipartBody.Part.createFormData(ApiConstant.UploadParametres.FILE, mUploadFile.getName(), file);
-
-                    uploadFileRetrofit(token, blobId, CreateMapRequestBody.createMapRequestBody(uri), multiPart);
-                }, throwable -> mView.showDialogError(throwable));
+                        uploadFileRetrofit(token, blobId, CreateMapRequestBody.createMapRequestBody(uri), multiPart);
+                    }, throwable -> mView.showDialogError(throwable));
+        }
     }
 
     private void uploadFileRetrofit(String token, long blobId, HashMap<String, RequestBody> map, MultipartBody.Part file) {
-
-        mModel.uploadFileMap(map, file)
-                .subscribe(aVoid -> {
-                    long fileSize = mUploadFile.length();
-                    if (fileSize != 0 && blobId != 0) {
-                        declareFileUploaded(fileSize, token, blobId);
-                    }
-                }, throwable -> mView.showDialogError(throwable));
+        if (mView.isNetworkConnect()) {
+            mModel.uploadFileMap(map, file)
+                    .subscribe(aVoid -> {
+                        long fileSize = mUploadFile.length();
+                        if (fileSize != 0 && blobId != 0) {
+                            declareFileUploaded(fileSize, token, blobId);
+                        }
+                    }, throwable -> mView.showDialogError(throwable));
+        }
     }
 
     private void declareFileUploaded(long size, String token, long blobId) {
+        if (mView.isNetworkConnect()) {
+            mModel.declareFileUploaded(size, token, blobId)
+                    .subscribe(aVoid -> {
+                        UpdateDialogRequest body = new UpdateDialogRequest();
+                        body.setPhotoId(blobId);
 
-        mModel.declareFileUploaded(size, token, blobId)
-                .subscribe(aVoid -> {
-                    UpdateDialogRequest body = new UpdateDialogRequest();
-                    body.setPhotoId(blobId);
+                        mModel.updateDialog(mPreferencesManager.getToken(), mDialogID, body)
+                                .subscribe(itemDialog -> {
 
-                    mModel.updateDialog(mPreferencesManager.getToken(), mDialogID, body)
-                            .subscribe(itemDialog -> {
-
-                            }, throwable -> {
-                                mView.showDialogError(throwable);
-
-                            });
-                }, throwable -> mView.showDialogError(throwable));
+                                }, throwable -> mView.showDialogError(throwable));
+                    }, throwable -> mView.showDialogError(throwable));
+        }
     }
 
 

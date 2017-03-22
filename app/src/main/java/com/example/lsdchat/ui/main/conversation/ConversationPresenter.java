@@ -58,12 +58,12 @@ public class ConversationPresenter implements ConversationContract.Presenter {
     @Override
     public void onUnregisterBroadcastReceiver() {
         mContext.unregisterReceiver(mBroadcastReceiver);
-        Log.e("AAA", "unregister receiver");
+
     }
 
     @Override
     public void onRegisterBroadcastReceiver() {
-        Log.e("AAA", "register receiver");
+
         mBroadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -87,40 +87,41 @@ public class ConversationPresenter implements ConversationContract.Presenter {
     }
 
     private void retrieveNewMessage(String dialogID, String messageID) {
-        mModel.getMessageByMessageID(mPreferencesManager.getToken(), dialogID, messageID, UNREAD_MARK)
-                .subscribe(messagesResponse -> {
-                    ItemMessage im = messagesResponse.getItemMessageList().get(0);
-                    saveMessagesToDataBase(im);
-                    addNewMessageToAdapterList(messageID);
-                }, throwable -> {
-                    Log.e("retrieveNewMessage", throwable.getMessage().toString());
-                });
+        if (mView.isNetworkConnect()) {
+            mModel.getMessageByMessageID(mPreferencesManager.getToken(), dialogID, messageID, UNREAD_MARK)
+                    .subscribe(messagesResponse -> {
+                        ItemMessage im = messagesResponse.getItemMessageList().get(0);
+                        saveMessagesToDataBase(im);
+                        addNewMessageToAdapterList(messageID);
+                    }, throwable -> mView.showErrorDialog(throwable));
+        }
     }
 
     private void retrieveNewMessagePrivate(String dialogID) {
-        mModel.getMessagesByDialogId(mPreferencesManager.getToken(), dialogID, 1, 0, UNREAD_MARK)
-                .subscribe(messagesResponse -> {
-                    ItemMessage im = messagesResponse.getItemMessageList().get(0);
-                    saveMessagesToDataBase(im);
-                    addNewMessageToAdapterList(im.getId());
-                }, throwable -> {
-                    Log.e("retrieveNewMessage", throwable.getMessage().toString());
-                });
+        if (mView.isNetworkConnect()) {
 
+            mModel.getMessagesByDialogId(mPreferencesManager.getToken(), dialogID, 1, 0, UNREAD_MARK)
+                    .subscribe(messagesResponse -> {
+                        ItemMessage im = messagesResponse.getItemMessageList().get(0);
+                        saveMessagesToDataBase(im);
+                        addNewMessageToAdapterList(im.getId());
+                    }, throwable -> mView.showErrorDialog(throwable));
+        }
     }
 
     @Override
     public void getMessages(String dialogId, int limit, int skip) {
-        mModel.getMessagesByDialogId(mPreferencesManager.getToken(), dialogId, limit, skip, UNREAD_MARK)
-                .map(messagesResponse -> messagesResponse.getItemMessageList())
-                .doOnNext(itemMessages -> saveMessagesToDataBase(itemMessages))
-                .subscribe(itemMessages -> {
+        if (mView.isNetworkConnect()) {
 
-                    fillAdapterListWithMessages(itemMessages);
+            mModel.getMessagesByDialogId(mPreferencesManager.getToken(), dialogId, limit, skip, UNREAD_MARK)
+                    .map(messagesResponse -> messagesResponse.getItemMessageList())
+                    .doOnNext(itemMessages -> saveMessagesToDataBase(itemMessages))
+                    .subscribe(itemMessages -> {
 
-                }, throwable -> {
-                    Log.e("AAA", throwable.getMessage().toString());
-                });
+                        fillAdapterListWithMessages(itemMessages);
+
+                    }, throwable -> mView.showErrorDialog(throwable));
+        }
     }
 
 
@@ -131,55 +132,24 @@ public class ConversationPresenter implements ConversationContract.Presenter {
 
     @Override
     public void deleteMessage(String dialogID, int position) {
-        mModel.deleteMessage(mPreferencesManager.getToken(), dialogID)
-                .subscribe(aVoid -> {
-                    mView.notifyAdapterItemDeleted(position);
-                }, throwable -> {
-
-                });
+        if (mView.isNetworkConnect()) {
+            mModel.deleteMessage(mPreferencesManager.getToken(), dialogID)
+                    .subscribe(aVoid -> mView.notifyAdapterItemDeleted(position),
+                            throwable -> mView.showErrorDialog(throwable));
+        }
     }
 
     @Override
     public void updateMessage(String messageID, int position, String message, String dialogID) {
-        mModel.updateMessage(mPreferencesManager.getToken(), messageID, message, dialogID)
-                .subscribe(aVoid -> {
-                    mView.notifyAdapterItemUpdated(position, message);
-                }, throwable -> {
+        if (mView.isNetworkConnect()) {
 
-                });
-    }
-
-    @Override
-    public boolean isOnline() {
-        return Network.isOnline(mContext);
-    }
-
-    @Override
-    public void sendMessage(String dialogId, String message, String sendTo, int dialogType) {
-        if (XMPPService.getState().equals(XMPPConnection.ConnectionState.CONNECTED)) {
-
-            if (!message.equalsIgnoreCase("")) {
-                Log.e("AAA", "The client is connected to the server, sending Message");
-                //Send the message to the server
-                if (dialogType != 3) {
-                    Intent intent = new Intent(XMPPService.SEND_MESSAGE);
-                    intent.putExtra(XMPPService.BUNDLE_MESSAGE_BODY, message);
-                    intent.putExtra(XMPPService.BUNDLE_TO, sendTo);
-                    getApplicationContext().sendBroadcast(intent);
-                } else {
-                    Intent intent = new Intent(XMPPService.SEND_MESSAGE_PRIVATE);
-                    intent.putExtra(XMPPService.BUNDLE_MESSAGE_BODY, message);
-                    intent.putExtra(XMPPService.BUNDLE_TO, sendTo);
-                    getApplicationContext().sendBroadcast(intent);
-                }
-            }
-        } else {
-            Toast.makeText(getApplicationContext(),
-                    "Client not connected to server, message not sent!",
-                    Toast.LENGTH_LONG).show();
+            mModel.updateMessage(mPreferencesManager.getToken(), messageID, message, dialogID)
+                    .subscribe(aVoid -> mView.notifyAdapterItemUpdated(position, message),
+                            throwable -> mView.showErrorDialog(throwable));
         }
-        mView.clearEditableField();
     }
+
+
 
     @Override
     public void fillAdapterListWithMessages(List<ItemMessage> list) {
@@ -220,12 +190,7 @@ public class ConversationPresenter implements ConversationContract.Presenter {
         Observable.combineLatest(observableUserID, observableDialogModel, ((value, dialogModel) -> {
             boolean result = checkAccessLevel(dialogModel, value);
             return result;
-        })).subscribe(aBoolean -> {
-            permissionForEditDialog(aBoolean, dialogId);
-
-        }, throwable -> {
-            Log.e("AAA", throwable.getMessage());
-        });
+        })).subscribe(aBoolean -> permissionForEditDialog(aBoolean, dialogId));
     }
 
     private void permissionForEditDialog(boolean value, String dialogID) {
@@ -268,36 +233,29 @@ public class ConversationPresenter implements ConversationContract.Presenter {
 
     @Override
     public void loadMore(String dialogId, int skip) {
-        mModel.getMessagesByDialogId(mPreferencesManager.getToken(), dialogId, ApiConstant.MessageRequestParams.MESSAGE_LIMIT, skip, UNREAD_MARK)
-                .map(messagesResponse -> messagesResponse.getItemMessageList())
-                .doOnNext(itemMessages -> saveMessagesToDataBase(itemMessages))
-                .subscribe(itemMessages -> {
+        if (mView.isNetworkConnect()) {
 
-                    fillAdapterListWithMessages(itemMessages);
+            mModel.getMessagesByDialogId(mPreferencesManager.getToken(), dialogId, ApiConstant.MessageRequestParams.MESSAGE_LIMIT, skip, UNREAD_MARK)
+                    .map(messagesResponse -> messagesResponse.getItemMessageList())
+                    .doOnNext(itemMessages -> saveMessagesToDataBase(itemMessages))
+                    .subscribe(itemMessages -> {
 
-                }, throwable -> {
-                    Log.e("AAA", throwable.getMessage().toString());
-                });
+                        fillAdapterListWithMessages(itemMessages);
+
+                    }, throwable -> mView.showErrorDialog(throwable));
+        }
     }
 
     @Override
     public void getUsersListFromDatabase() {
         mModel.getUsersFromDatabase()
-                .subscribe(loginUsers -> {
-                    mView.passUsersListToAdapter(loginUsers);
-                }, throwable -> {
-
-                });
+                .subscribe(loginUsers -> mView.passUsersListToAdapter(loginUsers));
     }
 
     @Override
     public void getUsersAvatarsFromDatabase() {
         mModel.getUserAvatarFromDatabase()
-                .subscribe(contentModel -> {
-                    mView.passUsersAvatarsToAdapter(contentModel);
-                }, throwable -> {
-
-                });
+                .subscribe(contentModel -> mView.passUsersAvatarsToAdapter(contentModel));
 
     }
 }

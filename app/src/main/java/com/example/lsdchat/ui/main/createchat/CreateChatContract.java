@@ -39,7 +39,7 @@ public interface CreateChatContract {
         boolean isRbPrivate();
 
         String getNameDialog();
-
+        boolean isNetworkConnect();
 
         void navigateToChat(Fragment fragment);
     }
