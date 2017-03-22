@@ -2,7 +2,11 @@ package com.example.lsdchat.ui.main.usersinfo;
 
 
 import com.example.lsdchat.App;
+import com.example.lsdchat.api.dialog.request.CreateDialogRequest;
+import com.example.lsdchat.constant.ApiConstant;
 import com.example.lsdchat.model.ContentModel;
+import com.example.lsdchat.model.RealmDialogModel;
+import com.example.lsdchat.ui.main.conversation.ConversationFragment;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,4 +33,21 @@ public class UserInfoPresenter implements UserInfoContract.Presenter {
                 .subscribe(s -> mView.setImagePath(s));
 
     }
+
+    @Override
+    public void createDialog(int idUser) {
+        CreateDialogRequest createDialogRequest = new CreateDialogRequest();
+        createDialogRequest.setType(ApiConstant.TYPE_DIALOG_PRIVATE);
+        createDialogRequest.setIdU(String.valueOf(idUser));
+        mModel.createDialog(createDialogRequest)
+                .subscribe(itemDialog -> {
+                    mModel.saveDialog(new RealmDialogModel(itemDialog));
+
+                    mView.navigateToChat(ConversationFragment
+                            .newInstance(itemDialog.getId(), itemDialog.getName(), itemDialog.getType(), idUser));
+
+                }, throwable -> mView.showDialogError(throwable));
+
+    }
+
 }

@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.Toolbar;
 import android.telephony.TelephonyManager;
 import android.view.LayoutInflater;
@@ -64,7 +65,10 @@ public class UserInfoFragment extends BaseFragment implements UserInfoContract.V
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_users_info, container, false);
-        mPresenter = new UserInfoPresenter(this, new UserInfoModel(App.getDataManager()));
+        mPresenter = new UserInfoPresenter(this,
+                new UserInfoModel(App.getDataManager(),
+                        App.getApiManager().getDialogService(),
+                        App.getSharedPreferencesManager(getActivity())));
         mPackageManager = getActivity().getPackageManager();
         mLoginUser = getArguments().getParcelable(LIST);
         initView(view);
@@ -90,13 +94,15 @@ public class UserInfoFragment extends BaseFragment implements UserInfoContract.V
 
     private void onClick() {
         mFabMessage.setOnClickListener(v -> {
-//        it work
+            mPresenter.createDialog(mLoginUser.getId());
+
         });
         mRlEmail.setOnClickListener(v -> navigateToSendEmail(mLoginUser.getEmail()));
         mRlPhone.setOnClickListener(v -> navigateToDial(mLoginUser.getPhone()));
         mRlWebsite.setOnClickListener(v -> navigateToWeb(mLoginUser.getWebsite()));
 
     }
+
 
     private void initView(View view) {
         mFabMessage = (FloatingActionButton) view.findViewById(R.id.fab_user_info);
@@ -152,5 +158,15 @@ public class UserInfoFragment extends BaseFragment implements UserInfoContract.V
                 startActivity(websiteIntent);
             }
         }
+    }
+
+    @Override
+    public void showDialogError(Throwable throwable) {
+        dialogError(throwable);
+    }
+
+    @Override
+    public void navigateToChat(Fragment fragment) {
+        getActivity().getSupportFragmentManager().beginTransaction().addToBackStack(null).replace(R.id.fragment, fragment).commit();
     }
 }
