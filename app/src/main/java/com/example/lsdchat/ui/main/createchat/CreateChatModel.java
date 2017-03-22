@@ -18,6 +18,8 @@ import com.example.lsdchat.api.registration.service.RegistrationService;
 import com.example.lsdchat.manager.DataManager;
 import com.example.lsdchat.manager.SharedPreferencesManager;
 import com.example.lsdchat.model.ContentModel;
+import com.example.lsdchat.model.RealmDialogModel;
+import com.example.lsdchat.util.DialogUtil;
 
 import java.io.File;
 import java.util.List;
@@ -99,5 +101,14 @@ public class CreateChatModel implements CreateChatContract.Model {
         return mDataManager.getUserObservable();
     }
 
+    @Override
+    public void saveDialog(List<RealmDialogModel> dialogList) {
+        Observable.from(dialogList)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(itemDialog -> mDataManager.insertDialogToDB(itemDialog));
+
+        DialogUtil.saveImageDialog(dialogList, getToken());
+    }
 
 }

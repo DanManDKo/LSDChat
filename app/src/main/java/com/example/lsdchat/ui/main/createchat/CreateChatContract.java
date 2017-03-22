@@ -8,6 +8,7 @@ import com.example.lsdchat.api.dialog.request.CreateDialogRequest;
 import com.example.lsdchat.api.login.model.LoginUser;
 import com.example.lsdchat.api.registration.response.RegistrationCreateFileResponse;
 import com.example.lsdchat.model.ContentModel;
+import com.example.lsdchat.model.RealmDialogModel;
 
 import java.io.File;
 import java.util.List;
@@ -70,5 +71,6 @@ public interface CreateChatContract {
 
         Observable<List<LoginUser>> getUserListObservable();
 
+        void saveDialog(List<RealmDialogModel> dialogList);
     }
 }

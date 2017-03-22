@@ -130,7 +130,7 @@ public class DataManager {
 
     public Observable<List<RealmDialogModel>> getObservableDialogsByType(int type) {
         return Observable.fromCallable(() ->
-                mRealm.where(RealmDialogModel.class).equalTo("type", type).findAllSorted("lastMessageDateSent", Sort.DESCENDING));
+                mRealm.where(RealmDialogModel.class).equalTo("type", type).findAllSorted("updatedAt", Sort.DESCENDING));
     }
 
 

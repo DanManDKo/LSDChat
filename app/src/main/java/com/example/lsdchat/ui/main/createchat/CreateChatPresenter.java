@@ -3,11 +3,11 @@ package com.example.lsdchat.ui.main.createchat;
 
 import android.net.Uri;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.example.lsdchat.R;
 import com.example.lsdchat.api.dialog.request.CreateDialogRequest;
 import com.example.lsdchat.constant.ApiConstant;
+import com.example.lsdchat.model.RealmDialogModel;
 import com.example.lsdchat.ui.main.conversation.ConversationFragment;
 import com.example.lsdchat.util.CreateMapRequestBody;
 
@@ -49,13 +49,20 @@ public class CreateChatPresenter implements CreateChatContract.Presenter {
 
 
     private void createDialog(CreateDialogRequest request) {
+        List<RealmDialogModel> list = new ArrayList<>();
         mModel.createDialog(mModel.getToken(), request)
-                .subscribe(itemDialog ->
-                                mView.navigateToChat(ConversationFragment
-                                        .newInstance(itemDialog.getId(), itemDialog.getName(), itemDialog.getType(), Integer.parseInt(request.getIdU()))),
-                        throwable -> {
-                            Log.e("DIALOG", throwable.getMessage());
-                        });
+                .subscribe(itemDialog -> {
+                    list.add(new RealmDialogModel(itemDialog));
+                    mModel.saveDialog(list);
+
+                    if (request.getIdU() == null || request.getIdU().contains(",")) {
+                        mView.navigateToChat(ConversationFragment
+                                .newInstance(itemDialog.getId(), itemDialog.getName(), itemDialog.getType(), -1));
+                    } else {
+                        mView.navigateToChat(ConversationFragment
+                                .newInstance(itemDialog.getId(), itemDialog.getName(), itemDialog.getType(), Integer.parseInt(request.getIdU())));
+                    }
+                }, throwable -> mView.showErrorDialog(throwable));
     }
 
 
@@ -92,7 +99,6 @@ public class CreateChatPresenter implements CreateChatContract.Presenter {
         mModel.declareFileUploaded(size, mModel.getToken(), blobId)
                 .subscribe(aVoid -> {
                     createDialog(getTypeDialog(blobId));
-                    Log.e("TEST", "SUCCESS");
                 }, throwable -> mView.showErrorDialog(throwable));
     }
 
@@ -205,12 +211,8 @@ public class CreateChatPresenter implements CreateChatContract.Presenter {
                 if (imageId != 0) {
                     createDialogRequest.setPhotoId(imageId);
                 }
-            } else {
-                Log.e("getTypeDialog", "Select item id");
             }
 
-        } else {
-            Log.e("getTypeDialog", "Select public or private");
         }
 
 

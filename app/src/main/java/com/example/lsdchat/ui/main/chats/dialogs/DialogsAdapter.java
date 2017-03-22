@@ -91,17 +91,18 @@ public class DialogsAdapter extends RecyclerView.Adapter<DialogsAdapter.ViewHold
             }
             holder.mChatLastMessage.setText(realmDialogModel.getLastMessage());
 
-            if (realmDialogModel.getUnreadMessagesCount() != 0) {
-                holder.mNewMessageCounter.setVisibility(View.VISIBLE);
-                holder.mChatName.setTextColor(Color.parseColor("#327780"));
-                holder.mChatDate.setTextColor(Color.BLACK);
-                holder.mNewMessageCounter.setText(String.valueOf(realmDialogModel.getUnreadMessagesCount()));
-            } else {
-                holder.mNewMessageCounter.setText("");
-                holder.mNewMessageCounter.setVisibility(View.GONE);
+            if (realmDialogModel.getUnreadMessagesCount() != null) {
+                if (realmDialogModel.getUnreadMessagesCount() != 0) {
+                    holder.mNewMessageCounter.setVisibility(View.VISIBLE);
+                    holder.mChatName.setTextColor(Color.parseColor("#327780"));
+                    holder.mChatDate.setTextColor(Color.BLACK);
+                    holder.mNewMessageCounter.setText(String.valueOf(realmDialogModel.getUnreadMessagesCount()));
+                } else {
+                    holder.mNewMessageCounter.setText("");
+                    holder.mNewMessageCounter.setVisibility(View.GONE);
+                }
+
             }
-
-
             String path = mMapAvatar.get(realmDialogModel.getId());
             if (path != null) {
                 holder.mDialogImage.setImageURI(Uri.fromFile(new File(path)));
