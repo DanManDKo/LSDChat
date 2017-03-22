@@ -73,9 +73,13 @@ public class UserInfoFragment extends BaseFragment implements UserInfoContract.V
         mLoginUser = getArguments().getParcelable(LIST);
         initView(view);
 
-        mEmail.setText(mLoginUser.getEmail());
-        mPhone.setText(mLoginUser.getPhone());
-        mWebsite.setText(mLoginUser.getWebsite());
+        fieldAccessibility(mEmail,mRlEmail,mLoginUser.getEmail());
+        fieldAccessibility(mPhone,mRlPhone,mLoginUser.getPhone());
+        fieldAccessibility(mWebsite,mRlWebsite,mLoginUser.getWebsite());
+
+//        mEmail.setText(mLoginUser.getEmail());
+//        mPhone.setText(mLoginUser.getPhone());
+//        mWebsite.setText(mLoginUser.getWebsite());
 
 
         mPresenter.getUserAvatar(mLoginUser.getId());
@@ -103,6 +107,15 @@ public class UserInfoFragment extends BaseFragment implements UserInfoContract.V
 
     }
 
+    private void fieldAccessibility(TextView textView,RelativeLayout rl,String value) {
+        if (value == null) {
+            rl.setVisibility(View.GONE);
+        }
+        else {
+            rl.setVisibility(View.VISIBLE);
+            textView.setText(value);
+        }
+    }
 
     private void initView(View view) {
         mFabMessage = (FloatingActionButton) view.findViewById(R.id.fab_user_info);
