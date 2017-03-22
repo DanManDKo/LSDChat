@@ -5,6 +5,7 @@ import com.example.lsdchat.api.dialog.model.ItemMessage;
 import com.example.lsdchat.api.dialog.request.CreateDialogRequest;
 import com.example.lsdchat.api.dialog.request.CreateMessageRequest;
 import com.example.lsdchat.api.dialog.request.UpdateDialogRequest;
+import com.example.lsdchat.api.dialog.request.UpdateMessageRequest;
 import com.example.lsdchat.api.dialog.response.ContentResponse;
 import com.example.lsdchat.api.dialog.response.DialogsResponse;
 import com.example.lsdchat.api.dialog.response.MessagesResponse;
@@ -16,6 +17,7 @@ import com.example.lsdchat.constant.ApiConstant;
 import okhttp3.ResponseBody;
 import retrofit2.Response;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.Headers;
@@ -70,4 +72,10 @@ public interface DialogService {
 
     @PUT(ApiConstant.UPDATE_REQUEST)
     Observable<LoginResponse> updateUserInfoRequest(@Path(ApiConstant.UploadParametres.ID) String dialogID, @Header(ApiConstant.QB_TOKEN) String token, @Body UpdateRequest body);
+
+    @DELETE(ApiConstant.UPDATE_DELETE_MESSAGE)
+    Observable<Void> deleteMessageRequest(@Header(ApiConstant.QB_TOKEN) String token, @Path(ApiConstant.UploadParametres.ID) String dialogID);
+
+    @PUT(ApiConstant.UPDATE_DELETE_MESSAGE)
+    Observable<Void> updateMessageRequest(@Header(ApiConstant.QB_TOKEN) String token, @Path(ApiConstant.UploadParametres.ID) String dialogID, @Body UpdateMessageRequest body);
 }

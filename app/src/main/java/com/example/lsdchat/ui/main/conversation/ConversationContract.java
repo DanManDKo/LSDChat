@@ -9,6 +9,7 @@ import com.example.lsdchat.api.login.model.LoginUser;
 import com.example.lsdchat.model.ContentModel;
 import com.example.lsdchat.model.RealmDialogModel;
 import com.example.lsdchat.model.User;
+import com.example.lsdchat.ui.BasePresenter;
 
 import java.util.List;
 
@@ -16,7 +17,7 @@ import rx.Observable;
 
 // TODO: 3/9/17 [Code Review] this should be in Fragment
 public interface ConversationContract {
-    interface Presenter {
+    interface Presenter extends BasePresenter {
 
         void onDestroy();
 
@@ -32,8 +33,6 @@ public interface ConversationContract {
 
         void addNewMessageToAdapterList(String messageId);
 
-        void onAdapterItemClicked(String id, int position);
-
         void sendMessage(String dialogId, String message, String sendTo, int dialogType);
 
         void loadMoreFromDataBase(String dialogId, int page);
@@ -45,6 +44,12 @@ public interface ConversationContract {
         void getUsersListFromDatabase();
 
         void getUsersAvatarsFromDatabase();
+
+        void onAdapterItemClicked(String id, int position, String message, String dialogID);
+
+        void deleteMessage(String dialogID, int position);
+
+        void updateMessage(String messageID, int position, String message, String dialogID);
 
         boolean isOnline();
 
@@ -71,8 +76,13 @@ public interface ConversationContract {
 
         void passUsersAvatarsToAdapter(List<ContentModel> users);
 
+        void showAppropriateMessage(int msg);
 
-        void showErrorDialog(String message);
+        void showConfirmationWindow(String messageID, int position, String message, String dialogID);
+
+        void notifyAdapterItemDeleted(int position);
+
+        void notifyAdapterItemUpdated(int position, String message);
     }
 
     interface Model {
@@ -89,5 +99,9 @@ public interface ConversationContract {
         Observable<List<LoginUser>> getUsersFromDatabase();
 
         Observable<List<ContentModel>> getUserAvatarFromDatabase();
+
+        Observable<Void> deleteMessage(String token, String dialogID);
+
+        Observable<Void> updateMessage(String token, String messageID, String message, String dialogId);
     }
 }

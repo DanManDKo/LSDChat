@@ -4,6 +4,7 @@ import com.example.lsdchat.App;
 import com.example.lsdchat.api.dialog.DialogService;
 import com.example.lsdchat.api.dialog.model.ItemMessage;
 import com.example.lsdchat.api.dialog.request.CreateMessageRequest;
+import com.example.lsdchat.api.dialog.request.UpdateMessageRequest;
 import com.example.lsdchat.api.dialog.response.MessagesResponse;
 import com.example.lsdchat.api.login.model.LoginUser;
 import com.example.lsdchat.constant.ApiConstant;
@@ -72,6 +73,24 @@ public class ConversationModel implements ConversationContract.Model {
     @Override
     public Observable<List<ContentModel>> getUserAvatarFromDatabase() {
         return mDataManager.getObservableUserAvatar()
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    @Override
+    public Observable<Void> deleteMessage(String token, String dialogID) {
+        return mDialogService.deleteMessageRequest(token, dialogID)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    @Override
+    public Observable<Void> updateMessage(String token, String messageID, String message, String dialogID) {
+        UpdateMessageRequest body = new UpdateMessageRequest();
+        body.setDialogID(dialogID);
+        body.setMessage(message);
+
+        return mDialogService.updateMessageRequest(token, messageID, body)
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
 }

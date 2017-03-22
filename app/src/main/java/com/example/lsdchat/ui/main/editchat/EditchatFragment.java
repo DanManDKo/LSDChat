@@ -21,15 +21,12 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import com.example.lsdchat.App;
 import com.example.lsdchat.R;
 import com.example.lsdchat.api.login.model.LoginUser;
-import com.example.lsdchat.constant.ApiConstant;
 import com.example.lsdchat.model.ContentModel;
 import com.example.lsdchat.ui.PresenterLoader;
-import com.example.lsdchat.ui.main.conversation.ConversationFragment;
 import com.example.lsdchat.ui.main.fragment.BaseFragment;
 import com.facebook.drawee.view.SimpleDraweeView;
 
@@ -81,9 +78,6 @@ public class EditchatFragment extends BaseFragment implements EditchatContract.V
         View view = inflater.inflate(R.layout.fragment_editchat, container, false);
         dialogId = getArguments().getString(DIALOG_ID);
         initView(view);
-
-
-
         return view;
     }
 
@@ -110,9 +104,9 @@ public class EditchatFragment extends BaseFragment implements EditchatContract.V
             @Override
             public void onLoaderReset(Loader<EditchatPresenter> loader) {
                 Log.i(TAG, "onLoaderReset");
+                onPresenterDestroyed();
                 EditchatFragment.this.mPresenter = null;
 
-                onPresenterDestroyed();
             }
         });
     }
@@ -160,10 +154,7 @@ public class EditchatFragment extends BaseFragment implements EditchatContract.V
     }
 
     private void onPresenterPrepared(EditchatPresenter presenter) {
-        int ownerID = App.getDataManager().getUser().getId();
-
-
-
+//        int ownerID = App.getDataManager().getUser().getId();
         presenter.getAvatarsFromDatabase();
         presenter.loadDialogCredentials(getArguments().getString(DIALOG_ID));
 
@@ -172,7 +163,6 @@ public class EditchatFragment extends BaseFragment implements EditchatContract.V
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mRecyclerView.setAdapter(mAdapter);
-
 
 
         mDialogImage.setOnClickListener(v -> chooseDialogImage());
@@ -188,6 +178,7 @@ public class EditchatFragment extends BaseFragment implements EditchatContract.V
 
     private void onPresenterDestroyed() {
         mListener = null;
+        mPresenter.onDetach();
     }
 
     @Override
@@ -237,8 +228,8 @@ public class EditchatFragment extends BaseFragment implements EditchatContract.V
     }
 
     @Override
-    public void navigateToConversationFragment(String dialogID, String dialogName,int dialogType, int singleOccupant) {
-        mListener.onConversationFragmentSelected(dialogID, dialogName,dialogType,singleOccupant);
+    public void navigateToConversationFragment(String dialogID, String dialogName, int dialogType, int singleOccupant) {
+        mListener.onConversationFragmentSelected(dialogID, dialogName, dialogType, singleOccupant);
     }
 
     @Override
@@ -278,7 +269,7 @@ public class EditchatFragment extends BaseFragment implements EditchatContract.V
         mDialogImage = (SimpleDraweeView) view.findViewById(R.id.editchat_groupeimage);
         mToolbar = (Toolbar) view.findViewById(R.id.chats_toolbar);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.editchat_recycler);
-        mRlUsers  =(RelativeLayout) view.findViewById(R.id.rl_user_edit_chat);
+        mRlUsers = (RelativeLayout) view.findViewById(R.id.rl_user_edit_chat);
 
 
         initToolbar(mToolbar, getString(R.string.edit_chat_title));
@@ -302,13 +293,11 @@ public class EditchatFragment extends BaseFragment implements EditchatContract.V
     }
 
 
-
     @Override
     public void setRlUsersAccessibility(boolean enable) {
         if (enable) {
             mRecyclerView.setVisibility(View.VISIBLE);
-        }
-        else {
+        } else {
             mRecyclerView.setVisibility(View.GONE);
         }
     }

@@ -1,5 +1,7 @@
 package com.example.lsdchat.ui.main.conversation;
 
+import android.app.Activity;
+import android.content.Context;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -68,6 +70,8 @@ public class ConversationRecyclerAdapter extends RecyclerView.Adapter<Conversati
     @Override
     public void onBindViewHolder(ConversationRecyclerAdapter.LocalViewHolder holder, int position) {
         ItemMessage itemMessage = mList.get(position);
+        holder.itemView.setTag(itemMessage);
+
         if (itemMessage != null) {
             holder.message.setText(mList.get(position).getMessage());
 
@@ -87,11 +91,6 @@ public class ConversationRecyclerAdapter extends RecyclerView.Adapter<Conversati
             } else {
                 holder.image.setImageResource(R.drawable.userpic);
             }
-
-            holder.messageRoot.setOnClickListener(view -> {
-
-                mConversationPresenter.onAdapterItemClicked(mList.get(position).getId(), position);
-            });
         }
     }
 
@@ -134,6 +133,12 @@ public class ConversationRecyclerAdapter extends RecyclerView.Adapter<Conversati
                 default:
                     break;
             }
+            itemView.setOnLongClickListener(v -> {
+                ItemMessage item = (ItemMessage) v.getTag();
+                int position = mList.indexOf(item);
+                mConversationPresenter.onAdapterItemClicked(mList.get(position).getId(), position, mList.get(position).getMessage(), mList.get(position).getChatDialogId());
+                return true;
+            });
         }
     }
 
@@ -164,5 +169,15 @@ public class ConversationRecyclerAdapter extends RecyclerView.Adapter<Conversati
         for (ContentModel o : mContentModels) {
             mMapAvatar.put(o.getId(), o.getImagePath());
         }
+    }
+
+    public void deleteItem(int position) {
+        mUsers.remove(position);
+        notifyItemRemoved(position);
+    }
+
+    public void updateItem(int position, String message) {
+        mList.get(position).setMessage(message);
+        notifyItemChanged(position);
     }
 }

@@ -5,12 +5,10 @@ import android.content.Context;
 import android.net.Uri;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.lsdchat.R;
@@ -24,7 +22,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -116,15 +113,15 @@ public class EditchatAdapter extends RecyclerView.Adapter<EditchatAdapter.ViewHo
 
 
             mCheckBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                int userId=mUsersList.get(getAdapterPosition()).getId();
+                int userId = mUsersList.get(getAdapterPosition()).getId();
                 if (isChecked) {
                     mIdChecked.add(userId);
                     mPresenter.checkBoxSetOnChecked(userId, true);
-                    mUserName.setTextColor(ContextCompat.getColor(mContext,R.color.colorNewChatTextCheck));
+                    mUserName.setTextColor(ContextCompat.getColor(mContext, R.color.colorNewChatTextCheck));
                 } else {
                     mIdChecked.remove(userId);
                     mPresenter.checkBoxSetOnChecked(userId, false);
-                    mUserName.setTextColor(ContextCompat.getColor(mContext,R.color.colorNewChatText));
+                    mUserName.setTextColor(ContextCompat.getColor(mContext, R.color.colorNewChatText));
                 }
 
             });
@@ -132,7 +129,6 @@ public class EditchatAdapter extends RecyclerView.Adapter<EditchatAdapter.ViewHo
 
         }
     }
-
 
 
     public void setContentModelList(List<ContentModel> contentModelList) {
