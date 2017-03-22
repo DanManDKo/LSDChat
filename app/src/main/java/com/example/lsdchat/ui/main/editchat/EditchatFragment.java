@@ -27,7 +27,7 @@ import com.example.lsdchat.R;
 import com.example.lsdchat.api.login.model.LoginUser;
 import com.example.lsdchat.model.ContentModel;
 import com.example.lsdchat.ui.PresenterLoader;
-import com.example.lsdchat.ui.main.NetworkConnect;
+import com.example.lsdchat.util.error.NetworkConnect;
 import com.example.lsdchat.ui.main.fragment.BaseFragment;
 import com.facebook.drawee.view.SimpleDraweeView;
 
@@ -44,7 +44,7 @@ public class EditchatFragment extends BaseFragment implements EditchatContract.V
 
     private static final String TAG = "EDITCHAT_LOADER";
 
-    private EditchatPresenter mPresenter;
+    private EditchatContract.Presenter mPresenter;
     private EditchatAdapter mAdapter;
     private RecyclerView mRecyclerView;
     private OnSaveButtonClicked mListener;
@@ -80,6 +80,8 @@ public class EditchatFragment extends BaseFragment implements EditchatContract.V
         View view = inflater.inflate(R.layout.fragment_editchat, container, false);
         dialogId = getArguments().getString(DIALOG_ID);
         initView(view);
+        mPresenter = new EditchatPresenter(this,new EditchatModel(),App.getSharedPreferencesManager(getActivity()));
+        onPresenterPrepared();
         return view;
     }
 
@@ -88,84 +90,14 @@ public class EditchatFragment extends BaseFragment implements EditchatContract.V
         return networkConnect.isNetworkConnect();
     }
 
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        Log.i("fragment", "onActivityCreated");
-        getLoaderManager().initLoader(EDITCHAT_LOADER_ID, null, new LoaderManager.LoaderCallbacks<EditchatPresenter>() {
-            @Override
-            public Loader<EditchatPresenter> onCreateLoader(int id, Bundle args) {
-                Log.i(TAG, "onCreateLoader");
-                return new PresenterLoader<EditchatPresenter>(getContext(), getFactory(), TAG);
-            }
 
-            @Override
-            public void onLoadFinished(Loader<EditchatPresenter> loader, EditchatPresenter data) {
-                Log.i(TAG, "onLoadFinished");
-                EditchatFragment.this.mPresenter = data;
-
-                onPresenterPrepared(mPresenter);
-            }
-
-            @Override
-            public void onLoaderReset(Loader<EditchatPresenter> loader) {
-                Log.i(TAG, "onLoaderReset");
-                onPresenterDestroyed();
-                EditchatFragment.this.mPresenter = null;
-
-            }
-        });
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        Log.i("fragment", "onStart");
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        Log.i("fragment", "onResume");
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        Log.i("fragment", "onPause");
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        Log.i("fragment", "onStop");
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        Log.i("fragment", "onDestroy");
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        Log.i("fragment", "onDetach");
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        Log.i("fragment", "onDetach");
-    }
-
-    private void onPresenterPrepared(EditchatPresenter presenter) {
+    private void onPresenterPrepared() {
 //        int ownerID = App.getDataManager().getUser().getId();
-        presenter.getAvatarsFromDatabase();
-        presenter.loadDialogCredentials(getArguments().getString(DIALOG_ID));
+        mPresenter.getAvatarsFromDatabase();
+        mPresenter.loadDialogCredentials(getArguments().getString(DIALOG_ID));
 
 //        initUserList();
-        mAdapter = new EditchatAdapter(presenter, getContext());
+        mAdapter = new EditchatAdapter(mPresenter, getContext());
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mRecyclerView.setAdapter(mAdapter);
@@ -174,6 +106,12 @@ public class EditchatFragment extends BaseFragment implements EditchatContract.V
         mDialogImage.setOnClickListener(v -> chooseDialogImage());
         mSaveButton.setOnClickListener(v ->
                 mPresenter.updateDialogCredentials(mEditChatName.getEditableText().toString()));
+    }
+
+    @Override
+    public void onDestroy() {
+        mPresenter.onDestroy();
+        super.onDestroy();
     }
 
     @Override

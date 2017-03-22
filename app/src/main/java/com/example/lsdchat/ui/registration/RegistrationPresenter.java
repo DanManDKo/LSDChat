@@ -195,6 +195,7 @@ public class RegistrationPresenter implements RegistrationContract.Presenter {
                     long blobID = loginResponse.getLoginUser().getBlobId();
 
                     saveUserToDataBase(email, password, userName, userID, blobID, true);
+                    mView.getDialogAndUser(token);
 
                     if (mUploadFile != null) {
                         getBlobObjectCreateFile(token, getFileMimeType(mUploadFile), mUploadFile.getName(), userID);

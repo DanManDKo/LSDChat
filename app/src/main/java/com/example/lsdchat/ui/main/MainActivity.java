@@ -3,22 +3,29 @@ package com.example.lsdchat.ui.main;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.FrameLayout;
 
+import com.example.lsdchat.App;
 import com.example.lsdchat.R;
 import com.example.lsdchat.manager.SharedPreferencesManager;
 import com.example.lsdchat.ui.main.chats.ChatsFragment;
 import com.example.lsdchat.ui.main.conversation.ConversationFragment;
 import com.example.lsdchat.ui.main.editchat.EditchatFragment;
 import com.example.lsdchat.ui.main.fragment.BaseFragment;
+import com.example.lsdchat.util.ErrorsCode;
 import com.example.lsdchat.util.Network;
 import com.example.lsdchat.util.UsersUtil;
+import com.example.lsdchat.util.error.ErrorInterface;
+import com.example.lsdchat.util.error.NetworkConnect;
 
 import java.util.List;
 
+import retrofit2.adapter.rxjava.HttpException;
+
 public class MainActivity extends AppCompatActivity implements ConversationFragment.OnEditchatButtonClicked,
-        EditchatFragment.OnSaveButtonClicked, NetworkConnect {
+        EditchatFragment.OnSaveButtonClicked, NetworkConnect,ErrorInterface {
 
     private FrameLayout mFrameLayout;
 
@@ -30,11 +37,23 @@ public class MainActivity extends AppCompatActivity implements ConversationFragm
         mFrameLayout = (FrameLayout) findViewById(R.id.fragment);
 
 //        get user list and save to db
-        UsersUtil.getUserListAndSave(new SharedPreferencesManager(this).getToken(), this);
+//        UsersUtil.getUserListAndSave(new SharedPreferencesManager(this).getToken(), this);
 
         replaceFragment(new ChatsFragment());
     }
 
+    @Override
+    public void showErrorDialog(Throwable throwable) {
+        String title = "Error " + String.valueOf(((HttpException) throwable).code());
+        String message = ErrorsCode.getErrorMessage(App.getContext(), throwable);
+
+        new AlertDialog.Builder(this)
+                .setTitle(title)
+                .setMessage(message)
+                .setPositiveButton("OK", (dialogInterface, i) -> dialogInterface.dismiss())
+                .setCancelable(false)
+                .create().show();
+    }
 
     private void replaceFragment(Fragment fragment) {
         getSupportFragmentManager().beginTransaction().addToBackStack(null).replace(R.id.fragment, fragment).commit();

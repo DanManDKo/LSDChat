@@ -3,15 +3,11 @@ package com.example.lsdchat.ui.main.conversation;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.Loader;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -32,9 +28,8 @@ import com.example.lsdchat.constant.ApiConstant;
 import com.example.lsdchat.listener.EndlessScrollListener;
 import com.example.lsdchat.model.ContentModel;
 import com.example.lsdchat.model.User;
-import com.example.lsdchat.ui.PresenterLoader;
-import com.example.lsdchat.ui.main.NetworkConnect;
 import com.example.lsdchat.ui.main.fragment.BaseFragment;
+import com.example.lsdchat.util.error.NetworkConnect;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,7 +52,7 @@ public class ConversationFragment extends BaseFragment implements ConversationCo
     private static final int DIALOG_PRIVATE = 3;
     private static final int TOTAL_ITEM_COUNT = 20;
 
-    private ConversationPresenter mConversationPresenter;
+    private ConversationContract.Presenter mConversationPresenter;
     private OnEditchatButtonClicked mEditListener;
 
     private Toolbar mToolbar;
@@ -118,8 +113,8 @@ public class ConversationFragment extends BaseFragment implements ConversationCo
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        Log.e("Conv", "onCreateView");
         View view = inflater.inflate(R.layout.fragment_conversation, container, false);
+        mConversationPresenter = new ConversationPresenter(this, new ConversationModel(), App.getSharedPreferencesManager(getActivity()));
 
         dialogID = getArguments().getString(DIALOG_ID);
         if (getArguments().getInt(OCCUPANT_INDEX) != -1) {
@@ -135,33 +130,12 @@ public class ConversationFragment extends BaseFragment implements ConversationCo
 
         initView(view);
 
+        onPresenterPrepared();
         return view;
     }
 
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        getLoaderManager().initLoader(CONVERSATION_LOADER_ID, null, new LoaderManager.LoaderCallbacks<ConversationPresenter>() {
-            @Override
-            public Loader<ConversationPresenter> onCreateLoader(int id, Bundle args) {
-                return new PresenterLoader<ConversationPresenter>(getContext(), getFactory(), TAG);
-            }
 
-            @Override
-            public void onLoadFinished(Loader<ConversationPresenter> loader, ConversationPresenter data) {
-                ConversationFragment.this.mConversationPresenter = data;
-                onPresenterPrepared(mConversationPresenter);
-            }
-
-            @Override
-            public void onLoaderReset(Loader<ConversationPresenter> loader) {
-                onPresenterDestroyed(mConversationPresenter);
-                ConversationFragment.this.mConversationPresenter = null;
-            }
-        });
-    }
-
-    private void onPresenterPrepared(ConversationPresenter presenter) {
+    private void onPresenterPrepared() {
 
         User user = App.getDataManager().getUser();
         Intent intentService = new Intent(getActivity(), XMPPService.class);
@@ -174,9 +148,9 @@ public class ConversationFragment extends BaseFragment implements ConversationCo
         mAdapter = new ConversationRecyclerAdapter(mMessageList, mConversationPresenter, user.getId());
 
 
-        presenter.getUsersListFromDatabase();
-        presenter.getUsersAvatarsFromDatabase();
-        presenter.getMessages(dialogID, ApiConstant.MessageRequestParams.MESSAGE_LIMIT, ApiConstant.MessageRequestParams.MESSAGE_SKIP);
+        mConversationPresenter.getUsersListFromDatabase();
+        mConversationPresenter.getUsersAvatarsFromDatabase();
+        mConversationPresenter.getMessages(dialogID, ApiConstant.MessageRequestParams.MESSAGE_LIMIT, ApiConstant.MessageRequestParams.MESSAGE_SKIP);
 
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
@@ -188,7 +162,7 @@ public class ConversationFragment extends BaseFragment implements ConversationCo
             @Override
             public void onLoadMore(int skip, int totalItemsCount, RecyclerView view) {
                 if (totalItemsCount > TOTAL_ITEM_COUNT) {
-                    presenter.loadMore(dialogID, skip);
+                    mConversationPresenter.loadMore(dialogID, skip);
                 }
             }
         });
@@ -225,11 +199,6 @@ public class ConversationFragment extends BaseFragment implements ConversationCo
 
     }
 
-    private void onPresenterDestroyed(ConversationPresenter presenter) {
-        presenter.onDestroy();
-        mEditListener = null;
-        getActivity().stopService(new Intent(getContext(), XMPPService.class));
-    }
 
     @Override
     public void onResume() {
@@ -251,8 +220,11 @@ public class ConversationFragment extends BaseFragment implements ConversationCo
                 break;
             case R.id.toolbar_edit:
                 mConversationPresenter.navigateToEditchatFragment(dialogID);
+                break;
+            default:
+                break;
         }
-        return super.onOptionsItemSelected(item);
+        return false;
     }
 
     @Override
@@ -261,16 +233,13 @@ public class ConversationFragment extends BaseFragment implements ConversationCo
         super.onCreateOptionsMenu(menu, inflater);
     }
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        Log.e("Conv", "onDestroyView");
-    }
 
     @Override
     public void onDestroy() {
+        getActivity().stopService(new Intent(getContext(), XMPPService.class));
+        mConversationPresenter.onDestroy();
         super.onDestroy();
-        Log.e("Conv", "onDestroy");
+
     }
 
     private void initView(View view) {
@@ -288,8 +257,9 @@ public class ConversationFragment extends BaseFragment implements ConversationCo
 
     @Override
     public void fillConversationAdapter(List<ItemMessage> list) {
-        Log.e("AAA", String.valueOf(mMessageList.size()));
-        mAdapter.addAll(list);
+        if (list != null) {
+            mAdapter.addAll(list);
+        }
     }
 
     @Override
@@ -391,14 +361,17 @@ public class ConversationFragment extends BaseFragment implements ConversationCo
         showAppropriateMessage(2);
     }
 
-    private ConversationPresenterFactory getFactory() {
-        ConversationContract.Model model = new ConversationModel();
-        return new ConversationPresenterFactory(this, model, App.getSharedPreferencesManager(getContext()));
-    }
 
     @Override
     public void replaceFragment(String dialogId) {
         mEditListener.onEditchatSelected(dialogId);
+    }
+
+    @Override
+    public void showErrorDialog(String throwable) {
+
+        dialogError(throwable);
+
     }
 
     public interface OnEditchatButtonClicked {

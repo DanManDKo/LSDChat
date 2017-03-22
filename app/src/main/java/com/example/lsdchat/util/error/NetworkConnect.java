@@ -1,4 +1,4 @@
-package com.example.lsdchat.ui.main;
+package com.example.lsdchat.util.error;
 
 
 

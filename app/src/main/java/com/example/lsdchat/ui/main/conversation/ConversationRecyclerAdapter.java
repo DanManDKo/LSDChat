@@ -25,7 +25,7 @@ import java.util.Map;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ConversationRecyclerAdapter extends RecyclerView.Adapter<ConversationRecyclerAdapter.LocalViewHolder> {
-    private ConversationPresenter mConversationPresenter;
+    private ConversationContract.Presenter mConversationPresenter;
     private static final String SENDER_NAME = "Me";
     private static final int OUTCOMING_MSG = 0;
     private static final int INCOMING_MSG = 1;
@@ -39,7 +39,7 @@ public class ConversationRecyclerAdapter extends RecyclerView.Adapter<Conversati
     private Map<Integer, String> mMapName;
     private int userID;
 
-    public ConversationRecyclerAdapter(List<ItemMessage> list, ConversationPresenter mConversationPresenter, int userID) {
+    public ConversationRecyclerAdapter(List<ItemMessage> list, ConversationContract.Presenter mConversationPresenter, int userID) {
         mList = list;
         mUsers = new ArrayList<>();
         mContentModels = new ArrayList<>();

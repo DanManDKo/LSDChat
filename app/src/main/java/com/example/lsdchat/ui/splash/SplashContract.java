@@ -39,5 +39,7 @@ public interface SplashContract {
         Context getContext();
 
         void navigateToMain();
+
+        void getDialogAndUser(String token);
     }
 }

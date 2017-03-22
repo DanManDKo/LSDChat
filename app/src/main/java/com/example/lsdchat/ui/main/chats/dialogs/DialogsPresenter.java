@@ -6,7 +6,6 @@ import com.example.lsdchat.R;
 import com.example.lsdchat.constant.ApiConstant;
 import com.example.lsdchat.model.IdsListInteger;
 import com.example.lsdchat.model.RealmDialogModel;
-import com.example.lsdchat.ui.main.NetworkConnect;
 import com.example.lsdchat.ui.main.conversation.ConversationFragment;
 
 import java.util.ArrayList;

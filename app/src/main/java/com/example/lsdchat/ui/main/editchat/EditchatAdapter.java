@@ -42,9 +42,9 @@ public class EditchatAdapter extends RecyclerView.Adapter<EditchatAdapter.ViewHo
 
     private int mDialogCreaterID;
     private Context mContext;
-    private EditchatPresenter mPresenter;
+    private EditchatContract.Presenter mPresenter;
 
-    public EditchatAdapter(EditchatPresenter presenter, Context context) {
+    public EditchatAdapter(EditchatContract.Presenter presenter, Context context) {
         mOccupantsList = new ArrayList<>();
         mAddedOccupantsList = new ArrayList<>();
         mDelatedOccupantsList = new ArrayList<>();

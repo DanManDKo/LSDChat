@@ -28,7 +28,7 @@ import com.example.lsdchat.App;
 import com.example.lsdchat.R;
 import com.example.lsdchat.api.login.model.LoginUser;
 import com.example.lsdchat.model.ContentModel;
-import com.example.lsdchat.ui.main.NetworkConnect;
+import com.example.lsdchat.util.error.NetworkConnect;
 import com.example.lsdchat.ui.main.fragment.BaseFragment;
 import com.example.lsdchat.util.StorageHelper;
 import com.facebook.drawee.view.SimpleDraweeView;

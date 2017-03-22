@@ -84,6 +84,8 @@ public interface RegistrationContract {
         void showDialogImageSourceChooser();
 
         void navigateToMainScreen();
+
+        void getDialogAndUser(String token);
     }
 
 

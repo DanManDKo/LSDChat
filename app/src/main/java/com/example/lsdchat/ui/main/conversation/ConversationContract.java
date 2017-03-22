@@ -84,6 +84,7 @@ public interface ConversationContract {
         boolean isNetworkConnect();
 
         void showErrorDialog(Throwable throwable);
+        void showErrorDialog(String throwable);
 
     }
 

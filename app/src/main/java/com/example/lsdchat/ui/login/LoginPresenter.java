@@ -131,7 +131,7 @@ public class LoginPresenter implements LoginContract.Presenter {
                     String fullName = loginUser.getFullName();
                     int userId = loginUser.getId();
                     long blobId = loginUser.getBlobId();
-
+                    mView.getDialogAndUser(token);
                             if (blobId!=0) {
                                 mModel.saveUser(new User(email,password,fullName,userId,blobId,mView.isKeepSignIn()));
                             }

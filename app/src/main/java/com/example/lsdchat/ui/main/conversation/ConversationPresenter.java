@@ -8,6 +8,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.example.lsdchat.App;
+import com.example.lsdchat.R;
 import com.example.lsdchat.api.dialog.model.ItemMessage;
 import com.example.lsdchat.constant.ApiConstant;
 import com.example.lsdchat.manager.SharedPreferencesManager;
@@ -20,6 +21,9 @@ import java.util.List;
 
 import io.realm.RealmList;
 import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.plugins.RxJavaErrorHandler;
+import rx.schedulers.Schedulers;
 
 import static com.facebook.FacebookSdk.getApplicationContext;
 
@@ -190,17 +194,22 @@ public class ConversationPresenter implements ConversationContract.Presenter {
         Observable.combineLatest(observableUserID, observableDialogModel, ((value, dialogModel) -> {
             boolean result = checkAccessLevel(dialogModel, value);
             return result;
-        })).subscribe(aBoolean -> permissionForEditDialog(aBoolean, dialogId));
+        }))
+                .subscribe(aBoolean -> {
+                    permissionForEditDialog(aBoolean,dialogId);
+
+                }, throwable -> Log.e("aa", throwable.getMessage()));
+
     }
+
 
     private void permissionForEditDialog(boolean value, String dialogID) {
         if (value) {
             mView.replaceFragment(dialogID);
         } else {
-            mView.showAppropriateMessage(0);
+            mView.showErrorDialog("You can`t edit this dialog");
         }
     }
-
     private boolean checkAccessLevel(RealmDialogModel dialog, int value) {
         switch (dialog.getType()) {
             case PUBLIC_GROUP_TYPE:

@@ -21,7 +21,7 @@ import android.widget.TextView;
 import com.example.lsdchat.App;
 import com.example.lsdchat.R;
 import com.example.lsdchat.api.login.model.LoginUser;
-import com.example.lsdchat.ui.main.NetworkConnect;
+import com.example.lsdchat.util.error.NetworkConnect;
 import com.example.lsdchat.ui.main.fragment.BaseFragment;
 import com.example.lsdchat.util.ErrorsCode;
 

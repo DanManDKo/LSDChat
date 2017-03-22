@@ -8,14 +8,12 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.content.Loader;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,7 +23,7 @@ import com.example.lsdchat.App;
 import com.example.lsdchat.R;
 import com.example.lsdchat.model.ContentModel;
 import com.example.lsdchat.model.RealmDialogModel;
-import com.example.lsdchat.ui.main.NetworkConnect;
+import com.example.lsdchat.util.error.NetworkConnect;
 import com.example.lsdchat.ui.main.fragment.BaseFragment;
 
 import java.util.List;
@@ -81,8 +79,8 @@ public class DialogsFragment extends BaseFragment implements DialogsContract.Vie
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_dialogs, container, false);
         initView(view);
-        mPresenter = new DialogsPresenter(this, new DialogsModel(App.getSharedPreferencesManager(getActivity())));
         mType = getArguments().getInt(TYPE);
+        mPresenter = new DialogsPresenter(this, new DialogsModel(App.getSharedPreferencesManager(getActivity())));
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -90,12 +88,15 @@ public class DialogsFragment extends BaseFragment implements DialogsContract.Vie
         mDialogsAdapter = new DialogsAdapter(mPresenter);
         mRecyclerView.setAdapter(mDialogsAdapter);
 
-
         mPresenter.getObservableDialogByType(mType);
+
+        setRefreshLayout();
+
+
 
         mPresenter.getContentModelList();
 
-        setRefreshLayout();
+
 
         initSwipeDelete();
 
@@ -150,10 +151,12 @@ public class DialogsFragment extends BaseFragment implements DialogsContract.Vie
     public void setListDialog(List<RealmDialogModel> list) {
         clearListDialog();
         mDialogsAdapter.addData(list);
+        mDialogsAdapter.notifyDataSetChanged();
     }
 
     private void clearListDialog() {
         mDialogsAdapter.clearData();
+        mDialogsAdapter.notifyDataSetChanged();
     }
 
     @Override

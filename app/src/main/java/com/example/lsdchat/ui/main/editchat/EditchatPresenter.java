@@ -65,7 +65,6 @@ public class EditchatPresenter implements EditchatContract.Presenter {
     private long mBlobId;
 
     public EditchatPresenter(EditchatContract.View view, EditchatContract.Model model, SharedPreferencesManager manager) {
-        Log.e("AAA", "constructor");
         mView = view;
         mContext = view.getContext();
         mModel = model;
@@ -81,13 +80,14 @@ public class EditchatPresenter implements EditchatContract.Presenter {
 
     @Override
     public void onDetach() {
-        mView = null;
-        mModel = null;
-        mPreferencesManager = null;
+
     }
 
     @Override
     public void onDestroy() {
+        mView = null;
+        mModel = null;
+        mPreferencesManager = null;
         //nothing to clean at this point
     }
 
