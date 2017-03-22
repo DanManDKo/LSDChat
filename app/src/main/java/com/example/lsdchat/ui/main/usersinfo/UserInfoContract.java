@@ -2,26 +2,38 @@ package com.example.lsdchat.ui.main.usersinfo;
 
 
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.Fragment;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
+import com.example.lsdchat.api.dialog.model.ItemDialog;
+import com.example.lsdchat.api.dialog.request.CreateDialogRequest;
 import com.example.lsdchat.api.login.model.LoginUser;
+import com.example.lsdchat.model.RealmDialogModel;
+
+import rx.Observable;
 
 public interface UserInfoContract {
 
-    interface View {
-        void navigateDial(String phone);
-        void navigateSendEmail(String email);
-        void navigateWeb(String website);
+    interface Model {
+        Observable<String> getImagePath(int userId);
 
+        Observable<ItemDialog> createDialog(CreateDialogRequest createDialogRequest);
+
+        void saveDialog(RealmDialogModel itemDialog);
+    }
+
+    interface View {
+        void setImagePath(String path);
+        void showDialogError(Throwable throwable);
+        boolean isNetworkConnect();
+        void navigateToChat(Fragment fragment);
     }
 
     interface Presenter {
-        void setImageView(ImageView imageView, long blobId);
-        void setOnClickListenerRlEmail(RelativeLayout rlEmail,String email);
-        void setOnClickListenerRlPhone(RelativeLayout rlPhone,String phone);
-        void setOnClickListenerRlWeb(RelativeLayout rlWeb,String web);
-        void setOnClickListenerFab(FloatingActionButton fab, LoginUser user);
+       void getUserAvatar(int userId);
+        void onDestroy();
+        void createDialog(int idUser);
 
     }
 

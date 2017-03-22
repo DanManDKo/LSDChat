@@ -16,16 +16,23 @@ import android.widget.ProgressBar;
 import com.example.lsdchat.App;
 import com.example.lsdchat.R;
 import com.example.lsdchat.ui.main.MainActivity;
+import com.example.lsdchat.util.DialogUtil;
+import com.example.lsdchat.util.ErrorsCode;
+import com.example.lsdchat.util.Network;
+import com.example.lsdchat.util.UsersUtil;
+import com.example.lsdchat.util.error.ErrorInterface;
+import com.example.lsdchat.util.error.NetworkConnect;
 import com.facebook.FacebookSdk;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.redmadrobot.inputmask.MaskedTextChangedListener;
 
 import org.jetbrains.annotations.NotNull;
 
+import retrofit2.adapter.rxjava.HttpException;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 
-public class RegistrationActivity extends AppCompatActivity implements RegistrationContract.View {
+public class RegistrationActivity extends AppCompatActivity implements RegistrationContract.View,NetworkConnect,ErrorInterface {
 
     private TextInputLayout mEmail;
     private TextInputLayout mPass;
@@ -158,8 +165,8 @@ public class RegistrationActivity extends AppCompatActivity implements Registrat
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
         mRegistrationPresenter.onDestroy();
+        super.onDestroy();
     }
 
     @Override
@@ -262,5 +269,34 @@ public class RegistrationActivity extends AppCompatActivity implements Registrat
     @Override
     public void hideProgressBar() {
         mProgressBar.setVisibility(View.INVISIBLE);
+    }
+
+    @Override
+    public void getDialogAndUser(String token) {
+        UsersUtil.getUserListAndSave(token, this);
+        DialogUtil.getAllDialogAndSave(token,this);
+    }
+
+    @Override
+    public void showErrorDialog(Throwable throwable) {
+        String title = "Error " + String.valueOf(((HttpException) throwable).code());
+        String message = ErrorsCode.getErrorMessage(App.getContext(), throwable);
+
+        new AlertDialog.Builder(this)
+                .setTitle(title)
+                .setMessage(message)
+                .setPositiveButton("OK", (dialogInterface, i) -> dialogInterface.dismiss())
+                .setCancelable(false)
+                .create().show();
+    }
+
+    @Override
+    public boolean isNetworkConnect() {
+        if (!Network.isOnline(this)) {
+            Network.showErrorConnectDialog(this);
+            return false;
+        } else {
+            return true;
+        }
     }
 }

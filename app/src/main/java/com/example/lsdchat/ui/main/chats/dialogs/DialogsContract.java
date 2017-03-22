@@ -3,44 +3,66 @@ package com.example.lsdchat.ui.main.chats.dialogs;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.widget.RelativeLayout;
 
 import com.example.lsdchat.api.dialog.response.DialogsResponse;
-import com.example.lsdchat.model.DialogModel;
+import com.example.lsdchat.model.ContentModel;
+import com.example.lsdchat.model.RealmDialogModel;
 
 import java.util.List;
 
-import de.hdodenhof.circleimageview.CircleImageView;
 import rx.Observable;
 
-// TODO: 3/9/17 [Code Review] pls check code review TODOs in ChatsContract.class and apply appropriate changes here
 public interface DialogsContract {
 
     interface Model {
-        List<DialogModel> getDialogsByType(int type);
         Observable<DialogsResponse> getAllDialogs(String token);
 
-        void saveDialog(List<DialogModel> dialogList);
+        void saveDialog(List<RealmDialogModel> dialogList);
 
+
+        Observable<List<RealmDialogModel>> getAllDialogFromDb();
+
+        void deleteItemDialog(String idDialog);
+
+        Observable<Void> deleteDialog(String dialogId);
+
+        String getToken();
+
+        Observable<List<ContentModel>> getObservableUserAvatar();
+        Observable<List<RealmDialogModel>> getObservableDialogsByType(int type);
     }
 
     interface View {
-        void initAdapter(List<DialogModel> list);
-        void updateAdapter();
+        void setListDialog(List<RealmDialogModel> list);
         int getType();
 
         void navigateToChat(Fragment fragment);
+
+        void setContentModelList(List<ContentModel> contentModelList);
+
+        void showErrorDialog(Throwable throwable);
+
+        void showErrorDialog(int throwable);
+
+        void deleteItemDialog(RealmDialogModel item);
+
+        boolean isNetworkConnect();
+
+        void errorConnectAccessibility(boolean enable);
     }
 
     interface Presenter {
-        List<DialogModel> showDialogs(int type);
+        void deleteDialog(int itemPosition, int type);
+        void onDestroy();
+        void getDialogFilterList(int typeDialog,String query);
+
+        void getObservableDialogByType(int type);
+
+        void setClickRl(RealmDialogModel realmDialogModel);
+
+        void getContentModelList();
+
         void getAllDialogAndSave();
-
-        void setImageDialog(CircleImageView imageView, DialogModel dialogModel);
-
-        void setOnRefreshListener(SwipeRefreshLayout swipeRefreshLayout);
-
-        void setOnClickListener(RelativeLayout relativeLayout, DialogModel dialogModel);
     }
 
 }

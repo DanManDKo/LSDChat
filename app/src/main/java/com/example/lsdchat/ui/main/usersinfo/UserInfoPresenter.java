@@ -1,74 +1,53 @@
 package com.example.lsdchat.ui.main.usersinfo;
 
 
-import android.support.design.widget.FloatingActionButton;
-import android.util.Log;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
+import com.example.lsdchat.api.dialog.request.CreateDialogRequest;
+import com.example.lsdchat.constant.ApiConstant;
+import com.example.lsdchat.model.RealmDialogModel;
+import com.example.lsdchat.ui.main.conversation.ConversationFragment;
 
-import com.example.lsdchat.api.login.model.LoginUser;
-import com.example.lsdchat.manager.SharedPreferencesManager;
-import com.example.lsdchat.util.Utils;
-
-import rx.Observable;
+import rx.android.schedulers.AndroidSchedulers;
 
 public class UserInfoPresenter implements UserInfoContract.Presenter {
 
     private UserInfoContract.View mView;
-    private SharedPreferencesManager mSharedPreferencesManager;
+    private UserInfoContract.Model mModel;
 
-    public UserInfoPresenter(UserInfoContract.View mView, SharedPreferencesManager sharedPreferencesManager) {
+    public UserInfoPresenter(UserInfoContract.View mView, UserInfoContract.Model mModel) {
         this.mView = mView;
-        this.mSharedPreferencesManager = sharedPreferencesManager;
+        this.mModel = mModel;
+
     }
 
+    @Override
+    public void onDestroy() {
+        mView = null;
+        mModel = null;
+    }
 
     @Override
-    public void setImageView(ImageView imageView, long blobId) {
-        if (blobId != 0) {
-            Utils.downloadContent(blobId, mSharedPreferencesManager.getToken())
-                    .flatMap(contentResponse -> Observable.just(contentResponse.getItemContent().getImageUrl()))
-                    .subscribe(imageUrl -> {
-                        Utils.downloadImageToView(imageUrl, imageView);
-                    }, throwable -> {
-                        Log.e("IMAGE-error", throwable.getMessage());
-                    });
+    public void getUserAvatar(int userId) {
+        mModel.getImagePath(userId)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(s -> mView.setImagePath(s));
 
+    }
+
+    @Override
+    public void createDialog(int idUser) {
+        CreateDialogRequest createDialogRequest = new CreateDialogRequest();
+        createDialogRequest.setType(ApiConstant.TYPE_DIALOG_PRIVATE);
+        createDialogRequest.setIdU(String.valueOf(idUser));
+        if (mView.isNetworkConnect()) {
+            mModel.createDialog(createDialogRequest)
+                    .subscribe(itemDialog -> {
+                        mModel.saveDialog(new RealmDialogModel(itemDialog));
+
+                        mView.navigateToChat(ConversationFragment
+                                .newInstance(itemDialog.getId(), itemDialog.getName(), itemDialog.getType(), idUser));
+
+                    }, throwable -> mView.showDialogError(throwable));
         }
     }
-
-    @Override
-    public void setOnClickListenerRlEmail(RelativeLayout rlEmail, String email) {
-        rlEmail.setOnClickListener(v -> {
-            if (email != null && !email.isEmpty()) {
-                mView.navigateSendEmail(email);
-            }
-        });
-    }
-
-    @Override
-    public void setOnClickListenerRlPhone(RelativeLayout rlPhone, String phone) {
-        rlPhone.setOnClickListener(v -> {
-            if (phone != null && !phone.isEmpty()) {
-                mView.navigateDial(phone);
-            }
-        });
-    }
-
-    @Override
-    public void setOnClickListenerRlWeb(RelativeLayout rlWeb, String web) {
-        rlWeb.setOnClickListener(v -> {
-            if (web != null && !web.isEmpty()) {
-                mView.navigateWeb(web);
-            }
-        });
-    }
-
-
-    @Override
-    public void setOnClickListenerFab(FloatingActionButton fab, LoginUser user) {
-// navigate to chat
-    }
-
 
 }

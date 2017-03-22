@@ -44,7 +44,7 @@
     <!--EditText new Chat-->
     <style name="TextNewChat">
         <item name="android:textSize">@dimen/font_normal</item>
-        <item name="android:textColor">@color/colorNewChatText</item>
+
     </style>
 
     <!--TextInputLayout login-->

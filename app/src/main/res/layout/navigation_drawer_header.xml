@@ -10,6 +10,7 @@
     tools:ignore="Overdraw">
 
     <de.hdodenhof.circleimageview.CircleImageView
+        android:src="@drawable/userpic"
         android:id="@+id/nav_view_avatar"
         android:layout_width="68dp"
         android:layout_height="68dp"

@@ -1,6 +1,7 @@
 package com.example.lsdchat.ui.main.chats;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -8,6 +9,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.text.SpannableString;
 import android.text.Spanned;
@@ -31,12 +33,16 @@ import android.widget.Toast;
 import com.example.lsdchat.App;
 import com.example.lsdchat.R;
 import com.example.lsdchat.behavior.NonSwipeableViewPager;
+import com.example.lsdchat.constant.ApiConstant;
 import com.example.lsdchat.ui.login.LoginActivity;
+import com.example.lsdchat.util.error.NetworkConnect;
 import com.example.lsdchat.ui.main.ViewPagerAdapter;
+import com.example.lsdchat.ui.main.chats.dialogs.DialogsFragment;
 import com.example.lsdchat.ui.main.createchat.CreateChatFragment;
 import com.example.lsdchat.ui.main.fragment.BaseFragment;
 import com.example.lsdchat.ui.main.users.UsersFragment;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,45 +66,70 @@ public class ChatsFragment extends BaseFragment implements ChatsContract.View {
     private TextView mSpannableText;
     private ImageView mNoChatsImage;
     private LinearLayout mNoChatsMessage;
-
-
-
+    private SearchView mSearchView;
+    private NetworkConnect networkConnect;
 
     public ChatsFragment() {
     }
 
     @Override
-    public DrawerLayout getDrawerLayout() {
-        return mDrawerLayout;
+    public boolean isNetworkConnect() {
+        return networkConnect.isNetworkConnect();
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        networkConnect = ((NetworkConnect) getActivity());
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_chats, container, false);
-        mPresenter = new ChatsPresenter(this, App.getSharedPreferencesManager(getActivity()));
-        mPresenter.getAllDialogAndSave();
+        mPresenter = new ChatsPresenter(this, new ChatsModel(App.getSharedPreferencesManager(getActivity())));
+
 
         initView(view);
         initToolbar(mToolbar, "Chats");
 
-        mPresenter.fabClick(mFloatingActionButton);
+
+        mFloatingActionButton.setOnClickListener(v -> navigateToNewChat());
 
 
-        mPresenter.setNavigationItemSelectedListener(mNavigationView);
+        setNavigationItemSelectedListener();
 
 
         return view;
     }
 
+    private void setNavigationItemSelectedListener() {
+        mNavigationView.setNavigationItemSelectedListener(item -> {
+            item.setChecked(true);
+            switch (item.getItemId()) {
+                case R.id.item_create_new_chat:
+                    navigateToNewChat();
+                    break;
+                case R.id.item_users:
+                    navigateToUsers();
+                    break;
+                case R.id.item_invite_users:
+                    navigateToInviteUsers();
+                    break;
 
-    @Override
-    public void startNewChat() {
+                case R.id.item_settings:
+                    navigateToSetting();
+                    break;
+                case R.id.item_log_out:
+                    mPresenter.onLogout();
+                    break;
+            }
+            mDrawerLayout.closeDrawers();
+            return false;
+        });
+    }
+
+    private void navigateToNewChat() {
         replaceFragment(new CreateChatFragment());
     }
 
@@ -120,7 +151,7 @@ public class ChatsFragment extends BaseFragment implements ChatsContract.View {
         setSpannableText();
 
 
-        initViewPagerAdapter(mPresenter.setFragmentList());
+        initViewPagerAdapter(setFragmentList());
 
 
         /*
@@ -129,19 +160,51 @@ public class ChatsFragment extends BaseFragment implements ChatsContract.View {
        */
         toggleTabsVisibility(true);
 
-//        mHeaderLayout = mNavigationView.inflateHeaderView(R.layout.navigation_drawer_header);
         mHeaderLayout = mNavigationView.getHeaderView(0);
         mHeaderImage = (CircleImageView) mHeaderLayout.findViewById(R.id.nav_view_avatar);
         mHeaderName = (TextView) mHeaderLayout.findViewById(R.id.nav_view_full_name);
         mHeaderEmail = (TextView) mHeaderLayout.findViewById(R.id.nav_view_email_address);
 
-        mPresenter.setHeaderData(mHeaderImage, mHeaderName, mHeaderEmail);
+        /*
+        * set header data:
+        * avatar, full name, email
+        * */
+        setHeaderImage();
+        mHeaderName.setText(mPresenter.getUserModel().getFullName());
+        mHeaderEmail.setText(mPresenter.getUserModel().getEmail());
+
+
+//        Observable.from(UsersUtil.getAllUser())
+//                .filter(user -> user.getBlobId()!=0)
+//                .subscribe(user -> {
+//                   Log.e("MY TETS",user.getImagePath());
+//                });
+    }
+
+
+    private List<Fragment> setFragmentList() {
+        List<Fragment> list = new ArrayList<>();
+        list.add(new DialogsFragment().newInstance(ApiConstant.TYPE_DIALOG_PUBLIC));
+        list.add(new DialogsFragment().newInstance(ApiConstant.TYPE_DIALOG_GROUP));
+
+        return list;
+    }
+
+    private void setHeaderImage() {
+        mPresenter.getUserAvatar().subscribe(path -> {
+            if (path != null) {
+                mHeaderImage.setImageURI(Uri.fromFile(new File(path)));
+            } else {
+                mHeaderImage.setImageResource(R.drawable.userpic);
+            }
+        });
+
     }
 
     private void initViewPagerAdapter(List<Fragment> fragmentList) {
         mViewPager.setOffscreenPageLimit(1);
         mViewPager.setAdapter(new ViewPagerAdapter(getActivity().getSupportFragmentManager()
-                ,fragmentList, setFillTitleList()));
+                , fragmentList, setFillTitleList()));
         mTabLayout.setupWithViewPager(mViewPager);
 
     }
@@ -152,7 +215,6 @@ public class ChatsFragment extends BaseFragment implements ChatsContract.View {
         titleList.add("Private");
         return titleList;
     }
-
 
 
     private void toggleTabsVisibility(boolean value) {
@@ -185,7 +247,6 @@ public class ChatsFragment extends BaseFragment implements ChatsContract.View {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.toolbar_options_menu, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -205,28 +266,28 @@ public class ChatsFragment extends BaseFragment implements ChatsContract.View {
     }
 
     @Override
-    public void startUsers() {
+    public void navigateToUsers() {
         replaceFragment(new UsersFragment());
     }
 
     @Override
-    public void startInviteUsers() {
+    public void navigateToInviteUsers() {
         dialogError("kjndaskjhads");
     }
 
     @Override
-    public void startSetting() {
+    public void navigateToSetting() {
 
     }
 
     @Override
-    public void logOut() {
+    public void navigateToLoginActivity() {
         startActivity(new Intent(getActivity(), LoginActivity.class));
         getActivity().finish();
     }
 
     private void replaceFragment(Fragment fragment) {
-        getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragment, fragment).commit();
+        getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.fragment, fragment).addToBackStack(null).commit();
     }
 
     @Override
@@ -245,4 +306,6 @@ public class ChatsFragment extends BaseFragment implements ChatsContract.View {
 
         }
     }
+
+
 }

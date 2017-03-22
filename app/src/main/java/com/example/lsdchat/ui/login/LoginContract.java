@@ -57,6 +57,7 @@ public interface LoginContract {
     }
 
     interface View {
+        void getDialogAndUser(String token);
 
         void dialogError(Throwable throwable);
 

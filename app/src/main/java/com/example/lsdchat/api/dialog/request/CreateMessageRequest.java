@@ -24,6 +24,11 @@ public class CreateMessageRequest {
         this.message = message;
     }
 
+    public CreateMessageRequest(String message, Integer recipientId) {
+        this.message = message;
+        this.recipientId = recipientId;
+    }
+
     public CreateMessageRequest() {
     }
 
